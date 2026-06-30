@@ -18,7 +18,8 @@
     <div class="relative z-10 flex min-h-screen">
 
         {{-- Sidebar --}}
-        <aside class="fixed inset-y-0 right-0 z-30 flex w-64 -translate-x-full flex-col border-l border-gray-800/60 bg-gray-900/70 backdrop-blur-xl transition-transform lg:translate-x-0" x-data="{ open: false }" @keydown.escape.window="open = false">
+        <aside
+            class="fixed inset-y-0 right-0 z-30 hidden w-64 flex-col border-l border-gray-800/60 bg-gray-900/70 backdrop-blur-xl lg:flex">
 
             {{-- Brand --}}
             <div class="relative flex h-20 items-center gap-2.5 overflow-hidden border-b border-gray-800/60 px-6">
@@ -100,7 +101,7 @@
                 <div class="pointer-events-none absolute inset-0 opacity-20" style="background: radial-gradient(ellipse at 70% 50%, rgba(245, 158, 11, 0.10), transparent 70%);"></div>
 
                 {{-- Mobile sidebar toggle --}}
-                <button @click="$el.closest('aside')?.classList.toggle('-translate-x-full')" class="relative lg:hidden rounded-lg p-2 text-gray-400 transition hover:bg-gray-800/50 hover:text-amber-300">
+                <button type="button" class="relative lg:hidden rounded-lg p-2 text-gray-400 transition hover:bg-gray-800/50 hover:text-amber-300">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
                     </svg>
