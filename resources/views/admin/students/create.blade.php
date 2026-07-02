@@ -18,7 +18,7 @@
 
     {{-- full_name --}}
     <div>
-        <label class="mb-1.5 block text-sm font-medium text-gray-300">Full Name</label>
+        <label class="mb-1.5 block text-sm font-medium text-gray-300">{{ __('admin.full_name') }}</label>
         <input type="text" name="full_name" value="{{ old('full_name') }}" required
                class="block w-full rounded-lg border border-gray-700 bg-gray-800/50 px-4 py-3 text-sm text-gray-100 placeholder-gray-500 transition focus:border-amber-500/50 focus:outline-none focus:ring-2 focus:ring-amber-500/20"
                placeholder="Student full name">
@@ -29,7 +29,7 @@
 
     {{-- phone --}}
     <div>
-        <label class="mb-1.5 block text-sm font-medium text-gray-300">Phone</label>
+        <label class="mb-1.5 block text-sm font-medium text-gray-300">{{ __('admin.phone') }}</label>
         <input type="tel" name="phone" value="{{ old('phone') }}" required
                class="block w-full rounded-lg border border-gray-700 bg-gray-800/50 px-4 py-3 text-sm text-gray-100 placeholder-gray-500 transition focus:border-amber-500/50 focus:outline-none focus:ring-2 focus:ring-amber-500/20"
                placeholder="09123456789">
@@ -40,7 +40,7 @@
 
     {{-- parent_phone --}}
     <div>
-        <label class="mb-1.5 block text-sm font-medium text-gray-300">Parent Phone</label>
+        <label class="mb-1.5 block text-sm font-medium text-gray-300">{{ __('admin.parent_phone') }}</label>
         <input type="tel" name="parent_phone" value="{{ old('parent_phone') }}"
                class="block w-full rounded-lg border border-gray-700 bg-gray-800/50 px-4 py-3 text-sm text-gray-100 placeholder-gray-500 transition focus:border-amber-500/50 focus:outline-none focus:ring-2 focus:ring-amber-500/20"
                placeholder="Optional">
@@ -66,13 +66,22 @@
 
     {{-- join_date --}}
     <div>
-        <label class="mb-1.5 block text-sm font-medium text-gray-300">Join Date</label>
+        <label class="mb-1.5 block text-sm font-medium text-gray-300">{{ __('admin.join_date') }}</label>
         <input type="date" name="join_date" value="{{ old('join_date') }}" required
                class="block w-full rounded-lg border border-gray-700 bg-gray-800/50 px-4 py-3 text-sm text-gray-100 transition focus:border-amber-500/50 focus:outline-none focus:ring-2 focus:ring-amber-500/20">
+        <p class="mt-1 text-xs text-gray-500">{{ __('admin.jalali_equivalent') }}: <span class="text-amber-400" id="joinDateJalali">—</span></p>
         @error('join_date')
             <p class="mt-1 text-sm text-red-400">{{ $message }}</p>
         @enderror
     </div>
+    <script>
+        document.querySelector('input[name="join_date"]').addEventListener('change', function(e) {
+            if (e.target.value) {
+                fetch('{{ route('admin.students.index') }}?date=' + e.target.value + '&jalali=true', {method:'HEAD'})
+                    .catch(() => {});
+            }
+        });
+    </script>
 
     {{-- notes --}}
     <div>

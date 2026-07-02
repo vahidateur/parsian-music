@@ -1,3 +1,46 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* ── Persian / Arabic font: Vazirmatn ─────────────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800&display=swap');
+
+/* ── Native select: dark text on white for OS dropdown popup ──────────────── */
+select option {
+    color: #111827;
+    background-color: #ffffff;
+}
+
+@layer base {
+    html {
+        font-family: 'Vazirmatn', system-ui, -apple-system, sans-serif;
+    }
+
+    /* Persian text rendering */
+    :lang(fa) {
+        font-family: 'Vazirmatn', system-ui, -apple-system, sans-serif;
+        line-height: 1.8;
+        letter-spacing: 0;
+        word-spacing: 0.05em;
+    }
+
+    /* Headings: slightly heavier weight in Persian */
+    :lang(fa) h1,
+    :lang(fa) h2,
+    :lang(fa) h3 {
+        font-weight: 700;
+        line-height: 1.6;
+    }
+
+    /* Persian numerals in fa locale */
+    :lang(fa) .persian-numerals {
+        font-feature-settings: "ss01";
+    }
+
+    /* Smooth font rendering */
+    body {
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        text-rendering: optimizeLegibility;
+    }
+}

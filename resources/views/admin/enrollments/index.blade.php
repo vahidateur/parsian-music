@@ -88,19 +88,25 @@
                         <td class="px-6 py-4 font-medium text-gray-100">{{ $enrollment->student?->full_name ?? '—' }}</td>
                         <td class="px-6 py-4 text-gray-400">{{ $enrollment->teacher?->full_name ?? '—' }}</td>
                         <td class="px-6 py-4 text-gray-400">{{ $enrollment->instrument?->name ?? '—' }}</td>
-                        <td class="px-6 py-4 text-gray-400">{{ ucfirst((string) $enrollment->skill_level) }}</td>
+                        <td class="px-6 py-4 text-gray-400">
+                            @php
+                                $enrollmentSkillValue = $enrollment->skill_level instanceof \BackedEnum ? $enrollment->skill_level->value : (string) $enrollment->skill_level;
+                            @endphp
+                            {{ ucfirst($enrollmentSkillValue) }}
+                        </td>
                         <td class="px-6 py-4">
                             @php
+                                $statusValue = $enrollment->status instanceof \BackedEnum ? $enrollment->status->value : (string) $enrollment->status;
                                 $statusStyles = [
                                     'active' => 'bg-emerald-500/10 text-emerald-400',
                                     'paused' => 'bg-amber-500/10 text-amber-300',
                                     'completed' => 'bg-sky-500/10 text-sky-400',
                                     'cancelled' => 'bg-red-500/10 text-red-400',
                                 ];
-                                $style = $statusStyles[$enrollment->status] ?? 'bg-gray-700/50 text-gray-400';
+                                $style = $statusStyles[$statusValue] ?? 'bg-gray-700/50 text-gray-400';
                             @endphp
                             <span class="rounded-full {{ $style }} px-2.5 py-0.5 text-xs font-medium">
-                                {{ ucfirst((string) $enrollment->status) }}
+                                {{ ucfirst($statusValue) }}
                             </span>
                         </td>
                         <td class="px-6 py-4 text-gray-400">{{ $enrollment->started_at?->format('Y/m/d') ?? '—' }}</td>

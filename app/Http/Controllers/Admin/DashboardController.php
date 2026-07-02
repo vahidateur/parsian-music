@@ -23,6 +23,9 @@ class DashboardController extends Controller
             'recentSessions'    => $summary['recentSessions'],
             'cancelledSessions' => $summary['cancelledSessions'],
             'missedSessions'    => $summary['missedSessions'],
+            'recentStudents'    => $summary['recentStudents'],
+            'enrollmentTrend'   => $summary['enrollmentTrend'],
+            'attendanceStats'   => $summary['attendanceStats'],
         ]);
     }
 }

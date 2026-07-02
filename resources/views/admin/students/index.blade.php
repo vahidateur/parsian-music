@@ -28,7 +28,7 @@
                class="rounded-lg border border-gray-700 bg-gray-800/50 px-4 py-2.5 text-sm text-gray-100 placeholder-gray-500 transition focus:border-amber-500/50 focus:outline-none focus:ring-2 focus:ring-amber-500/20">
     </div>
     <div>
-        <label class="mb-1 block text-xs font-medium text-gray-400">Phone</label>
+        <label class="mb-1 block text-xs font-medium text-gray-400">{{ __('admin.phone') }}</label>
         <input type="text" name="phone" value="{{ request('phone') }}" placeholder="Search phone..."
                class="rounded-lg border border-gray-700 bg-gray-800/50 px-4 py-2.5 text-sm text-gray-100 placeholder-gray-500 transition focus:border-amber-500/50 focus:outline-none focus:ring-2 focus:ring-amber-500/20">
     </div>
@@ -50,12 +50,15 @@
         </thead>
         <tbody class="divide-y divide-gray-800/60">
             @forelse ($students as $student)
+                @php
+                    $statusValue = $student->status instanceof \BackedEnum ? $student->status->value : (string) $student->status;
+                @endphp
                 <tr class="transition hover:bg-gray-800/20">
                     <td class="px-6 py-4 font-medium text-gray-100">{{ $student->full_name }}</td>
                     <td class="px-6 py-4 text-gray-400">{{ $student->phone }}</td>
                     <td class="px-6 py-4">
-                        <span class="rounded-full {{ (string) $student->status === 'active' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-gray-700/50 text-gray-400' }} px-2.5 py-0.5 text-xs font-medium">
-                            {{ ucfirst((string) $student->status) }}
+                        <span class="rounded-full {{ $statusValue === 'active' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-gray-700/50 text-gray-400' }} px-2.5 py-0.5 text-xs font-medium">
+                            {{ ucfirst($statusValue) }}
                         </span>
                     </td>
                     <td class="px-6 py-4 text-gray-400">{{ $student->join_date->format('Y/m/d') }}</td>

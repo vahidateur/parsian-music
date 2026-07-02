@@ -1,0 +1,232 @@
+<?php
+
+return [
+    // ── Navigation & brand ─────────────────────────────────────────────────
+    'panel_title'    => 'Parsian Admin Panel',
+    'brand_name'     => 'Parsian Music',
+    'academy_footer' => 'Parsian Music Academy',
+    'dashboard'      => 'Dashboard',
+    'students'       => 'Students',
+    'teachers'       => 'Teachers',
+    'sessions'       => 'Sessions',
+    'calendar'       => 'Calendar',
+    'reports'        => 'Reports',
+    'logout'         => 'Log Out',
+
+    // ── Dashboard ──────────────────────────────────────────────────────────
+    'welcome_message'        => 'Here is what\'s happening at the academy today.',
+    'total_students'         => 'Total Students',
+    'active_teachers'        => 'Active Teachers',
+    'today_sessions'         => 'Today\'s Sessions',
+    'monthly_revenue'        => 'Monthly Revenue',
+    'new_student'            => 'New Student',
+    'new_teacher'            => 'New Teacher',
+    'scheduled_for_today'    => 'Scheduled for today',
+    'currently_teaching'     => 'Currently teaching',
+    'currently_enrolled'     => 'Currently enrolled',
+    'total_registered'       => 'Total registered',
+    'coming_soon'            => 'Coming soon',
+    'todays_schedule'        => 'Today\'s Schedule',
+    'cancelled_sessions'     => 'Cancelled Sessions',
+    'missed_sessions'        => 'Missed Sessions',
+    'cancelled_last_7_days'  => 'cancelled (last 7 days)',
+    'missed_last_7_days'     => 'missed (last 7 days)',
+    'no_sessions_today'      => 'No sessions scheduled for today.',
+    'sessions_count'         => ':count sessions',
+
+    // ── Students ───────────────────────────────────────────────────────────
+    'student'                       => 'Student',
+    'student_information'           => 'Student Information',
+    'register_student_desc'         => 'Fill in the details to register a new student.',
+    'update_student_desc'           => 'Update student information.',
+    'student_full_name_placeholder' => 'Student full name',
+    'create_student'                => 'Create Student',
+    'update_student'                => 'Update Student',
+    'edit_student'                  => 'Edit Student',
+    'back_to_students'              => '← Back to Students',
+    'no_students_found'             => 'No students found.',
+    'delete_student_confirm'        => 'Delete this student?',
+
+    // ── Teachers ───────────────────────────────────────────────────────────
+    'teacher'                        => 'Teacher',
+    'teacher_information'            => 'Teacher Information',
+    'manage_teachers'                => 'Manage academy teachers.',
+    'register_teacher_desc'          => 'Fill in the details to register a new teacher.',
+    'update_teacher_desc'            => 'Update teacher information.',
+    'teacher_full_name_placeholder'  => 'Teacher full name',
+    'create_teacher'                 => 'Create Teacher',
+    'update_teacher'                 => 'Update Teacher',
+    'edit_teacher'                   => 'Edit Teacher',
+    'back_to_teachers'               => '← Back to Teachers',
+    'no_teachers_found'              => 'No teachers found.',
+    'delete_teacher_confirm'         => 'Delete this teacher?',
+    'teaches'                        => 'Teaches:',
+    'joined'                         => 'Joined',
+    'hire_date'                      => 'Hire Date',
+    'bio'                            => 'Bio',
+
+    // ── Teacher panel ──────────────────────────────────────────────────────
+    'weekly_sessions'       => 'Weekly Sessions',
+    'this_week'             => 'This week',
+    'completed'             => 'Completed',
+    'sessions_done'         => 'Sessions done',
+    'missed'                => 'Missed',
+    'needs_attention'       => 'Needs attention',
+    'weekly_schedule'       => 'Weekly Schedule',
+    'no_sessions_this_week' => 'No sessions scheduled this week.',
+    'enrolled_count'        => ':count enrolled',
+
+    // ── Instruments ────────────────────────────────────────────────────────
+    'instruments'                 => 'Instruments',
+    'instrument'                  => 'Instrument',
+    'assigned_instruments'        => 'Assigned Instruments',
+    'add_instrument'              => 'Add Instrument',
+    'assign_instrument'           => 'Assign Instrument',
+    'select_instrument'           => 'Select instrument...',
+    'no_instruments_assigned_yet' => 'No instruments assigned yet.',
+    'remove'                      => 'Remove',
+    'primary'                     => 'Primary',
+    'set_as_primary'              => 'Set as primary instrument',
+    'primary_instrument_hint'     => 'Only one instrument can be primary. Setting this will unset the existing one.',
+
+    // ── Enrollments ────────────────────────────────────────────────────────
+    'enrollments'              => 'Enrollments',
+    'manage_enrollments'       => 'Manage student instrument enrollments.',
+    'new_enrollment'           => 'New Enrollment',
+    'new_enrollment_desc'      => 'Enroll a student with a teacher for an instrument.',
+    'edit_enrollment'          => 'Edit Enrollment',
+    'update_enrollment_desc'   => 'Update enrollment information.',
+    'update_enrollment_btn'    => 'Update Enrollment',
+    'create_enrollment'        => 'Create Enrollment',
+    'add_enrollment'           => 'Add Enrollment',
+    'teacher_must_teach_instrument' => 'The teacher must teach the selected instrument.',
+    'no_enrollments_found'     => 'No enrollments found.',
+    'no_enrollments_yet'       => 'No enrollments yet.',
+    'delete_enrollment_confirm' => 'Delete this enrollment?',
+
+    // ── Class sessions ─────────────────────────────────────────────────────
+    'class_sessions'           => 'Class Sessions',
+    'view_filter_sessions'     => 'View and filter all scheduled sessions.',
+    'generate_sessions'        => 'Generate Sessions',
+    'no_sessions_found'        => 'No sessions found.',
+    'duration_minutes_value'   => ':count min',
+
+    // ── Attendance ─────────────────────────────────────────────────────────
+    'attendance'            => 'Attendance',
+    'attendance_desc'       => 'Mark and track student attendance for this session.',
+    'attendance_completion' => 'Attendance Completion',
+    'attendance_report'     => 'Attendance Report',
+    'attendance_report_desc'=> 'Aggregated attendance by student for the selected range.',
+    'attendance_rate'       => 'Attendance Rate',
+    'back_to_sessions'      => '← Back to Sessions',
+    'present'               => 'Present',
+    'absent'                => 'Absent',
+    'late'                  => 'Late',
+    'excused'               => 'Excused',
+    'unmarked'              => 'Unmarked',
+    'unmarked_count'        => 'Unmarked',
+    'marked'                => 'marked',
+    'summary'               => 'Summary',
+    'by_student'            => 'By Student',
+    'no_attendance_records' => 'No attendance records in this range.',
+    'no_students_in_session'=> 'No students enrolled in this session.',
+
+    // ── Teacher report ─────────────────────────────────────────────────────
+    'teacher_performance_report' => 'Teacher Performance Report',
+    'teacher_performance_desc'   => 'Session delivery & attendance rate — last 30 days',
+    'no_teacher_activity'        => 'No teacher activity in the last 30 days.',
+
+    // ── Calendar ───────────────────────────────────────────────────────────
+    'weekly_calendar' => 'Weekly Calendar',
+    'prev'            => '← Prev',
+    'today'           => 'Today',
+    'next'            => 'Next →',
+
+    // ── Common labels ──────────────────────────────────────────────────────
+    'full_name'      => 'Full Name',
+    'name'           => 'Name',
+    'phone'          => 'Phone',
+    'parent_phone'   => 'Parent Phone',
+    'status'         => 'Status',
+    'join_date'      => 'Join Date',
+    'started_at'     => 'Started At',
+    'started'        => 'Started',
+    'skill'          => 'Skill',
+    'skill_level'    => 'Skill Level',
+    'date'           => 'Date',
+    'time'           => 'Time',
+    'duration'       => 'Duration',
+    'room'           => 'Room',
+    'notes'          => 'Notes',
+    'optional_notes' => 'Optional notes',
+    'optional'       => 'Optional',
+    'action'         => 'Action',
+    'actions'        => 'Actions',
+    'total'          => 'Total',
+    'total_sessions' => 'Total Sessions',
+    'total_count'    => ':count total',
+
+    // ── Buttons & actions ──────────────────────────────────────────────────
+    'filter' => 'Filter',
+    'clear'  => 'Clear',
+    'search' => 'Search',
+    'apply'  => 'Apply',
+    'reset'  => 'Reset',
+    'from'   => 'From',
+    'to'     => 'To',
+    'edit'   => 'Edit',
+    'delete' => 'Delete',
+    'cancel' => 'Cancel',
+    'view'   => 'View',
+
+    // ── Search placeholders ────────────────────────────────────────────────
+    'search_name'  => 'Search name...',
+    'search_phone' => 'Search phone...',
+
+    // ── Select placeholders ────────────────────────────────────────────────
+    'all_students'    => 'All Students',
+    'all_teachers'    => 'All Teachers',
+    'all_instruments' => 'All Instruments',
+    'all_statuses'    => 'All Statuses',
+    'all_rooms'       => 'All Rooms',
+    'select_student'  => 'Select student...',
+    'select_teacher'  => 'Select teacher...',
+    'select_level'    => 'Select level...',
+
+    // ── Quick links ────────────────────────────────────────────────────────
+    'present_absent_summary' => 'Present: :present · Absent: :absent',
+
+    // ── Nested: statuses ───────────────────────────────────────────────────
+    'statuses' => [
+        'active'    => 'Active',
+        'paused'    => 'Paused',
+        'completed' => 'Completed',
+        'cancelled' => 'Cancelled',
+        'inactive'  => 'Inactive',
+        'graduated' => 'Graduated',
+    ],
+
+    // ── Nested: session statuses ───────────────────────────────────────────
+    'session_statuses' => [
+        'scheduled' => 'Scheduled',
+        'completed' => 'Completed',
+        'cancelled' => 'Cancelled',
+        'missed'    => 'Missed',
+        'makeup'    => 'Makeup',
+    ],
+
+    // ── Nested: skill levels ───────────────────────────────────────────────
+    'skill_levels' => [
+        'beginner'     => 'Beginner',
+        'intermediate' => 'Intermediate',
+        'advanced'     => 'Advanced',
+        'expert'       => 'Expert',
+    ],
+
+    // ── Nested: rooms ──────────────────────────────────────────────────────
+    'rooms' => [
+        'Room 1' => 'Room 1',
+        'Room 2' => 'Room 2',
+        'Room 3' => 'Room 3',
+    ],
+];

@@ -19,6 +19,9 @@
     <div class="border-b border-gray-800/60 px-6 py-4">
         <h2 class="text-lg font-semibold text-amber-100">Teacher Information</h2>
     </div>
+    @php
+        $statusValue = $teacher->status instanceof \BackedEnum ? $teacher->status->value : (string) $teacher->status;
+    @endphp
     <div class="grid grid-cols-1 gap-6 px-6 py-6 sm:grid-cols-3">
         <div>
             <p class="text-xs font-medium uppercase tracking-wider text-gray-500">Full Name</p>
@@ -30,8 +33,8 @@
         </div>
         <div>
             <p class="text-xs font-medium uppercase tracking-wider text-gray-500">Status</p>
-            <span class="mt-1 inline-block rounded-full {{ (string) $teacher->status === 'active' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-gray-700/50 text-gray-400' }} px-2.5 py-0.5 text-xs font-medium">
-                {{ ucfirst((string) $teacher->status) }}
+            <span class="mt-1 inline-block rounded-full {{ $statusValue === 'active' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-gray-700/50 text-gray-400' }} px-2.5 py-0.5 text-xs font-medium">
+                {{ ucfirst($statusValue) }}
             </span>
         </div>
     </div>
@@ -114,12 +117,12 @@
 
             {{-- skill_level --}}
             <div>
-                <label class="mb-1.5 block text-sm font-medium text-gray-300">Skill Level</label>
+                <label class="mb-1.5 block text-sm font-medium text-gray-300">{{ __('admin.skill_level') }}</label>
                 <select name="skill_level" required
                         class="block w-full rounded-lg border border-gray-700 bg-gray-800/50 px-4 py-3 text-sm text-gray-100 transition focus:border-amber-500/50 focus:outline-none focus:ring-2 focus:ring-amber-500/20">
-                    <option value="">Select level...</option>
+                    <option value="">{{ __('admin.select_level') }}</option>
                     @foreach (['beginner', 'intermediate', 'advanced', 'expert'] as $level)
-                        <option value="{{ $level }}" {{ old('skill_level') === $level ? 'selected' : '' }}>{{ ucfirst($level) }}</option>
+                        <option value="{{ $level }}" {{ old('skill_level') === $level ? 'selected' : '' }}>{{ __('admin.skill_levels.' . $level) }}</option>
                     @endforeach
                 </select>
                 @error('skill_level')
@@ -131,13 +134,13 @@
             <div class="flex items-center gap-2.5">
                 <input type="checkbox" name="is_primary" value="1" id="is_primary" {{ old('is_primary') ? 'checked' : '' }}
                        class="h-4 w-4 rounded border-gray-600 bg-gray-800 text-amber-500 focus:ring-amber-500/20">
-                <label for="is_primary" class="text-sm text-gray-300">Set as primary instrument</label>
+                <label for="is_primary" class="text-sm text-gray-300">{{ __('admin.set_as_primary') }}</label>
             </div>
-            <p class="text-xs text-gray-500">Only one instrument can be primary. Setting this will unset the existing primary.</p>
+            <p class="text-xs text-gray-500">{{ __('admin.primary_instrument_hint') }}</p>
 
             {{-- Submit --}}
             <button type="submit" class="w-full rounded-lg bg-gradient-to-r from-amber-600 to-amber-500 px-4 py-3 text-sm font-semibold text-gray-950 shadow-lg transition hover:from-amber-500 hover:to-amber-400">
-                Assign Instrument
+                {{ __('admin.assign_instrument') }}
             </button>
         </form>
     </section>

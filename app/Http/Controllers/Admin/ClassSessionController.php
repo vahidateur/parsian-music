@@ -5,7 +5,10 @@ namespace App\Http\Controllers\Admin;
 use App\Enums\SessionStatusEnum;
 use App\Http\Controllers\Controller;
 use App\Models\ClassSession;
+use App\Models\Instrument;
 use App\Models\RecurringSchedule;
+use App\Models\Student;
+use App\Models\Teacher;
 use App\Services\SessionGeneratorService;
 use Carbon\Carbon;
 use Carbon\CarbonPeriod;
@@ -52,7 +55,11 @@ class ClassSessionController extends Controller
             ->paginate(20)
             ->withQueryString();
 
-        return view('admin.sessions.index', compact('sessions'));
+        $students = Student::orderBy('full_name')->get();
+        $teachers = Teacher::orderBy('full_name')->get();
+        $instruments = Instrument::orderBy('name')->get();
+
+        return view('admin.sessions.index', compact('sessions', 'students', 'teachers', 'instruments'));
     }
 
     public function generate(SessionGeneratorService $generator): RedirectResponse
@@ -68,6 +75,32 @@ class ClassSessionController extends Controller
 
         return redirect()->route('admin.sessions.index')
             ->with('success', "{$totalCreated} session(s) generated successfully.");
+    }
+
+    public function create(): View
+    {
+        $students = Student::orderBy('full_name')->get();
+        $teachers = Teacher::orderBy('full_name')->get();
+        $instruments = Instrument::orderBy('name')->get();
+
+        return view('admin.sessions.create', compact('students', 'teachers', 'instruments'));
+    }
+
+    public function store(Request $request): RedirectResponse
+    {
+        $validated = $request->validate([
+            'student_id' => ['required', 'exists:students,id'],
+            'teacher_id' => ['required', 'exists:teachers,id'],
+            'session_date' => ['required', 'date'],
+            'start_time' => ['required', 'date_format:H:i', 'between:15:00,21:30'],
+            'duration_minutes' => ['required', 'integer', 'min:30', 'max:120'],
+            'room' => ['required', 'string'],
+        ]);
+
+        ClassSession::create($validated);
+
+        return redirect()->route('admin.sessions.index')
+            ->with('success', 'Session created successfully.');
     }
 
     public function calendar(Request $request): View
@@ -114,6 +147,9 @@ class ClassSessionController extends Controller
         $prevWeek = $weekStart->copy()->subWeek()->toDateString();
         $nextWeek = $weekStart->copy()->addWeek()->toDateString();
 
+        $students = Student::orderBy('full_name')->get();
+        $teachers = Teacher::orderBy('full_name')->get();
+
         return view('admin.calendar', compact(
             'weekStart',
             'weekEnd',
@@ -121,7 +157,17 @@ class ClassSessionController extends Controller
             'hours',
             'grid',
             'prevWeek',
-            'nextWeek'
+            'nextWeek',
+            'students',
+            'teachers'
         ));
+    }
+
+    public function destroy(ClassSession $session): RedirectResponse
+    {
+        $session->delete();
+
+        return redirect()->route('admin.sessions.index')
+            ->with('success', __('admin.session_deleted_successfully'));
     }
 }

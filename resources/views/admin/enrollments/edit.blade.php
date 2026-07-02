@@ -65,7 +65,7 @@
 
     {{-- skill_level --}}
     <div>
-        <label class="mb-1.5 block text-sm font-medium text-gray-300">Skill Level</label>
+        <label class="mb-1.5 block text-sm font-medium text-gray-300">{{ __('admin.skill_level') }}</label>
         <select name="skill_level" required
                 class="block w-full rounded-lg border border-gray-700 bg-gray-800/50 px-4 py-3 text-sm text-gray-100 transition focus:border-amber-500/50 focus:outline-none focus:ring-2 focus:ring-amber-500/20">
             <option value="">Select level...</option>
@@ -80,11 +80,11 @@
 
     {{-- status --}}
     <div>
-        <label class="mb-1.5 block text-sm font-medium text-gray-300">Status</label>
+        <label class="mb-1.5 block text-sm font-medium text-gray-300">{{ __('admin.status') }}</label>
         <select name="status" required
                 class="block w-full rounded-lg border border-gray-700 bg-gray-800/50 px-4 py-3 text-sm text-gray-100 transition focus:border-amber-500/50 focus:outline-none focus:ring-2 focus:ring-amber-500/20">
             @foreach (['active', 'paused', 'completed', 'cancelled'] as $status)
-                <option value="{{ $status }}" {{ (string) old('status', $enrollment->status) === $status ? 'selected' : '' }}>{{ ucfirst($status) }}</option>
+                <option value="{{ $status }}" {{ (string) old('status', $enrollment->status) === $status ? 'selected' : '' }}>{{ __('admin.statuses.' . $status) }}</option>
             @endforeach
         </select>
         @error('status')
@@ -94,9 +94,12 @@
 
     {{-- started_at --}}
     <div>
-        <label class="mb-1.5 block text-sm font-medium text-gray-300">Started At</label>
+        <label class="mb-1.5 block text-sm font-medium text-gray-300">{{ __('admin.started_at') }}</label>
         <input type="date" name="started_at" value="{{ old('started_at', $enrollment->started_at?->format('Y-m-d')) }}" required
                class="block w-full rounded-lg border border-gray-700 bg-gray-800/50 px-4 py-3 text-sm text-gray-100 transition focus:border-amber-500/50 focus:outline-none focus:ring-2 focus:ring-amber-500/20">
+        @if ($enrollment->started_at)
+            <p class="mt-1 text-xs text-gray-500">{{ __('admin.jalali_equivalent') }}: <span class="text-amber-400">{{ \App\Helpers\Jalalian::fromCarbon($enrollment->started_at) }}</span></p>
+        @endif
         @error('started_at')
             <p class="mt-1 text-sm text-red-400">{{ $message }}</p>
         @enderror
