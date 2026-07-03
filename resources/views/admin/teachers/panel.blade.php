@@ -58,7 +58,7 @@
                 <span class="text-xs font-medium uppercase tracking-wider text-gray-500">{{ __('admin.teaches_prefix') }}</span>
                 @foreach ($teacher->instruments as $instrument)
                     <span class="rounded-full border border-amber-500/30 bg-amber-500/[0.04] px-2.5 py-0.5 text-xs font-medium text-amber-300">
-                        {{ $instrument->name }}
+                        {{ $instrument->display_name }}
                         @if ($instrument->pivot->is_primary)
                             <span class="ml-1 text-amber-400/60">★</span>
                         @endif
@@ -145,7 +145,7 @@
                     </div>
                     <div class="flex-1">
                         <p class="font-medium text-gray-100">{{ $session->enrollment?->student?->full_name ?? '—' }}</p>
-                        <p class="text-xs text-gray-500">{{ $session->enrollment?->instrument?->name ?? '—' }} · {{ __('admin.rooms.' . $session->room) }}</p>
+                        <p class="text-xs text-gray-500">{{ $session->enrollment?->instrument?->display_name ?? '—' }} · {{ $session->room ?? '—' }}</p>
                     </div>
                     <span class="rounded-full {{ $badgeStyle }} px-2.5 py-0.5 text-xs font-medium">
                         {{ ucfirst($statusValue) }}

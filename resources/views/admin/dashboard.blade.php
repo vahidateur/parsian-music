@@ -298,7 +298,7 @@
             @forelse ($recentStudents as $student)
                 @php
                     $enrollment = $student->enrollments->first();
-                    $instrument = $enrollment?->instrument?->name ?? '—';
+                    $instrument = $enrollment?->instrument?->display_name ?? '—';
                     $level = $enrollment?->skill_level ? __('admin.skill_levels.'.$enrollment->skill_level->value) : '—';
                     $jalaliDate = \App\Helpers\Jalalian::fromCarbon($student->created_at);
                 @endphp
@@ -403,7 +403,7 @@
                                 <td class="px-6 py-3.5 font-mono text-sm font-semibold text-amber-400">{{ $session->start_time?->format('H:i') ?? '—' }}</td>
                                 <td class="px-6 py-3.5 font-medium text-gray-100">{{ $session->enrollment?->student?->full_name ?? '—' }}</td>
                                 <td class="px-6 py-3.5 text-gray-400">{{ $session->enrollment?->teacher?->full_name ?? '—' }}</td>
-                                <td class="px-6 py-3.5 text-gray-400">{{ $session->room }}</td>
+                                <td class="px-6 py-3.5 text-gray-400">{{ $session->room ?? '—' }}</td>
                                 <td class="px-6 py-3.5">
                                     <span class="rounded-full {{ $badgeStyle }} px-2.5 py-0.5 text-xs font-medium">
                                         {{ __('admin.session_statuses.'.$statusValue) }}

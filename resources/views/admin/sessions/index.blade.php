@@ -9,13 +9,10 @@
             <h1 class="text-2xl font-semibold text-amber-100">{{ __('admin.class_sessions') }}</h1>
             <p class="mt-1 text-sm text-gray-500">{{ __('admin.view_filter_sessions') }}</p>
         </div>
-        <form method="POST" action="{{ route('admin.sessions.generate') }}">
-            @csrf
-            <button type="submit" class="inline-flex items-center gap-2 rounded-lg bg-gradient-to-r from-amber-600 to-amber-500 px-4 py-2.5 text-sm font-semibold text-gray-950 shadow-lg shadow-amber-500/10 transition hover:from-amber-500 hover:to-amber-400">
+        <a href="{{ route('admin.sessions.create') }}" class="inline-flex items-center gap-2 rounded-lg bg-gradient-to-r from-amber-600 to-amber-500 px-4 py-2.5 text-sm font-semibold text-gray-950 shadow-lg shadow-amber-500/10 transition hover:from-amber-500 hover:to-amber-400">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
-                {{ __('admin.generate_sessions') }}
-            </button>
-        </form>
+                {{ __('admin.create_session') }}
+            </a>
     </div>
 </div>
 
@@ -51,7 +48,7 @@
         <select name="instrument_id" class="block w-full rounded-lg border border-gray-700 bg-gray-800/50 px-4 py-2.5 text-sm text-gray-100 transition focus:border-amber-500/50 focus:outline-none focus:ring-2 focus:ring-amber-500/20">
             <option value="">{{ __('admin.all_instruments') }}</option>
             @foreach ($instruments ?? [] as $instrument)
-                <option value="{{ $instrument->id }}" {{ (string) request('instrument_id') === (string) $instrument->id ? 'selected' : '' }}>{{ $instrument->name }}</option>
+                <option value="{{ $instrument->id }}" {{ (string) request('instrument_id') === (string) $instrument->id ? 'selected' : '' }}>{{ $instrument->display_name }}</option>
             @endforeach
         </select>
     </div>
@@ -59,8 +56,8 @@
         <label class="mb-1 block text-xs font-medium text-gray-400">{{ __('admin.room') }}</label>
         <select name="room" class="block w-full rounded-lg border border-gray-700 bg-gray-800/50 px-4 py-2.5 text-sm text-gray-100 transition focus:border-amber-500/50 focus:outline-none focus:ring-2 focus:ring-amber-500/20">
             <option value="">{{ __('admin.all_rooms') }}</option>
-            @foreach (['Room 1', 'Room 2', 'Room 3'] as $r)
-                <option value="{{ $r }}" {{ request('room') === $r ? 'selected' : '' }}>{{ __('admin.rooms.' . $r) }}</option>
+            @foreach (['A101', 'A102', 'A103'] as $r)
+                <option value="{{ $r }}" {{ request('room') === $r ? 'selected' : '' }}>{{ $r }}</option>
             @endforeach
         </select>
     </div>
@@ -68,7 +65,7 @@
         <label class="mb-1 block text-xs font-medium text-gray-400">{{ __('admin.status') }}</label>
         <select name="status" class="block w-full rounded-lg border border-gray-700 bg-gray-800/50 px-4 py-2.5 text-sm text-gray-100 transition focus:border-amber-500/50 focus:outline-none focus:ring-2 focus:ring-amber-500/20">
             <option value="">{{ __('admin.all_statuses') }}</option>
-            @foreach (['scheduled', 'completed', 'cancelled', 'missed', 'makeup'] as $status)
+            @foreach (\App\Enums\SessionStatusEnum::values() as $status)
                 <option value="{{ $status }}" {{ request('status') === $status ? 'selected' : '' }}>{{ __('admin.session_statuses.' . $status) }}</option>
             @endforeach
         </select>
@@ -95,14 +92,14 @@
         <table class="w-full text-left text-sm">
             <thead>
                 <tr class="border-b border-gray-800/60 bg-gray-800/30">
-                    <th class="px-5 py-4 text-xs font-medium uppercase tracking-wider text-gray-500">{{ __('admin.student') }}</th>
-                    <th class="px-5 py-4 text-xs font-medium uppercase tracking-wider text-gray-500">{{ __('admin.teacher') }}</th>
-                    <th class="px-5 py-4 text-xs font-medium uppercase tracking-wider text-gray-500">{{ __('admin.instrument') }}</th>
-                    <th class="px-5 py-4 text-xs font-medium uppercase tracking-wider text-gray-500">{{ __('admin.date') }}</th>
-                    <th class="px-5 py-4 text-xs font-medium uppercase tracking-wider text-gray-500">{{ __('admin.time') }}</th>
-                    <th class="px-5 py-4 text-xs font-medium uppercase tracking-wider text-gray-500">{{ __('admin.duration') }}</th>
-                    <th class="px-5 py-4 text-xs font-medium uppercase tracking-wider text-gray-500">{{ __('admin.room') }}</th>
-                    <th class="px-5 py-4 text-xs font-medium uppercase tracking-wider text-gray-500">{{ __('admin.status') }}</th>
+                    @include('admin.partials.sort-th', ['col'=>'student_name',       'label'=>__('admin.student'),   'currentSort'=>$sortCol, 'currentDir'=>$sortDir, 'route'=>'admin.sessions.index'])
+                    @include('admin.partials.sort-th', ['col'=>'teacher_name',       'label'=>__('admin.teacher'),   'currentSort'=>$sortCol, 'currentDir'=>$sortDir, 'route'=>'admin.sessions.index'])
+                    @include('admin.partials.sort-th', ['col'=>'instrument_name',    'label'=>__('admin.instrument'),'currentSort'=>$sortCol, 'currentDir'=>$sortDir, 'route'=>'admin.sessions.index'])
+                    @include('admin.partials.sort-th', ['col'=>'session_date',      'label'=>__('admin.date'),     'currentSort'=>$sortCol, 'currentDir'=>$sortDir, 'route'=>'admin.sessions.index'])
+                    @include('admin.partials.sort-th', ['col'=>'start_time',        'label'=>__('admin.time'),     'currentSort'=>$sortCol, 'currentDir'=>$sortDir, 'route'=>'admin.sessions.index'])
+                    @include('admin.partials.sort-th', ['col'=>'duration_minutes',  'label'=>__('admin.duration'), 'currentSort'=>$sortCol, 'currentDir'=>$sortDir, 'route'=>'admin.sessions.index'])
+                    @include('admin.partials.sort-th', ['col'=>'room',              'label'=>__('admin.room'),     'currentSort'=>$sortCol, 'currentDir'=>$sortDir, 'route'=>'admin.sessions.index'])
+                    @include('admin.partials.sort-th', ['col'=>'status',            'label'=>__('admin.status'),   'currentSort'=>$sortCol, 'currentDir'=>$sortDir, 'route'=>'admin.sessions.index'])
                     <th class="px-5 py-4 text-xs font-medium uppercase tracking-wider text-gray-500">{{ __('admin.actions') }}</th>
                 </tr>
             </thead>
@@ -122,14 +119,14 @@
                     <tr class="transition hover:bg-gray-800/20">
                         <td class="px-5 py-3.5 font-medium text-gray-100">{{ $session->enrollment?->student?->full_name ?? '—' }}</td>
                         <td class="px-5 py-3.5 text-gray-400">{{ $session->enrollment?->teacher?->full_name ?? '—' }}</td>
-                        <td class="px-5 py-3.5 text-gray-400">{{ $session->enrollment?->instrument?->name ?? '—' }}</td>
+                        <td class="px-5 py-3.5 text-gray-400">{{ $session->enrollment?->instrument?->display_name ?? '—' }}</td>
                         <td class="px-5 py-3.5 text-gray-400">{{ \App\Helpers\Jalalian::fromCarbon($session->session_date) ?? '—' }}</td>
                         @php
                             $startTime = is_string($session->start_time) ? $session->start_time : $session->start_time?->format('H:i');
                         @endphp
                         <td class="px-5 py-3.5 text-gray-400">{{ $startTime ?? '—' }}</td>
                         <td class="px-5 py-3.5 text-gray-400">{{ $session->duration_minutes }}{{ __('admin.minutes') }}</td>
-                        <td class="px-5 py-3.5 text-gray-400">{{ __('admin.rooms.' . $session->room) }}</td>
+                        <td class="px-5 py-3.5 text-gray-400">{{ $session->room ?? '—' }}</td>
                         <td class="px-5 py-3.5">
                             <span class="rounded-full {{ $badgeStyle }} px-2.5 py-0.5 text-xs font-medium">
                                 {{ __('admin.session_statuses.' . $statusValue) }}
@@ -148,7 +145,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="8" class="px-5 py-12 text-center text-gray-500">{{ __('admin.no_sessions_found') }}</td>
+                        <td colspan="9" class="px-5 py-12 text-center text-gray-500">{{ __('admin.no_sessions_found') }}</td>
                     </tr>
                 @endforelse
             </tbody>

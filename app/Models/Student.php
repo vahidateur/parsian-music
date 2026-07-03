@@ -25,6 +25,18 @@ class Student extends Model
         'status' => StudentStatusEnum::class,
     ];
 
+    protected static function booted(): void
+    {
+        static::creating(function (self $student) {
+            if (empty($student->student_code)) {
+                $student->student_code = 'S-' . str_pad(
+                    (static::withTrashed()->max('id') ?? 0) + 1,
+                    5, '0', STR_PAD_LEFT
+                );
+            }
+        });
+    }
+
     public function attendances(): HasMany
     {
         return $this->hasMany(ClassAttendance::class);

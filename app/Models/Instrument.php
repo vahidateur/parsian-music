@@ -13,6 +13,7 @@ class Instrument extends Model
 
     protected $fillable = [
         'name',
+        'name_fa',
         'slug',
         'is_active',
     ];
@@ -20,6 +21,14 @@ class Instrument extends Model
     protected $casts = [
         'is_active' => 'boolean',
     ];
+
+    /**
+     * Display name: Persian name when available, falls back to English name.
+     */
+    public function getDisplayNameAttribute(): string
+    {
+        return $this->name_fa ?: $this->name;
+    }
 
     /**
      * Scope for active instruments only.

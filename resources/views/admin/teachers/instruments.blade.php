@@ -4,8 +4,8 @@
 
 {{-- Back + Actions --}}
 <div class="mb-8 flex items-center justify-between">
-    <a href="{{ route('admin.teachers.index') }}" class="text-sm text-gray-400 transition hover:text-gray-200">← Back to Teachers</a>
-    <a href="{{ route('admin.teachers.edit', $teacher) }}" class="rounded-lg border border-gray-700 px-4 py-2.5 text-sm font-medium text-gray-300 transition hover:border-gray-600 hover:text-gray-100">Edit Teacher</a>
+    <a href="{{ route('admin.teachers.index') }}" class="text-sm text-gray-400 transition hover:text-gray-200">{{ __('admin.back_to_teachers') }}</a>
+    <a href="{{ route('admin.teachers.edit', $teacher) }}" class="rounded-lg border border-gray-700 px-4 py-2.5 text-sm font-medium text-gray-300 transition hover:border-gray-600 hover:text-gray-100">{{ __('admin.edit_teacher') }}</a>
 </div>
 
 @if (session('success'))
@@ -17,24 +17,24 @@
 {{-- Section 1: Teacher Info --}}
 <div class="mb-8 overflow-hidden rounded-2xl border border-gray-800/60 bg-gray-900/50 shadow-xl backdrop-blur-sm">
     <div class="border-b border-gray-800/60 px-6 py-4">
-        <h2 class="text-lg font-semibold text-amber-100">Teacher Information</h2>
+        <h2 class="text-lg font-semibold text-amber-100">{{ __('admin.teacher_information') }}</h2>
     </div>
     @php
         $statusValue = $teacher->status instanceof \BackedEnum ? $teacher->status->value : (string) $teacher->status;
     @endphp
     <div class="grid grid-cols-1 gap-6 px-6 py-6 sm:grid-cols-3">
         <div>
-            <p class="text-xs font-medium uppercase tracking-wider text-gray-500">Full Name</p>
+            <p class="text-xs font-medium uppercase tracking-wider text-gray-500">{{ __('admin.full_name') }}</p>
             <p class="mt-1 text-sm text-gray-100">{{ $teacher->full_name }}</p>
         </div>
         <div>
-            <p class="text-xs font-medium uppercase tracking-wider text-gray-500">Phone</p>
+            <p class="text-xs font-medium uppercase tracking-wider text-gray-500">{{ __('admin.phone') }}</p>
             <p class="mt-1 text-sm text-gray-100">{{ $teacher->phone }}</p>
         </div>
         <div>
-            <p class="text-xs font-medium uppercase tracking-wider text-gray-500">Status</p>
+            <p class="text-xs font-medium uppercase tracking-wider text-gray-500">{{ __('admin.status') }}</p>
             <span class="mt-1 inline-block rounded-full {{ $statusValue === 'active' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-gray-700/50 text-gray-400' }} px-2.5 py-0.5 text-xs font-medium">
-                {{ ucfirst($statusValue) }}
+                {{ __('admin.statuses.' . $statusValue) }}
             </span>
         </div>
     </div>
@@ -45,8 +45,8 @@
     {{-- Section 2: Assigned Instruments --}}
     <section class="xl:col-span-2 overflow-hidden rounded-2xl border border-gray-800/60 bg-gray-900/50 shadow-xl backdrop-blur-sm">
         <div class="flex items-center justify-between border-b border-gray-800/60 px-6 py-4">
-            <h2 class="text-lg font-semibold text-amber-100">Assigned Instruments</h2>
-            <span class="rounded-full bg-amber-500/10 px-3 py-1 text-xs font-medium text-amber-300">{{ $teacher->instruments->count() }} total</span>
+            <h2 class="text-lg font-semibold text-amber-100">{{ __('admin.assigned_instruments') }}</h2>
+            <span class="rounded-full bg-amber-500/10 px-3 py-1 text-xs font-medium text-amber-300">{{ __('admin.total_count', ['count' => $teacher->instruments->count()]) }}</span>
         </div>
 
         @if ($teacher->instruments->count())
@@ -54,20 +54,20 @@
                 <table class="w-full text-left text-sm">
                     <thead>
                         <tr class="border-b border-gray-800/60 bg-gray-800/30">
-                            <th class="px-6 py-4 text-xs font-medium uppercase tracking-wider text-gray-500">Instrument</th>
-                            <th class="px-6 py-4 text-xs font-medium uppercase tracking-wider text-gray-500">Skill Level</th>
-                            <th class="px-6 py-4 text-xs font-medium uppercase tracking-wider text-gray-500">Primary</th>
-                            <th class="px-6 py-4 text-xs font-medium uppercase tracking-wider text-gray-500 text-right">Action</th>
+                            <th class="px-6 py-4 text-xs font-medium uppercase tracking-wider text-gray-500">{{ __('admin.instrument') }}</th>
+                            <th class="px-6 py-4 text-xs font-medium uppercase tracking-wider text-gray-500">{{ __('admin.skill_level') }}</th>
+                            <th class="px-6 py-4 text-xs font-medium uppercase tracking-wider text-gray-500">{{ __('admin.primary') }}</th>
+                            <th class="px-6 py-4 text-xs font-medium uppercase tracking-wider text-gray-500 text-right">{{ __('admin.action') }}</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-800/60">
                         @foreach ($teacher->instruments as $instrument)
                             <tr class="transition hover:bg-gray-800/20">
-                                <td class="px-6 py-4 font-medium text-gray-100">{{ $instrument->name }}</td>
-                                <td class="px-6 py-4 text-gray-400">{{ ucfirst($instrument->pivot->skill_level ?? '') ?: '—' }}</td>
+                                <td class="px-6 py-4 font-medium text-gray-100">{{ $instrument->display_name }}</td>
+                                <td class="px-6 py-4 text-gray-400">{{ $instrument->pivot->skill_level ? __('admin.skill_levels.' . $instrument->pivot->skill_level) : '—' }}</td>
                                 <td class="px-6 py-4">
                                     @if ($instrument->pivot->is_primary)
-                                        <span class="rounded-full bg-amber-500/10 px-2.5 py-0.5 text-xs font-medium text-amber-300">Primary</span>
+                                        <span class="rounded-full bg-amber-500/10 px-2.5 py-0.5 text-xs font-medium text-amber-300">{{ __('admin.primary') }}</span>
                                     @else
                                         <span class="text-xs text-gray-600">—</span>
                                     @endif
@@ -77,7 +77,7 @@
                                         @csrf
                                         @method('DELETE')
                                         <input type="hidden" name="instrument_id" value="{{ $instrument->id }}">
-                                        <button type="submit" class="text-red-400 transition hover:text-red-300">Remove</button>
+                                        <button type="submit" class="text-red-400 transition hover:text-red-300">{{ __('admin.remove') }}</button>
                                     </form>
                                 </td>
                             </tr>
@@ -87,7 +87,7 @@
             </div>
         @else
             <div class="px-6 py-12 text-center text-gray-500">
-                No instruments assigned yet.
+                {{ __('admin.no_instruments_assigned_yet') }}
             </div>
         @endif
     </section>
@@ -95,19 +95,19 @@
     {{-- Section 3: Add Instrument Form --}}
     <section class="overflow-hidden rounded-2xl border border-gray-800/60 bg-gray-900/50 shadow-xl backdrop-blur-sm">
         <div class="border-b border-gray-800/60 px-6 py-4">
-            <h2 class="text-base font-semibold text-amber-100">Add Instrument</h2>
+            <h2 class="text-base font-semibold text-amber-100">{{ __('admin.add_instrument') }}</h2>
         </div>
         <form method="POST" action="{{ route('admin.teachers.attachInstrument', $teacher) }}" class="space-y-5 px-6 py-6">
             @csrf
 
             {{-- instrument_id --}}
             <div>
-                <label class="mb-1.5 block text-sm font-medium text-gray-300">Instrument</label>
+                <label class="mb-1.5 block text-sm font-medium text-gray-300">{{ __('admin.instrument') }}</label>
                 <select name="instrument_id" required
                         class="block w-full rounded-lg border border-gray-700 bg-gray-800/50 px-4 py-3 text-sm text-gray-100 transition focus:border-amber-500/50 focus:outline-none focus:ring-2 focus:ring-amber-500/20">
-                    <option value="">Select instrument...</option>
+                    <option value="">{{ __('admin.select_instrument') }}</option>
                     @foreach ($allInstruments as $instrument)
-                        <option value="{{ $instrument->id }}" {{ old('instrument_id') == $instrument->id ? 'selected' : '' }}>{{ $instrument->name }}</option>
+                        <option value="{{ $instrument->id }}" {{ old('instrument_id') == $instrument->id ? 'selected' : '' }}>{{ $instrument->display_name }}</option>
                     @endforeach
                 </select>
                 @error('instrument_id')

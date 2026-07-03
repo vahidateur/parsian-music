@@ -4,10 +4,10 @@
 
 {{-- Header --}}
 <div class="mb-8">
-    <h1 class="text-2xl font-semibold text-amber-100">Teacher Performance Report</h1>
+    <h1 class="text-2xl font-semibold text-amber-100">{{ __('admin.teacher_performance_report') }}</h1>
     <p class="mt-1 text-sm text-gray-500">
-        Session delivery & attendance rate — last 30 days
-        ({{ $startDate->format('Y/m/d') }} → {{ $endDate->format('Y/m/d') }}).
+        {{ __('admin.teacher_performance_desc') }}
+        ({{ \App\Helpers\Jalalian::fromCarbon($startDate) }} → {{ \App\Helpers\Jalalian::fromCarbon($endDate) }})
     </p>
 </div>
 
@@ -17,11 +17,11 @@
         <table class="w-full text-left text-sm">
             <thead>
                 <tr class="border-b border-gray-800/60 bg-gray-800/30">
-                    <th class="px-6 py-4 text-xs font-medium uppercase tracking-wider text-gray-500">Teacher</th>
-                    <th class="px-6 py-4 text-xs font-medium uppercase tracking-wider text-gray-500 text-right">Total Sessions</th>
-                    <th class="px-6 py-4 text-xs font-medium uppercase tracking-wider text-gray-500 text-right">Completed</th>
-                    <th class="px-6 py-4 text-xs font-medium uppercase tracking-wider text-gray-500 text-right">Missed</th>
-                    <th class="px-6 py-4 text-xs font-medium uppercase tracking-wider text-gray-500 text-right">Attendance Rate</th>
+                    <th class="px-6 py-4 text-xs font-medium uppercase tracking-wider text-gray-500">{{ __('admin.teacher') }}</th>
+                    <th class="px-6 py-4 text-xs font-medium uppercase tracking-wider text-gray-500 text-right">{{ __('admin.total_sessions') }}</th>
+                    <th class="px-6 py-4 text-xs font-medium uppercase tracking-wider text-gray-500 text-right">{{ __('admin.completed') }}</th>
+                    <th class="px-6 py-4 text-xs font-medium uppercase tracking-wider text-gray-500 text-right">{{ __('admin.missed') }}</th>
+                    <th class="px-6 py-4 text-xs font-medium uppercase tracking-wider text-gray-500 text-right">{{ __('admin.attendance_rate') }}</th>
                 </tr>
             </thead>
             <tbody class="divide-y divide-gray-800/60">
@@ -54,7 +54,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="5" class="px-6 py-12 text-center text-gray-500">No teacher activity in the last 30 days.</td>
+                        <td colspan="5" class="px-6 py-12 text-center text-gray-500">{{ __('admin.no_teacher_activity') }}</td>
                     </tr>
                 @endforelse
             </tbody>

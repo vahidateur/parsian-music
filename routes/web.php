@@ -4,6 +4,7 @@ use App\Enums\RoleEnum;
 use App\Http\Controllers\Admin\AttendanceReportController;
 use App\Http\Controllers\Admin\ClassAttendanceController;
 use App\Http\Controllers\Admin\ClassSessionController;
+use App\Http\Controllers\Admin\InstrumentController;
 use App\Http\Controllers\Admin\RoomController;
 use App\Http\Controllers\Admin\StudentController;
 use App\Http\Controllers\Admin\StudentEnrollmentController;
@@ -97,4 +98,14 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin/enrollments')->name('ad
 Route::middleware(['auth', 'role:admin'])->prefix('admin/reports')->name('admin.reports.')->group(function () {
     Route::get('/attendance', [AttendanceReportController::class, 'index'])->name('attendance');
     Route::get('/teachers', [TeacherReportController::class, 'index'])->name('teachers');
+});
+
+Route::middleware(['auth', 'role:admin'])->prefix('admin/instruments')->name('admin.instruments.')->group(function () {
+    Route::get('/', [InstrumentController::class, 'index'])->name('index');
+    Route::get('/create', [InstrumentController::class, 'create'])->name('create');
+    Route::post('/', [InstrumentController::class, 'store'])->name('store');
+    Route::get('/{instrument}/edit', [InstrumentController::class, 'edit'])->name('edit');
+    Route::put('/{instrument}', [InstrumentController::class, 'update'])->name('update');
+    Route::delete('/{instrument}', [InstrumentController::class, 'destroy'])->name('destroy');
+    Route::patch('/{instrument}/toggle', [InstrumentController::class, 'toggle'])->name('toggle');
 });

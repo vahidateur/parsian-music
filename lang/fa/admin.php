@@ -46,6 +46,9 @@ return [
     'back_to_students'              => '← بازگشت به هنرجویان',
     'no_students_found'             => 'هیچ هنرجویی یافت نشد.',
     'delete_student_confirm'        => 'آیا از حذف این هنرجو مطمئنید؟',
+    'student_created_successfully'  => 'هنرجو با موفقیت ثبت شد.',
+    'student_updated_successfully'  => 'اطلاعات هنرجو با موفقیت ذخیره شد.',
+    'student_deleted_successfully'  => 'هنرجو با موفقیت حذف شد.',
 
     // ── Teachers ───────────────────────────────────────────────────────────
     'teacher'                        => 'استاد',
@@ -60,6 +63,9 @@ return [
     'back_to_teachers'               => '← بازگشت به اساتید',
     'no_teachers_found'              => 'هیچ استادی یافت نشد.',
     'delete_teacher_confirm'         => 'آیا از حذف این استاد مطمئنید؟',
+    'teacher_created_successfully'   => 'استاد با موفقیت ثبت شد.',
+    'teacher_updated_successfully'   => 'اطلاعات استاد با موفقیت ذخیره شد.',
+    'teacher_deleted_successfully'   => 'استاد با موفقیت حذف شد.',
     'teaches'                        => 'تدریس:',
     'joined'                         => 'عضویت',
     'hire_date'                      => 'تاریخ استخدام',
@@ -88,6 +94,19 @@ return [
     'primary'                     => 'اصلی',
     'set_as_primary'              => 'به‌عنوان ساز اصلی تنظیم شود',
     'primary_instrument_hint'     => 'فقط یک ساز اصلی مجاز است. با انتخاب جدید، قبلی غیرفعال می‌شود.',
+    'instrument_name_fa'          => 'نام فارسی',
+    'instrument_name_en'          => 'نام انگلیسی (اختیاری)',
+    'create_instrument'           => 'ثبت ساز',
+    'edit_instrument'             => 'ویرایش ساز',
+    'no_instruments_found'        => 'هیچ سازی یافت نشد.',
+    'delete_instrument_confirm'   => 'آیا از حذف این ساز مطمئنید؟',
+    'instrument_created_successfully' => 'ساز با موفقیت ثبت شد.',
+    'instrument_updated_successfully' => 'ساز با موفقیت ویرایش شد.',
+    'instrument_deleted_successfully' => 'ساز با موفقیت حذف شد.',
+    'instrument_in_use_error'     => 'امکان حذف وجود ندارد: این ساز به استاد یا ثبت‌نامی اختصاص دارد.',
+    'manage_instruments'          => 'مدیریت سازهای آموزشگاه.',
+    'new_instrument'              => 'ساز جدید',
+    'instrument_name_fa_unique'   => 'این نام فارسی قبلاً ثبت شده است.',
 
     // ── Enrollments ────────────────────────────────────────────────────────
     'enrollments'              => 'ثبت‌نام‌ها',
@@ -103,6 +122,9 @@ return [
     'no_enrollments_found'     => 'ثبت‌نامی یافت نشد.',
     'no_enrollments_yet'       => 'هنوز ثبت‌نامی ثبت نشده.',
     'delete_enrollment_confirm' => 'آیا از حذف این ثبت‌نام مطمئنید؟',
+    'enrollment_created_successfully' => 'ثبت‌نام با موفقیت ایجاد شد.',
+    'enrollment_updated_successfully' => 'ثبت‌نام با موفقیت ویرایش شد.',
+    'enrollment_deleted_successfully' => 'ثبت‌نام با موفقیت حذف شد.',
 
     // ── کلاس‌های درسی ─────────────────────────────────────────────────────────
     'class_sessions'           => 'کلاس‌ها',
@@ -113,9 +135,21 @@ return [
     'session_created_successfully' => 'کلاس با موفقیت ایجاد شد.',
     'session_updated_successfully' => 'کلاس با موفقیت ویرایش شد.',
     'session_deleted_successfully' => 'کلاس با موفقیت حذف شد.',
+    'sessions_generated_successfully' => ':count کلاس با موفقیت تولید شد.',
+    'session_conflict_error'   => 'این بازه زمانی با یک کلاس موجود تداخل دارد.',
     'delete_session_confirm' => 'آیا از حذف این کلاس مطمئنید؟',
     'no_sessions_found'        => 'هیچ کلاسی یافت نشد.',
     'duration_minutes_value'   => ':count دقیقه',
+    'select_enrollment_placeholder' => 'انتخاب ثبت‌نام...',
+    'schedule_session_manually_desc' => 'یک کلاس جدید را به‌صورت دستی برنامه‌ریزی کنید.',
+    'duration_minutes_label'   => 'مدت (دقیقه)',
+    'select_room_placeholder' => 'انتخاب اتاق...',
+    'active_enrollment'       => 'ثبت‌نام فعال',
+    'session_fee'             => 'شهریه جلسه',
+    'discount'                => 'تخفیف',
+    'currency_toman'          => 'تومان',
+    'auto_filled_hint'        => 'به‌صورت خودکار از ثبت‌نام انتخاب‌شده پر می‌شود.',
+    'no_active_enrollment_for_student' => 'این هنرجو ثبت‌نام فعالی ندارد.',
 
     // ── Attendance ─────────────────────────────────────────────────────────
     'attendance'            => 'حضور و غیاب',
@@ -245,9 +279,9 @@ return [
 
     // ── Nested: rooms ──────────────────────────────────────────────────────
     'rooms' => [
-        'Room 1' => 'اتاق ۱',
-        'Room 2' => 'اتاق ۲',
-        'Room 3' => 'اتاق ۳',
+        'A101' => 'A101',
+        'A102' => 'A102',
+        'A103' => 'A103',
     ],
 
     // ── Recurring Schedules ────────────────────────────────────────────────
@@ -286,15 +320,12 @@ return [
     'activate'             => 'فعال کردن',
     'deactivate'           => 'غیرفعال کردن',
     'delete_room_confirm'  => 'آیا از حذف این اتاق مطمئنید؟',
-];
 
-    // ── Teachers Panel (NEW) ───────────────────────────────────────────────
-    'back_to_teachers'         => '← بازگشت به اساتید',
+    // ── Teachers Panel ─────────────────────────────────────────────────────
     'instruments_button'       => 'سازها',
     'edit_button'              => 'ویرایش',
     'teaches_prefix'           => 'تدریس:',
     'joined_prefix'            => 'عضویت',
-    'total_students'           => 'کل هنرجویان',
     'currently_enrolled_students' => 'در حال تحصیل',
     'weekly_sessions_kpi'      => 'کلاس‌های هفتگی',
     'this_week_kpi'            => 'این هفته',
@@ -304,33 +335,21 @@ return [
     'needs_attention_kpi'      => 'نیاز به پیگیری',
     'weekly_schedule_title'    => 'برنامه هفتگی',
     'sessions_count_badge'     => ':count کلاس',
-    'no_sessions_this_week'    => 'هیچ کلاسی برای این هفته ثبت نشده.',
     'attendance_quick_link'    => 'حضور و غیاب',
     'present_absent_count'     => 'حاضر: :present · غایب: :absent',
     'students_quick_link'      => 'هنرجویان',
     'enrolled_count_badge'     => ':count ثبت‌نام‌شده',
-    
+
     // ── Calendar & Sessions ────────────────────────────────────────────────
     'prev_week'                => '→ قبلی',
     'today_nav'                => 'امروز',
     'next_week'                => 'بعدی ←',
-    'all_rooms'                => 'همه اتاق‌ها',
     'calendar_title'           => 'تقویم هفتگی',
     'no_sessions_message'      => 'هیچ کلاسی برای این هفته یافت نشد.',
-    'started_at'               => 'تاریخ شروع',
-    'start_time'               => 'ساعت شروع',
-    
+
     // ── Attendance Show ────────────────────────────────────────────────────
     'mark_attendance'          => 'ثبت حضور و غیاب',
-    'attendance_completion'    => 'تکمیل حضور و غیاب',
-    'unmarked'                 => 'ثبت‌نشده',
     'no_students_enrolled'     => 'هیچ هنرجویی در این کلاس ثبت‌نام نکرده.',
     'total_students_count'     => 'کل هنرجویان',
     'unmarked_count_label'     => 'ثبت‌نشده',
-];
-
-    'weekly_calendar'     => 'تقویم هفتگی',
-    'prev_week'           => '→ قبلی',
-    'today_nav'           => 'امروز',
-    'next_week'           => 'بعدی ←',
 ];

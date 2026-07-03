@@ -46,6 +46,9 @@ return [
     'back_to_students'              => '← Back to Students',
     'no_students_found'             => 'No students found.',
     'delete_student_confirm'        => 'Delete this student?',
+    'student_created_successfully'  => 'Student created successfully.',
+    'student_updated_successfully'  => 'Student updated successfully.',
+    'student_deleted_successfully'  => 'Student deleted successfully.',
 
     // ── Teachers ───────────────────────────────────────────────────────────
     'teacher'                        => 'Teacher',
@@ -60,6 +63,9 @@ return [
     'back_to_teachers'               => '← Back to Teachers',
     'no_teachers_found'              => 'No teachers found.',
     'delete_teacher_confirm'         => 'Delete this teacher?',
+    'teacher_created_successfully'   => 'Teacher created successfully.',
+    'teacher_updated_successfully'   => 'Teacher updated successfully.',
+    'teacher_deleted_successfully'   => 'Teacher deleted successfully.',
     'teaches'                        => 'Teaches:',
     'joined'                         => 'Joined',
     'hire_date'                      => 'Hire Date',
@@ -88,6 +94,19 @@ return [
     'primary'                     => 'Primary',
     'set_as_primary'              => 'Set as primary instrument',
     'primary_instrument_hint'     => 'Only one instrument can be primary. Setting this will unset the existing one.',
+    'instrument_name_fa'          => 'Persian Name',
+    'instrument_name_en'          => 'English Name (optional)',
+    'create_instrument'           => 'Create Instrument',
+    'edit_instrument'             => 'Edit Instrument',
+    'no_instruments_found'        => 'No instruments found.',
+    'delete_instrument_confirm'   => 'Delete this instrument?',
+    'instrument_created_successfully' => 'Instrument created successfully.',
+    'instrument_updated_successfully' => 'Instrument updated successfully.',
+    'instrument_deleted_successfully' => 'Instrument deleted successfully.',
+    'instrument_in_use_error'     => 'Cannot delete: instrument is assigned to teachers or enrollments.',
+    'manage_instruments'          => 'Manage academy instruments.',
+    'new_instrument'              => 'New Instrument',
+    'instrument_name_fa_unique'   => 'This Persian instrument name already exists.',
 
     // ── Enrollments ────────────────────────────────────────────────────────
     'enrollments'              => 'Enrollments',
@@ -103,6 +122,9 @@ return [
     'no_enrollments_found'     => 'No enrollments found.',
     'no_enrollments_yet'       => 'No enrollments yet.',
     'delete_enrollment_confirm' => 'Delete this enrollment?',
+    'enrollment_created_successfully' => 'Enrollment created successfully.',
+    'enrollment_updated_successfully' => 'Enrollment updated successfully.',
+    'enrollment_deleted_successfully' => 'Enrollment deleted successfully.',
 
     // ── Class sessions ─────────────────────────────────────────────────────
     'class_sessions'           => 'Class Sessions',
@@ -113,8 +135,20 @@ return [
     'session_created_successfully' => 'Session created successfully.',
     'session_updated_successfully' => 'Session updated successfully.',
     'session_deleted_successfully' => 'Session deleted successfully.',
+    'sessions_generated_successfully' => ':count session(s) generated successfully.',
+    'session_conflict_error'   => 'This time slot conflicts with an existing session.',
     'no_sessions_found'        => 'No sessions found.',
     'duration_minutes_value'   => ':count min',
+    'select_enrollment_placeholder' => 'Select enrollment...',
+    'schedule_session_manually_desc' => 'Schedule a new class session manually.',
+    'duration_minutes_label'   => 'Duration (minutes)',
+    'select_room_placeholder' => 'Select room...',
+    'active_enrollment'       => 'Active Enrollment',
+    'session_fee'             => 'Session Fee',
+    'discount'                => 'Discount',
+    'currency_toman'          => 'Toman',
+    'auto_filled_hint'        => 'Filled automatically from the selected enrollment.',
+    'no_active_enrollment_for_student' => 'This student has no active enrollment.',
 
     // ── Attendance ─────────────────────────────────────────────────────────
     'attendance'            => 'Attendance',
@@ -243,9 +277,9 @@ return [
 
     // ── Nested: rooms ──────────────────────────────────────────────────────
     'rooms' => [
-        'Room 1' => 'Room 1',
-        'Room 2' => 'Room 2',
-        'Room 3' => 'Room 3',
+        'A101' => 'A101',
+        'A102' => 'A102',
+        'A103' => 'A103',
     ],
 
     // ── Recurring Schedules ────────────────────────────────────────────────
@@ -282,6 +316,39 @@ return [
     'activate'             => 'Activate',
     'deactivate'           => 'Deactivate',
     'delete_room_confirm'  => 'Delete this room?',
+    'delete_session_confirm' => 'Delete this session?',
+
+    // ── Teachers Panel ─────────────────────────────────────────────────────
+    'instruments_button'       => 'Instruments',
+    'edit_button'              => 'Edit',
+    'teaches_prefix'           => 'Teaches:',
+    'joined_prefix'            => 'Joined',
+    'currently_enrolled_students' => 'Currently enrolled',
+    'weekly_sessions_kpi'      => 'Weekly Sessions',
+    'this_week_kpi'            => 'This week',
+    'completed_kpi'            => 'Completed',
+    'sessions_done_kpi'        => 'Sessions done',
+    'missed_kpi'               => 'Missed',
+    'needs_attention_kpi'      => 'Needs attention',
+    'weekly_schedule_title'    => 'Weekly Schedule',
+    'sessions_count_badge'     => ':count sessions',
+    'attendance_quick_link'    => 'Attendance',
+    'present_absent_count'     => 'Present: :present · Absent: :absent',
+    'students_quick_link'      => 'Students',
+    'enrolled_count_badge'     => ':count enrolled',
+
+    // ── Calendar & Sessions ────────────────────────────────────────────────
+    'prev_week'                => '← Prev',
+    'today_nav'                => 'Today',
+    'next_week'                => 'Next →',
+    'calendar_title'           => 'Weekly Calendar',
+    'no_sessions_message'      => 'No sessions found for this week.',
+
+    // ── Attendance Show ────────────────────────────────────────────────────
+    'mark_attendance'          => 'Mark Attendance',
+    'no_students_enrolled'     => 'No students enrolled in this session.',
+    'total_students_count'     => 'Total Students',
+    'unmarked_count_label'     => 'Unmarked',
 ];
 
 

@@ -74,7 +74,10 @@ class ConflictDetectionService
      */
     protected function hasOverlappingSession(callable $filterScope, string $date, Carbon $start, Carbon $end): bool
     {
-        $query = ClassSession::where('session_date', $date)
+        // `session_date` is persisted with a time component (e.g. "2026-07-04
+        // 00:00:00"), so an exact string match against a plain "Y-m-d" value
+        // would silently miss every row. whereDate() normalizes the comparison.
+        $query = ClassSession::whereDate('session_date', $date)
             ->whereTime('start_time', '<', $end->format('H:i:s'));
 
         $filterScope($query);
@@ -102,13 +105,20 @@ class ConflictDetectionService
      * Implements the overlap rule: existing_end > new_start.
      * Combined with the query filter (existing_start < new_end), this
      * gives the full overlap check.
+     *
+     * NOTE: `start_time` is cast to `datetime`, so Carbon anchors it to
+     * "today" at cast-time rather than the session's own `session_date`.
+     * We must always rebuild the end time using `session_date` explicitly,
+     * otherwise conflicts on any date other than today go undetected.
      */
     protected function sessionEndsAfter(ClassSession $session, Carbon $newStart): bool
     {
-        $existingEnd = $session->start_time instanceof Carbon
-            ? $session->start_time->copy()->addMinutes($session->duration_minutes)
-            : Carbon::parse("{$session->session_date->toDateString()} {$session->start_time}")
-                ->addMinutes($session->duration_minutes);
+        $timeOfDay = $session->start_time instanceof Carbon
+            ? $session->start_time->format('H:i:s')
+            : (string) $session->start_time;
+
+        $existingEnd = Carbon::parse("{$session->session_date->toDateString()} {$timeOfDay}")
+            ->addMinutes($session->duration_minutes);
 
         return $existingEnd->gt($newStart);
     }

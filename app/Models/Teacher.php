@@ -28,6 +28,18 @@ class Teacher extends Model
         'status' => TeacherStatusEnum::class,
     ];
 
+    protected static function booted(): void
+    {
+        static::creating(function (self $teacher) {
+            if (empty($teacher->teacher_code)) {
+                $teacher->teacher_code = 'T-' . str_pad(
+                    (static::max('id') ?? 0) + 1,
+                    5, '0', STR_PAD_LEFT
+                );
+            }
+        });
+    }
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);

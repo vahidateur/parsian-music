@@ -21,6 +21,8 @@ class ClassSession extends Model
         'duration_minutes',
         'status',
         'room',
+        'session_fee',
+        'discount',
         'notes',
     ];
 
@@ -28,6 +30,8 @@ class ClassSession extends Model
         'session_date' => 'date',
         'start_time' => 'datetime',
         'duration_minutes' => 'integer',
+        'session_fee' => 'integer',
+        'discount' => 'integer',
         'status' => SessionStatusEnum::class,
     ];
 

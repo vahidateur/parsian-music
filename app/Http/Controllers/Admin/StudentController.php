@@ -14,6 +14,10 @@ class StudentController extends Controller
 {
     public function index(Request $request): View
     {
+        $sortCol = in_array($request->sort, ['full_name', 'phone', 'status', 'join_date', 'created_at'], true)
+            ? $request->sort : 'full_name';
+        $sortDir = $request->direction === 'desc' ? 'desc' : 'asc';
+
         $query = Student::query();
 
         if ($request->filled('full_name')) {
@@ -24,9 +28,9 @@ class StudentController extends Controller
             $query->where('phone', 'like', "%{$request->phone}%");
         }
 
-        $students = $query->latest()->paginate(15);
+        $students = $query->orderBy($sortCol, $sortDir)->paginate(15)->withQueryString();
 
-        return view('admin.students.index', compact('students'));
+        return view('admin.students.index', compact('students', 'sortCol', 'sortDir'));
     }
 
     public function show(Student $student): View
@@ -50,15 +54,18 @@ class StudentController extends Controller
             'full_name' => ['required', 'string', 'max:255'],
             'phone' => ['required', 'string', 'max:20', 'unique:students,phone'],
             'parent_phone' => ['nullable', 'string', 'max:20'],
-            'status' => ['required', 'string', Rule::in(StudentStatusEnum::values())],
-            'join_date' => ['required', 'date'],
+            'status' => ['nullable', 'string', Rule::in(StudentStatusEnum::values())],
+            'join_date' => ['nullable', 'date'],
             'notes' => ['nullable', 'string'],
         ]);
+
+        // Default status to active when not provided
+        $validated['status'] = $validated['status'] ?? StudentStatusEnum::Active->value;
 
         Student::create($validated);
 
         return redirect()->route('admin.students.index')
-            ->with('success', 'Student created successfully.');
+            ->with('success', __('admin.student_created_successfully'));
     }
 
     public function edit(Student $student): View
@@ -72,15 +79,17 @@ class StudentController extends Controller
             'full_name' => ['required', 'string', 'max:255'],
             'phone' => ['required', 'string', 'max:20', Rule::unique('students', 'phone')->ignore($student->id)],
             'parent_phone' => ['nullable', 'string', 'max:20'],
-            'status' => ['required', 'string', Rule::in(StudentStatusEnum::values())],
-            'join_date' => ['required', 'date'],
+            'status' => ['nullable', 'string', Rule::in(StudentStatusEnum::values())],
+            'join_date' => ['nullable', 'date'],
             'notes' => ['nullable', 'string'],
         ]);
+
+        $validated['status'] = $validated['status'] ?? StudentStatusEnum::Active->value;
 
         $student->update($validated);
 
         return redirect()->route('admin.students.index')
-            ->with('success', 'Student updated successfully.');
+            ->with('success', __('admin.student_updated_successfully'));
     }
 
     public function destroy(Student $student): RedirectResponse
@@ -88,6 +97,6 @@ class StudentController extends Controller
         $student->delete();
 
         return redirect()->route('admin.students.index')
-            ->with('success', 'Student deleted successfully.');
+            ->with('success', __('admin.student_deleted_successfully'));
     }
 }

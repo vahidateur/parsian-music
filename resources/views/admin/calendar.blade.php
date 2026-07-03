@@ -50,8 +50,8 @@
         <label class="mb-1 block text-xs font-medium text-gray-400">{{ __('admin.room') }}</label>
         <select name="room" class="block w-full rounded-lg border border-gray-700 bg-gray-800/50 px-4 py-2.5 text-sm text-gray-100 transition focus:border-amber-500/50 focus:outline-none focus:ring-2 focus:ring-amber-500/20">
             <option value="">{{ __('admin.all_rooms') }}</option>
-            @foreach (['Room 1', 'Room 2', 'Room 3'] as $r)
-                <option value="{{ $r }}" {{ request('room') === $r ? 'selected' : '' }}>{{ __('admin.rooms.' . $r) }}</option>
+            @foreach (['A101', 'A102', 'A103'] as $r)
+                <option value="{{ $r }}" {{ request('room') === $r ? 'selected' : '' }}>{{ $r }}</option>
             @endforeach
         </select>
     </div>
@@ -65,7 +65,7 @@
 {{-- Calendar Grid --}}
 <div class="overflow-hidden rounded-2xl border border-gray-800/60 bg-gray-900/50 shadow-xl backdrop-blur-sm">
     <div class="overflow-x-auto">
-        <table class="w-full border-collapse">
+        <table class="w-full border-collapse" dir="rtl">
             {{-- Day Headers --}}
             <thead>
                 <tr>
@@ -89,9 +89,10 @@
                 @foreach ($hours as $hour)
                     @php
                         $label = str_pad($hour, 2, '0', STR_PAD_LEFT) . ':00';
+                        $isBookable = $hour >= 15 && $hour <= 21;
                     @endphp
                     <tr class="group">
-                        <td class="sticky left-0 z-10 border-b border-r border-gray-800/60 bg-gray-800/80 px-2 py-2 text-xs text-gray-500 align-top">{{ $label }}</td>
+                        <td class="sticky left-0 z-10 border-b border-r border-gray-800/60 bg-gray-800/80 px-2 py-2 text-xs align-top {{ $isBookable ? 'text-amber-400' : 'text-gray-500' }}">{{ $label }}</td>
                         @foreach ($days as $day)
                             @php
                                 $dateKey = $day->toDateString();
@@ -105,17 +106,17 @@
                                             'scheduled' => 'border-sky-500/40 bg-sky-500/10 text-sky-300',
                                             'completed' => 'border-emerald-500/40 bg-emerald-500/10 text-emerald-300',
                                             'cancelled' => 'border-red-500/40 bg-red-500/10 text-red-300',
-                                            'makeup' => 'border-amber-500/40 bg-amber-500/10 text-amber-300',
+                                            'missed' => 'border-orange-500/40 bg-orange-500/10 text-orange-300',
                                         ];
                                         $cardColor = $statusColors[$statusValue] ?? 'border-gray-600 bg-gray-700/40 text-gray-300';
                                     @endphp
                                     <div class="mb-1 rounded-md border px-2 py-1.5 text-xs {{ $cardColor }}">
                                         <div class="font-semibold leading-tight">{{ $session->enrollment?->student?->full_name ?? '—' }}</div>
-                                        <div class="mt-0.5 opacity-80">{{ $session->enrollment?->instrument?->name ?? '—' }}</div>
+                                        <div class="mt-0.5 opacity-80">{{ $session->enrollment?->instrument?->display_name ?? '—' }}</div>
                                         @php
-                                            $startTime = is_string($session->start_time) ? $session->start_time : $session->start_time->format('H:i');
+                                            $startTime = is_string($session->start_time) ? $session->start_time : $session->start_time?->format('H:i');
                                         @endphp
-                                        <div class="mt-0.5 opacity-70">{{ $startTime }} · {{ __('admin.rooms.' . $session->room) }}</div>
+                                        <div class="mt-0.5 opacity-70">{{ $startTime }} · {{ $session->room ?? '—' }}</div>
                                     </div>
                                 @endforeach
                             </td>
