@@ -70,8 +70,11 @@
         </label>
         <select name="status"
                 class="block w-full rounded-lg border border-gray-700 bg-gray-800/50 px-4 py-3 text-sm text-gray-100 transition focus:border-amber-500/50 focus:outline-none focus:ring-2 focus:ring-amber-500/20">
+            @php
+                $currentStatus = old('status') ?: ($student->status instanceof \BackedEnum ? $student->status->value : (string) $student->status);
+            @endphp
             @foreach (['active', 'paused', 'inactive', 'graduated'] as $statusOpt)
-                <option value="{{ $statusOpt }}" {{ (string) old('status', $student->status) === $statusOpt ? 'selected' : '' }}>
+                <option value="{{ $statusOpt }}" {{ $currentStatus === $statusOpt ? 'selected' : '' }}>
                     {{ __('admin.statuses.' . $statusOpt) }}
                 </option>
             @endforeach

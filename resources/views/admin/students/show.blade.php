@@ -114,4 +114,7 @@
     @endif
 </div>
 
+{{-- Section 3: History Timeline --}}
+@include('admin.partials.timeline', ['timeline' => $timeline])
+
 @endsection

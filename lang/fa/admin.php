@@ -266,9 +266,32 @@ return [
         'expert'       => 'حرفه‌ای',
     ],
 
+    // ── تاریخچه هنرجو ──────────────────────────────────────────────────────
+    'student_history'                    => 'تاریخچه هنرجو',
+    'no_history_events'                  => 'رویدادی ثبت نشده است.',
+    'history_note_excerpt'               => 'یادداشت مدیر افزوده شد.',
+    'history_student_created_desc'       => 'هنرجو :name ثبت شد.',
+    'history_enrollment_created_desc'    => 'ثبت‌نام در ساز :instrument نزد :teacher.',
+    'history_teacher_changed_desc'       => 'استاد به :teacher تغییر کرد.',
+    'history_instrument_changed_desc'    => 'ساز به :instrument تغییر کرد.',
+    'history_session_completed_desc'     => 'کلاس :date (:instrument) برگزار شد.',
+    'history_session_cancelled_desc'     => 'کلاس :date (:instrument) لغو شد.',
+    'history_attendance_marked_desc'     => 'حضور :date به‌عنوان :status ثبت شد.',
+    'history_discount_assigned_desc'     => 'شهریه یا تخفیف جلسه تنظیم شد.',
+    'history_event_types' => [
+        'student_created'    => 'ثبت هنرجو',
+        'enrollment_created' => 'ثبت‌نام جدید',
+        'teacher_changed'    => 'تغییر استاد',
+        'instrument_changed' => 'تغییر ساز',
+        'session_completed'  => 'کلاس برگزارشد',
+        'session_cancelled'  => 'کلاس لغوشد',
+        'attendance_marked'  => 'غیبت/تأخیر',
+        'discount_assigned'  => 'تخفیف/شهریه',
+        'admin_note'         => 'یادداشت مدیر',
+    ],
+
     // ── مدیریت اتاق‌ها ────────────────────────────────────────────────────────
     'rooms_management'         => 'مدیریت اتاق‌ها',
-    'manage_rooms'             => 'مدیریت اتاق‌های آموزشگاه.',
     'create_room'              => 'ایجاد اتاق',
     'edit_room'                => 'ویرایش اتاق',
     'room_created_successfully' => 'اتاق با موفقیت ایجاد شد.',

@@ -5,8 +5,10 @@ namespace App\Http\Controllers\Admin;
 use App\Enums\StudentStatusEnum;
 use App\Http\Controllers\Controller;
 use App\Models\Student;
+use App\Services\StudentHistoryService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 
@@ -33,14 +35,21 @@ class StudentController extends Controller
         return view('admin.students.index', compact('students', 'sortCol', 'sortDir'));
     }
 
-    public function show(Student $student): View
+    public function show(Student $student, StudentHistoryService $historyService): View
     {
         $student->load([
             'enrollments.teacher',
             'enrollments.instrument',
         ]);
 
-        return view('admin.students.show', compact('student'));
+        try {
+            $timeline = $historyService->buildTimeline($student);
+        } catch (\Throwable $e) {
+            Log::error('StudentHistoryService failed for student ' . $student->id . ': ' . $e->getMessage());
+            $timeline = collect();
+        }
+
+        return view('admin.students.show', compact('student', 'timeline'));
     }
 
     public function create(): View

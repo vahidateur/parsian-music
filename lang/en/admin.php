@@ -264,9 +264,32 @@ return [
         'expert'       => 'Expert',
     ],
 
+    // ── Student History Timeline ────────────────────────────────────────────
+    'student_history'                    => 'Student History',
+    'no_history_events'                  => 'No history events found.',
+    'history_note_excerpt'               => 'Admin note added.',
+    'history_student_created_desc'       => 'Student :name was registered.',
+    'history_enrollment_created_desc'    => 'Enrolled in :instrument with :teacher.',
+    'history_teacher_changed_desc'       => 'Teacher changed to :teacher.',
+    'history_instrument_changed_desc'    => 'Instrument changed to :instrument.',
+    'history_session_completed_desc'     => 'Session completed on :date (:instrument).',
+    'history_session_cancelled_desc'     => 'Session cancelled on :date (:instrument).',
+    'history_attendance_marked_desc'     => 'Attendance marked as :status on :date.',
+    'history_discount_assigned_desc'     => 'Session fee or discount was set.',
+    'history_event_types' => [
+        'student_created'    => 'Student Registration',
+        'enrollment_created' => 'New Enrollment',
+        'teacher_changed'    => 'Teacher Changed',
+        'instrument_changed' => 'Instrument Changed',
+        'session_completed'  => 'Session Completed',
+        'session_cancelled'  => 'Session Cancelled',
+        'attendance_marked'  => 'Absence / Late',
+        'discount_assigned'  => 'Fee / Discount',
+        'admin_note'         => 'Admin Note',
+    ],
+
     // ── Rooms ──────────────────────────────────────────────────────────────
     'rooms_management'         => 'Room Management',
-    'manage_rooms'             => 'Manage academy rooms.',
     'create_room'              => 'Create Room',
     'edit_room'                => 'Edit Room',
     'room_created_successfully' => 'Room created successfully.',
