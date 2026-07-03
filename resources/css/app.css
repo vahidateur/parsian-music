@@ -44,3 +44,10 @@ select option {
         text-rendering: optimizeLegibility;
     }
 }
+
+@layer components {
+    .sidebar-transition {
+        @apply transition-all duration-300 ease-in-out;
+    }
+}
+
