@@ -38,46 +38,50 @@
 
 {{-- Table --}}
 <div class="overflow-hidden rounded-2xl border border-gray-800/60 bg-gray-900/50 shadow-xl backdrop-blur-sm">
-    <table class="w-full text-left text-sm">
-        <thead>
-            <tr class="border-b border-gray-800/60 bg-gray-800/30">
-                @include('admin.partials.sort-th', ['col'=>'full_name',  'label'=>__('admin.full_name'),  'currentSort'=>$sortCol, 'currentDir'=>$sortDir, 'route'=>'admin.students.index'])
-                @include('admin.partials.sort-th', ['col'=>'phone',      'label'=>__('admin.phone'),      'currentSort'=>$sortCol, 'currentDir'=>$sortDir, 'route'=>'admin.students.index'])
-                @include('admin.partials.sort-th', ['col'=>'status',     'label'=>__('admin.status'),     'currentSort'=>$sortCol, 'currentDir'=>$sortDir, 'route'=>'admin.students.index'])
-                @include('admin.partials.sort-th', ['col'=>'join_date',  'label'=>__('admin.join_date'),  'currentSort'=>$sortCol, 'currentDir'=>$sortDir, 'route'=>'admin.students.index'])
-                <th class="px-6 py-4 text-xs font-medium uppercase tracking-wider text-gray-500 text-right">{{ __('admin.actions') }}</th>
-            </tr>
-        </thead>
-        <tbody class="divide-y divide-gray-800/60">
-            @forelse ($students as $student)
-                @php
-                    $statusValue = $student->status instanceof \BackedEnum ? $student->status->value : (string) $student->status;
-                @endphp
-                <tr class="transition hover:bg-gray-800/20">
-                    <td class="px-6 py-4 font-medium text-gray-100">{{ $student->full_name }}</td>
-                    <td class="px-6 py-4 text-gray-400">{{ $student->phone }}</td>
-                    <td class="px-6 py-4">
-                        <span class="rounded-full {{ $statusValue === 'active' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-gray-700/50 text-gray-400' }} px-2.5 py-0.5 text-xs font-medium">
-                            {{ __('admin.statuses.' . $statusValue) }}
-                        </span>
-                    </td>
-                    <td class="px-6 py-4 text-gray-400">{{ \App\Helpers\Jalalian::fromCarbon($student->join_date) }}</td>
-                    <td class="px-6 py-4 text-right">
-                        <a href="{{ route('admin.students.edit', $student) }}" class="text-amber-400 transition hover:text-amber-300">{{ __('admin.edit') }}</a>
-                        <form method="POST" action="{{ route('admin.students.destroy', $student) }}" class="inline ml-3" onsubmit="return confirm('{{ __('admin.delete_student_confirm') }}')">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="text-red-400 transition hover:text-red-300">{{ __('admin.delete') }}</button>
-                        </form>
-                    </td>
-                </tr>
-            @empty
-                <tr>
-                    <td colspan="5" class="px-6 py-12 text-center text-gray-500">{{ __('admin.no_students_found') }}</td>
-                </tr>
-            @endforelse
-        </tbody>
-    </table>
+    <div class="overflow-x-auto">
+        <div class="max-h-[70vh] overflow-y-auto">
+            <table class="w-full text-left text-sm">
+                <thead>
+                    <tr class="sticky top-0 z-10 border-b border-gray-800/60 bg-gray-800/30">
+                        @include('admin.partials.sort-th', ['col'=>'full_name',  'label'=>__('admin.full_name'),  'currentSort'=>$sortCol, 'currentDir'=>$sortDir, 'route'=>'admin.students.index'])
+                        @include('admin.partials.sort-th', ['col'=>'phone',      'label'=>__('admin.phone'),      'currentSort'=>$sortCol, 'currentDir'=>$sortDir, 'route'=>'admin.students.index'])
+                        @include('admin.partials.sort-th', ['col'=>'status',     'label'=>__('admin.status'),     'currentSort'=>$sortCol, 'currentDir'=>$sortDir, 'route'=>'admin.students.index'])
+                        @include('admin.partials.sort-th', ['col'=>'join_date',  'label'=>__('admin.join_date'),  'currentSort'=>$sortCol, 'currentDir'=>$sortDir, 'route'=>'admin.students.index'])
+                        <th class="px-6 py-4 text-xs font-medium uppercase tracking-wider text-gray-500 text-right">{{ __('admin.actions') }}</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-800/60">
+                    @forelse ($students as $student)
+                        @php
+                            $statusValue = $student->status instanceof \BackedEnum ? $student->status->value : (string) $student->status;
+                        @endphp
+                        <tr class="transition hover:bg-gray-800/20 {{ $loop->even ? 'bg-gray-900/30' : 'bg-gray-900/50' }}">
+                            <td class="px-6 py-4 font-medium text-gray-100">{{ $student->full_name }}</td>
+                            <td class="px-6 py-4 text-gray-400">{{ $student->phone }}</td>
+                            <td class="px-6 py-4">
+                                <span class="rounded-full {{ $statusValue === 'active' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-gray-700/50 text-gray-400' }} px-2.5 py-0.5 text-xs font-medium">
+                                    {{ __('admin.statuses.' . $statusValue) }}
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 text-gray-400">{{ \App\Helpers\Jalalian::fromCarbon($student->join_date) }}</td>
+                            <td class="px-6 py-4 text-right">
+                                <a href="{{ route('admin.students.edit', $student) }}" class="text-amber-400 transition hover:text-amber-300">{{ __('admin.edit') }}</a>
+                                <form method="POST" action="{{ route('admin.students.destroy', $student) }}" class="inline ml-3" onsubmit="return confirm('{{ __('admin.delete_student_confirm') }}')">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="text-red-400 transition hover:text-red-300">{{ __('admin.delete') }}</button>
+                                </form>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="5" class="px-6 py-12 text-center text-gray-500">{{ __('admin.no_students_found') }}</td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
 
 {{-- Pagination --}}

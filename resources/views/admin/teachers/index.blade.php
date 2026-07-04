@@ -52,53 +52,55 @@
 {{-- Table --}}
 <div class="overflow-hidden rounded-2xl border border-gray-800/60 bg-gray-900/50 shadow-xl backdrop-blur-sm">
     <div class="overflow-x-auto">
-        <table class="w-full text-start text-sm">
-            <thead>
-                <tr class="border-b border-gray-800/60 bg-gray-800/30">
-                    @include('admin.partials.sort-th', ['col'=>'full_name', 'label'=>__('admin.full_name'), 'currentSort'=>$sortCol, 'currentDir'=>$sortDir, 'route'=>'admin.teachers.index'])
-                    @include('admin.partials.sort-th', ['col'=>'phone',     'label'=>__('admin.phone'),     'currentSort'=>$sortCol, 'currentDir'=>$sortDir, 'route'=>'admin.teachers.index'])
-                    @include('admin.partials.sort-th', ['col'=>'status',    'label'=>__('admin.status'),    'currentSort'=>$sortCol, 'currentDir'=>$sortDir, 'route'=>'admin.teachers.index'])
-                    <th class="px-6 py-4 text-xs font-medium uppercase tracking-wider text-gray-500">{{ __('admin.actions') }}</th>
-                </tr>
-            </thead>
-            <tbody class="divide-y divide-gray-800/60">
-                @forelse ($teachers as $teacher)
-                    @php
-                        $statusValue = $teacher->status instanceof \BackedEnum ? $teacher->status->value : (string) $teacher->status;
-                    @endphp
-                    <tr class="transition hover:bg-gray-800/20">
-                        <td class="px-6 py-4 font-medium text-gray-100">{{ $teacher->full_name }}</td>
-                        <td class="px-6 py-4 text-gray-400">{{ $teacher->phone }}</td>
-                        <td class="px-6 py-4">
-                            <span class="rounded-full {{ $statusValue === 'active' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-gray-700/50 text-gray-400' }} px-2.5 py-0.5 text-xs font-medium">
-                                {{ __('admin.statuses.'.$statusValue) }}
-                            </span>
-                        </td>
-                        <td class="px-6 py-4 text-right">
-                            <div class="flex items-center gap-3">
-                                <a href="{{ route('admin.teachers.instruments', $teacher) }}" class="text-amber-400 transition hover:text-amber-300">
-                                    {{ __('admin.instruments') }}
-                                </a>
-                                <a href="{{ route('admin.teachers.edit', $teacher) }}" class="text-amber-400 transition hover:text-amber-300">
-                                    {{ __('admin.edit') }}
-                                </a>
-                                <form method="POST" action="{{ route('admin.teachers.destroy', $teacher) }}" class="inline" onsubmit="return confirm('{{ __('admin.delete_teacher_confirm') }}')">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit" class="text-red-400 transition hover:text-red-300">
-                                        {{ __('admin.delete') }}
-                                    </button>
-                                </form>
-                            </div>
-                        </td>
+        <div class="max-h-[70vh] overflow-y-auto">
+            <table class="w-full text-start text-sm">
+                <thead>
+                    <tr class="sticky top-0 z-10 border-b border-gray-800/60 bg-gray-800/30">
+                        @include('admin.partials.sort-th', ['col'=>'full_name', 'label'=>__('admin.full_name'), 'currentSort'=>$sortCol, 'currentDir'=>$sortDir, 'route'=>'admin.teachers.index'])
+                        @include('admin.partials.sort-th', ['col'=>'phone',     'label'=>__('admin.phone'),     'currentSort'=>$sortCol, 'currentDir'=>$sortDir, 'route'=>'admin.teachers.index'])
+                        @include('admin.partials.sort-th', ['col'=>'status',    'label'=>__('admin.status'),    'currentSort'=>$sortCol, 'currentDir'=>$sortDir, 'route'=>'admin.teachers.index'])
+                        <th class="px-6 py-4 text-xs font-medium uppercase tracking-wider text-gray-500">{{ __('admin.actions') }}</th>
                     </tr>
-                @empty
-                    <tr>
-                        <td colspan="4" class="px-6 py-12 text-center text-gray-500">{{ __('admin.no_teachers_found') }}</td>
-                    </tr>
-                @endforelse
-            </tbody>
-        </table>
+                </thead>
+                <tbody class="divide-y divide-gray-800/60">
+                    @forelse ($teachers as $teacher)
+                        @php
+                            $statusValue = $teacher->status instanceof \BackedEnum ? $teacher->status->value : (string) $teacher->status;
+                        @endphp
+                        <tr class="transition hover:bg-gray-800/20 {{ $loop->even ? 'bg-gray-900/30' : 'bg-gray-900/50' }}">
+                            <td class="px-6 py-4 font-medium text-gray-100">{{ $teacher->full_name }}</td>
+                            <td class="px-6 py-4 text-gray-400">{{ $teacher->phone }}</td>
+                            <td class="px-6 py-4">
+                                <span class="rounded-full {{ $statusValue === 'active' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-gray-700/50 text-gray-400' }} px-2.5 py-0.5 text-xs font-medium">
+                                    {{ __('admin.statuses.'.$statusValue) }}
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 text-right">
+                                <div class="flex items-center gap-3">
+                                    <a href="{{ route('admin.teachers.instruments', $teacher) }}" class="text-amber-400 transition hover:text-amber-300">
+                                        {{ __('admin.instruments') }}
+                                    </a>
+                                    <a href="{{ route('admin.teachers.edit', $teacher) }}" class="text-amber-400 transition hover:text-amber-300">
+                                        {{ __('admin.edit') }}
+                                    </a>
+                                    <form method="POST" action="{{ route('admin.teachers.destroy', $teacher) }}" class="inline" onsubmit="return confirm('{{ __('admin.delete_teacher_confirm') }}')">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="text-red-400 transition hover:text-red-300">
+                                            {{ __('admin.delete') }}
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="4" class="px-6 py-12 text-center text-gray-500">{{ __('admin.no_teachers_found') }}</td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
 
