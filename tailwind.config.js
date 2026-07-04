@@ -12,7 +12,15 @@ export default {
     theme: {
         extend: {
             fontFamily: {
-                sans: ['Figtree', ...defaultTheme.fontFamily.sans],
+                sans: ['Vazirmatn', ...defaultTheme.fontFamily.sans],
+                fa: ['Vazirmatn', 'system-ui', '-apple-system'],
+            },
+            backdropBlur: {
+                'sm': '4px',    // Subtle blur for glass effects
+            },
+            opacity: {
+                '04': '0.04',   // Very light transparency
+                '08': '0.08',
             },
         },
     },

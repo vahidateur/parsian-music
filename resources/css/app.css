@@ -2,9 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ── Persian / Arabic font: Vazirmatn ─────────────────────────────────── */
-@import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800&display=swap');
-
 /* ── Native select: dark text on white for OS dropdown popup ──────────────── */
 select option {
     color: #111827;
@@ -46,8 +43,62 @@ select option {
 }
 
 @layer components {
+    /* ── Transitions & Animations ───────────────────────────────────────── */
     .sidebar-transition {
         @apply transition-all duration-300 ease-in-out;
+    }
+
+    .transition-smooth {
+        @apply transition-all duration-200 ease-in-out;
+    }
+
+    /* ── Glass Effect Base (subtle) ──────────────────────────────────────── */
+    .glass {
+        @apply backdrop-blur-sm bg-gray-900/70;
+    }
+
+    .glass-sm {
+        @apply backdrop-blur-sm bg-gray-900/80;
+    }
+
+    /* ── Interactive Hover States ────────────────────────────────────────── */
+    .nav-item-active {
+        @apply bg-amber-500/10 ring-1 ring-amber-500/20 text-amber-300;
+    }
+
+    .nav-item-hover {
+        @apply hover:bg-gray-800/50 hover:text-amber-300 transition-colors duration-200;
+    }
+
+    /* ── Table Utilities ─────────────────────────────────────────────────── */
+    .table-sticky-header {
+        @apply sticky top-0 z-10 bg-gray-800/50 backdrop-blur-sm;
+    }
+
+    .table-row-hover {
+        @apply hover:bg-gray-800/30 transition-colors duration-200;
+    }
+
+    .table-zebra tbody tr:nth-child(even) {
+        @apply bg-gray-800/20;
+    }
+
+    /* ── Spacing Grid Enforcement (8px multiples) ────────────────────────── */
+    .p-safe {
+        @apply p-6; /* 24px = 8 * 3 */
+    }
+
+    .gap-safe {
+        @apply gap-6; /* 24px = 8 * 3 */
+    }
+
+    /* ── RTL Logical Properties Support ──────────────────────────────────── */
+    [dir="rtl"] .flex-row-logical {
+        @apply flex-row-reverse;
+    }
+
+    [dir="rtl"] .text-start-logical {
+        @apply text-end;
     }
 
     /* ── Sidebar layout system ─────────────────────────────────────────────

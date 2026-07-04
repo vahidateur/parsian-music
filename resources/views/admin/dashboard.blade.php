@@ -33,90 +33,70 @@
 <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-4">
 
     {{-- Total Students --}}
-    <div class="group relative overflow-hidden rounded-2xl border border-amber-500/10 bg-gradient-to-br from-amber-500/[0.08] via-gray-900/80 to-gray-900/60 p-6 shadow-xl shadow-black/20 backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:border-amber-500/30 hover:shadow-amber-500/10">
-        {{-- glow --}}
-        <div class="pointer-events-none absolute -right-8 -top-8 h-32 w-32 rounded-full bg-amber-500/10 blur-3xl transition-all duration-300 group-hover:bg-amber-500/20"></div>
-        {{-- top row: icon + label --}}
+    <div class="group relative overflow-hidden rounded-xl border border-gray-800/40 bg-gray-900/50 p-6 shadow-lg shadow-black/10 transition-all duration-300 hover:-translate-y-0.5 hover:border-amber-500/20 hover:bg-gray-900/70 hover:shadow-amber-500/10">
         <div class="relative flex items-start justify-between">
-            <div class="flex h-11 w-11 items-center justify-center rounded-xl bg-amber-500/10 ring-1 ring-amber-500/20 transition-all duration-300 group-hover:bg-amber-500/20">
+            <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-amber-500/10 ring-1 ring-amber-500/20">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" />
                 </svg>
             </div>
-            <span class="rounded-full bg-amber-500/10 px-2 py-0.5 text-xs font-medium text-amber-400/80">+0%</span>
+            <span class="rounded-full bg-amber-500/10 px-2 py-0.5 text-xs font-medium text-amber-400">+0%</span>
         </div>
-        {{-- value --}}
-        <div class="relative mt-5">
-            <p class="text-4xl font-bold tracking-tight text-white">{{ $totalStudents }}</p>
-            <p class="mt-1.5 text-sm font-medium text-amber-300/90">{{ __('admin.total_students') }}</p>
-            <p class="mt-1 text-xs text-gray-500">{{ __('admin.total_registered') }}</p>
-        </div>
-        {{-- bottom bar --}}
-        <div class="relative mt-5 h-1 overflow-hidden rounded-full bg-gray-800/80">
-            <div class="h-full w-3/4 rounded-full bg-gradient-to-r from-amber-600 to-amber-400 transition-all duration-500 group-hover:w-full"></div>
+        <div class="relative mt-4">
+            <p class="text-3xl font-bold text-white">{{ $totalStudents }}</p>
+            <p class="mt-1 text-sm font-medium text-gray-300">{{ __('admin.total_students') }}</p>
+            <p class="mt-0.5 text-xs text-gray-500">{{ __('admin.total_registered') }}</p>
         </div>
     </div>
 
     {{-- Active Teachers --}}
-    <div class="group relative overflow-hidden rounded-2xl border border-emerald-500/10 bg-gradient-to-br from-emerald-500/[0.08] via-gray-900/80 to-gray-900/60 p-6 shadow-xl shadow-black/20 backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:border-emerald-500/30 hover:shadow-emerald-500/10">
-        <div class="pointer-events-none absolute -right-8 -top-8 h-32 w-32 rounded-full bg-emerald-500/10 blur-3xl transition-all duration-300 group-hover:bg-emerald-500/20"></div>
+    <div class="group relative overflow-hidden rounded-xl border border-gray-800/40 bg-gray-900/50 p-6 shadow-lg shadow-black/10 transition-all duration-300 hover:-translate-y-0.5 hover:border-emerald-500/20 hover:bg-gray-900/70 hover:shadow-emerald-500/10">
         <div class="relative flex items-start justify-between">
-            <div class="flex h-11 w-11 items-center justify-center rounded-xl bg-emerald-500/10 ring-1 ring-emerald-500/20 transition-all duration-300 group-hover:bg-emerald-500/20">
+            <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-500/10 ring-1 ring-emerald-500/20">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M4.26 10.147a60.438 60.438 0 00-.491 6.347A48.62 48.62 0 0112 20.904a48.62 48.62 0 018.232-4.41 60.46 60.46 0 00-.491-6.347m-15.482 0a50.636 50.636 0 00-2.658-.813A59.906 59.906 0 0112 3.493a59.903 59.903 0 0110.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.717 50.717 0 0112 13.489a50.702 50.702 0 017.74-3.342M6.75 15a.75.75 0 100-1.5.75.75 0 000 1.5zm0 0v-3.675A55.378 55.378 0 0112 8.443m-7.007 11.55A5.981 5.981 0 006.75 15.75v-1.5" />
                 </svg>
             </div>
-            <span class="rounded-full bg-emerald-500/10 px-2 py-0.5 text-xs font-medium text-emerald-400/80">فعال</span>
+            <span class="rounded-full bg-emerald-500/10 px-2 py-0.5 text-xs font-medium text-emerald-400">فعال</span>
         </div>
-        <div class="relative mt-5">
-            <p class="text-4xl font-bold tracking-tight text-white">{{ $activeTeachers }}</p>
-            <p class="mt-1.5 text-sm font-medium text-emerald-300/90">{{ __('admin.active_teachers') }}</p>
-            <p class="mt-1 text-xs text-gray-500">{{ __('admin.currently_teaching') }}</p>
-        </div>
-        <div class="relative mt-5 h-1 overflow-hidden rounded-full bg-gray-800/80">
-            <div class="h-full w-2/3 rounded-full bg-gradient-to-r from-emerald-600 to-emerald-400 transition-all duration-500 group-hover:w-full"></div>
+        <div class="relative mt-4">
+            <p class="text-3xl font-bold text-white">{{ $activeTeachers }}</p>
+            <p class="mt-1 text-sm font-medium text-gray-300">{{ __('admin.active_teachers') }}</p>
+            <p class="mt-0.5 text-xs text-gray-500">{{ __('admin.currently_teaching') }}</p>
         </div>
     </div>
 
     {{-- Today Sessions --}}
-    <div class="group relative overflow-hidden rounded-2xl border border-sky-500/10 bg-gradient-to-br from-sky-500/[0.08] via-gray-900/80 to-gray-900/60 p-6 shadow-xl shadow-black/20 backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:border-sky-500/30 hover:shadow-sky-500/10">
-        <div class="pointer-events-none absolute -right-8 -top-8 h-32 w-32 rounded-full bg-sky-500/10 blur-3xl transition-all duration-300 group-hover:bg-sky-500/20"></div>
+    <div class="group relative overflow-hidden rounded-xl border border-gray-800/40 bg-gray-900/50 p-6 shadow-lg shadow-black/10 transition-all duration-300 hover:-translate-y-0.5 hover:border-sky-500/20 hover:bg-gray-900/70 hover:shadow-sky-500/10">
         <div class="relative flex items-start justify-between">
-            <div class="flex h-11 w-11 items-center justify-center rounded-xl bg-sky-500/10 ring-1 ring-sky-500/20 transition-all duration-300 group-hover:bg-sky-500/20">
+            <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-sky-500/10 ring-1 ring-sky-500/20">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-sky-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0V11.25A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
                 </svg>
             </div>
-            <span class="rounded-full bg-sky-500/10 px-2 py-0.5 text-xs font-medium text-sky-400/80">امروز</span>
+            <span class="rounded-full bg-sky-500/10 px-2 py-0.5 text-xs font-medium text-sky-400">امروز</span>
         </div>
-        <div class="relative mt-5">
-            <p class="text-4xl font-bold tracking-tight text-white">{{ $todaySessions }}</p>
-            <p class="mt-1.5 text-sm font-medium text-sky-300/90">{{ __('admin.today_sessions') }}</p>
-            <p class="mt-1 text-xs text-gray-500">{{ __('admin.scheduled_for_today') }}</p>
-        </div>
-        <div class="relative mt-5 h-1 overflow-hidden rounded-full bg-gray-800/80">
-            <div class="h-full w-1/2 rounded-full bg-gradient-to-r from-sky-600 to-sky-400 transition-all duration-500 group-hover:w-full"></div>
+        <div class="relative mt-4">
+            <p class="text-3xl font-bold text-white">{{ $todaySessions }}</p>
+            <p class="mt-1 text-sm font-medium text-gray-300">{{ __('admin.today_sessions') }}</p>
+            <p class="mt-0.5 text-xs text-gray-500">{{ __('admin.scheduled_for_today') }}</p>
         </div>
     </div>
 
     {{-- Monthly Revenue (placeholder) --}}
-    <div class="group relative overflow-hidden rounded-2xl border border-violet-500/10 bg-gradient-to-br from-violet-500/[0.08] via-gray-900/80 to-gray-900/60 p-6 shadow-xl shadow-black/20 backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:border-violet-500/30 hover:shadow-violet-500/10">
-        <div class="pointer-events-none absolute -right-8 -top-8 h-32 w-32 rounded-full bg-violet-500/10 blur-3xl transition-all duration-300 group-hover:bg-violet-500/20"></div>
+    <div class="group relative overflow-hidden rounded-xl border border-gray-800/40 bg-gray-900/50 p-6 shadow-lg shadow-black/10 transition-all duration-300 hover:-translate-y-0.5 hover:border-violet-500/20 hover:bg-gray-900/70 hover:shadow-violet-500/10">
         <div class="relative flex items-start justify-between">
-            <div class="flex h-11 w-11 items-center justify-center rounded-xl bg-violet-500/10 ring-1 ring-violet-500/20 transition-all duration-300 group-hover:bg-violet-500/20">
+            <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-violet-500/10 ring-1 ring-violet-500/20">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-violet-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818l.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
             </div>
-            <span class="rounded-full bg-violet-500/10 px-2 py-0.5 text-xs font-medium text-violet-400/80">{{ __('admin.coming_soon') }}</span>
+            <span class="rounded-full bg-violet-500/10 px-2 py-0.5 text-xs font-medium text-violet-400">{{ __('admin.coming_soon') }}</span>
         </div>
-        <div class="relative mt-5">
-            <p class="text-4xl font-bold tracking-tight text-gray-600">—</p>
-            <p class="mt-1.5 text-sm font-medium text-violet-300/90">{{ __('admin.monthly_revenue') }}</p>
-            <p class="mt-1 text-xs text-gray-500">{{ __('admin.coming_soon') }}</p>
-        </div>
-        <div class="relative mt-5 h-1 overflow-hidden rounded-full bg-gray-800/80">
-            <div class="h-full w-0 rounded-full bg-gradient-to-r from-violet-600 to-violet-400 transition-all duration-500 group-hover:w-1/4"></div>
+        <div class="relative mt-4">
+            <p class="text-3xl font-bold text-gray-600">—</p>
+            <p class="mt-1 text-sm font-medium text-gray-300">{{ __('admin.monthly_revenue') }}</p>
+            <p class="mt-0.5 text-xs text-gray-500">{{ __('admin.coming_soon') }}</p>
         </div>
     </div>
 </div>

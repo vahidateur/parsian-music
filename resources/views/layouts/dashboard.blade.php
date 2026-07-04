@@ -8,6 +8,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ $title ?? __('admin.panel_title') }}</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="relative min-h-screen overflow-x-hidden bg-gray-950 text-gray-100 antialiased">
@@ -31,7 +37,7 @@
 
         {{-- Sidebar --}}
         <aside
-            class="sidebar-transition sidebar-fixed-width fixed inset-y-0 z-30 hidden flex-col bg-gray-900/70 backdrop-blur-xl lg:flex {{ $isRtl ? 'right-0 border-l border-gray-800/60' : 'left-0 border-r border-gray-800/60' }}">
+            class="sidebar-transition sidebar-fixed-width fixed inset-y-0 z-30 hidden flex-col bg-gray-950/80 backdrop-blur-md lg:flex {{ $isRtl ? 'right-0 border-l border-gray-800/40' : 'left-0 border-r border-gray-800/40' }}">
 
             {{-- Brand + Collapse Toggle --}}
             <div class="relative flex h-20 items-center justify-between overflow-hidden border-b border-gray-800/60 px-4">
