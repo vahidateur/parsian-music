@@ -14,4 +14,12 @@ class Room extends Model
     protected $casts = [
         'is_active' => 'boolean',
     ];
+
+    /**
+     * Scope for active rooms only.
+     */
+    public function scopeActive($query)
+    {
+        return $query->where('is_active', true);
+    }
 }

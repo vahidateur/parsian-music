@@ -46,14 +46,41 @@ class EnrollmentService
     }
 
     /**
+     * Update an existing enrollment after enforcing all business invariants.
+     *
+     * @param  array{instrument_id: int, teacher_id: int, skill_level?: string, status: string, notes?: string}  $data
+     * @return StudentEnrollment
+     *
+     * @throws ValidationException When a business invariant is violated.
+     */
+    public function updateEnrollment(StudentEnrollment $enrollment, array $data): StudentEnrollment
+    {
+        $this->guardAgainstDuplicateActive(
+            $enrollment->student_id,
+            $data['instrument_id'],
+            $enrollment->id,
+        );
+
+        $this->guardTeacherTeachesInstrument(
+            $data['teacher_id'],
+            $data['instrument_id'],
+        );
+
+        $enrollment->update($data);
+
+        return $enrollment;
+    }
+
+    /**
      * Prevent two active enrollments for the same student + instrument.
      *
      * @throws ValidationException
      */
-    protected function guardAgainstDuplicateActive(int $studentId, int $instrumentId): void
+    protected function guardAgainstDuplicateActive(int $studentId, int $instrumentId, ?int $excludeEnrollmentId = null): void
     {
         $duplicate = StudentEnrollment::where('student_id', $studentId)
             ->where('instrument_id', $instrumentId)
+            ->when($excludeEnrollmentId, fn ($q) => $q->where('id', '!=', $excludeEnrollmentId))
             ->active()
             ->exists();
 

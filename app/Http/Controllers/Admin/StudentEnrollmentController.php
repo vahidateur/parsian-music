@@ -68,7 +68,7 @@ class StudentEnrollmentController extends Controller
     {
         $students = Student::orderBy('full_name')->get();
         $teachers = Teacher::orderBy('full_name')->get();
-        $instruments = Instrument::orderBy('name_fa')->orderBy('name')->get();
+        $instruments = Instrument::active()->orderBy('name_fa')->orderBy('name')->get();
 
         return view('admin.enrollments.create', compact('students', 'teachers', 'instruments'));
     }
@@ -79,6 +79,7 @@ class StudentEnrollmentController extends Controller
             'student_id' => ['required', 'exists:students,id'],
             'teacher_id' => ['required', 'exists:teachers,id'],
             'instrument_id' => ['required', 'exists:instruments,id'],
+            'skill_level' => ['required', 'string', Rule::in(\App\Enums\SkillLevelEnum::values())],
             'status' => ['nullable', 'string', Rule::in(\App\Enums\EnrollmentStatusEnum::values())],
             'notes' => ['nullable', 'string'],
         ]);
@@ -98,20 +99,26 @@ class StudentEnrollmentController extends Controller
         $enrollment->load(['student', 'teacher', 'instrument']);
         $students = Student::orderBy('full_name')->get();
         $teachers = Teacher::orderBy('full_name')->get();
-        $instruments = Instrument::orderBy('name_fa')->orderBy('name')->get();
+        $instruments = Instrument::active()->orderBy('name_fa')->orderBy('name')->get();
 
         return view('admin.enrollments.edit', compact('enrollment', 'students', 'teachers', 'instruments'));
     }
 
-    public function update(Request $request, StudentEnrollment $enrollment): RedirectResponse
+    public function update(Request $request, StudentEnrollment $enrollment, EnrollmentService $service): RedirectResponse
     {
         $validated = $request->validate([
+            'instrument_id' => ['required', 'exists:instruments,id'],
             'teacher_id' => ['required', 'exists:teachers,id'],
+            'skill_level' => ['required', 'string', Rule::in(\App\Enums\SkillLevelEnum::values())],
             'status' => ['required', 'string', Rule::in(\App\Enums\EnrollmentStatusEnum::values())],
             'notes' => ['nullable', 'string'],
         ]);
 
-        $enrollment->update($validated);
+        try {
+            $service->updateEnrollment($enrollment, $validated);
+        } catch (ValidationException $e) {
+            return back()->withInput()->withErrors($e->errors());
+        }
 
         return redirect()->route('admin.enrollments.index')
             ->with('success', __('admin.enrollment_updated_successfully'));

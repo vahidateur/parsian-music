@@ -5,6 +5,7 @@ namespace Tests\Feature\Admin;
 use App\Enums\RoleEnum;
 use App\Models\ClassSession;
 use App\Models\Instrument;
+use App\Models\Room;
 use App\Models\Student;
 use App\Models\StudentEnrollment;
 use App\Models\Teacher;
@@ -56,6 +57,8 @@ class SessionSchedulingTest extends TestCase
             'status' => 'active',
             'started_at' => now(),
         ]);
+
+        Room::create(['name' => 'Room 1', 'is_active' => true]);
     }
 
     /** Manual session creation must use enrollment_id, not student_id/teacher_id. */

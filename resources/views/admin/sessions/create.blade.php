@@ -23,15 +23,18 @@
 @endif
 
 @php
-    $enrollmentsJson = $enrollments->map(function ($e) {
+    // Lookup map keyed by enrollment id: teacher/instrument names for the
+    // readonly auto-filled fields, plus the suggested base fee (nullable —
+    // taken from that enrollment's most recent prior session, per audit).
+    $enrollmentMeta = $enrollments->mapWithKeys(function ($e) use ($lastFees) {
         return [
-            'id'              => $e->id,
-            'student_id'      => $e->student_id,
-            'teacher_name'    => $e->teacher?->full_name ?? '',
-            'instrument_name' => $e->instrument?->display_name ?? '',
-            'label'           => ($e->instrument?->display_name ?? '—') . ' — ' . ($e->teacher?->full_name ?? '—'),
+            $e->id => [
+                'teacher_name'    => $e->teacher?->full_name ?? '',
+                'instrument_name' => $e->instrument?->display_name ?? '',
+                'base_fee'        => $lastFees[$e->id] ?? null,
+            ],
         ];
-    })->values();
+    });
 @endphp
 
 <form method="POST" action="{{ route('admin.sessions.store') }}" class="max-w-2xl space-y-6"
@@ -50,17 +53,25 @@
         </select>
     </div>
 
-    {{-- 2. Active Enrollment --}}
+    {{-- 2. Active Enrollment — all options rendered server-side (no template
+         re-rendering), filtered client-side via the `hidden` attribute per
+         student. This avoids the x-model/<template x-for> sync issue that
+         made the enrollment dropdown unreliable. --}}
     <div>
         <label class="mb-1.5 block text-sm font-medium text-gray-300">{{ __('admin.active_enrollment') }}</label>
-        <select name="enrollment_id" required x-model="enrollmentId" @change="onEnrollmentChange()"
+        <select name="enrollment_id" required x-ref="enrollmentSelect" @change="onEnrollmentChange($event.target.value)"
                 class="block w-full rounded-lg border border-gray-700 bg-gray-800/50 px-4 py-3 text-sm text-gray-100 transition focus:border-amber-500/50 focus:outline-none focus:ring-2 focus:ring-amber-500/20">
             <option value="">{{ __('admin.select_enrollment_placeholder') }}</option>
-            <template x-for="e in filteredEnrollments" :key="e.id">
-                <option :value="e.id" :selected="e.id == enrollmentId" x-text="e.label"></option>
-            </template>
+            @foreach ($enrollments as $e)
+                @php
+                    $skillLabel = $e->skill_level ? __('admin.skill_levels.' . $e->skill_level->value) : '';
+                    $label = ($e->instrument?->display_name ?? '—') . ' — ' . ($e->teacher?->full_name ?? '—') . ' — ' . ($skillLabel ?: '—');
+                @endphp
+                <option value="{{ $e->id }}" data-student-id="{{ $e->student_id }}"
+                        @if(old('enrollment_id') == $e->id) selected @endif>{{ $label }}</option>
+            @endforeach
         </select>
-        <p x-show="studentId && filteredEnrollments.length === 0" class="mt-1 text-xs text-red-400">
+        <p x-show="studentId && visibleEnrollmentCount === 0" class="mt-1 text-xs text-red-400">
             {{ __('admin.no_active_enrollment_for_student') }}
         </p>
         @error('enrollment_id')
@@ -68,7 +79,7 @@
         @enderror
     </div>
 
-    {{-- 3. Teacher (auto-filled) --}}
+    {{-- 3. Teacher (auto-filled, readonly) --}}
     <div>
         <label class="mb-1.5 block text-sm font-medium text-gray-300">{{ __('admin.teacher') }}</label>
         <input type="text" readonly tabindex="-1"
@@ -78,7 +89,7 @@
         <p class="mt-1 text-xs text-gray-500">{{ __('admin.auto_filled_hint') }}</p>
     </div>
 
-    {{-- 4. Instrument (auto-filled) --}}
+    {{-- 4. Instrument (auto-filled, readonly) --}}
     <div>
         <label class="mb-1.5 block text-sm font-medium text-gray-300">{{ __('admin.instrument') }}</label>
         <input type="text" readonly tabindex="-1"
@@ -87,7 +98,20 @@
                class="block w-full rounded-lg border border-gray-700 bg-gray-800/30 px-4 py-3 text-sm text-gray-300 cursor-not-allowed">
     </div>
 
-    {{-- 5. Session Date — split Y/M/D to prevent 5-digit year --}}
+    {{-- 5. Base Fee (auto-filled, readonly display — suggestion only) --}}
+    <div>
+        <label class="mb-1.5 block text-sm font-medium text-gray-300">
+            {{ __('admin.base_fee') }}
+            <span class="text-gray-500 text-xs">({{ __('admin.currency_toman') }})</span>
+        </label>
+        <input type="text" readonly tabindex="-1"
+               :value="baseFee !== null ? Number(baseFee).toLocaleString('en-US') : ''"
+               :placeholder="enrollmentId ? '—' : '{{ __('admin.select_enrollment_placeholder') }}'"
+               class="block w-full rounded-lg border border-gray-700 bg-gray-800/30 px-4 py-3 text-sm text-gray-300 cursor-not-allowed">
+        <p class="mt-1 text-xs text-gray-500">{{ __('admin.auto_filled_hint') }}</p>
+    </div>
+
+    {{-- 6. Session Date — split Y/M/D to prevent 5-digit year --}}
     <div x-data="dateForm('session_date', '{{ old('session_date', '') }}')" x-init="init()">
         <label class="mb-1.5 block text-sm font-medium text-gray-300">{{ __('admin.date') }}</label>
         <input type="hidden" name="session_date" :value="isoValue">
@@ -123,7 +147,7 @@
         @enderror
     </div>
 
-    {{-- 6. Start Time --}}
+    {{-- 7. Start Time --}}
     <div>
         <label class="mb-1.5 block text-sm font-medium text-gray-300">{{ __('admin.start_time') }} (۱۵:۰۰ – ۲۱:۳۰)</label>
         <input type="time" name="start_time" required value="{{ old('start_time') }}"
@@ -134,7 +158,7 @@
         @enderror
     </div>
 
-    {{-- 7. Duration --}}
+    {{-- 8. Duration --}}
     <div>
         <label class="mb-1.5 block text-sm font-medium text-gray-300">{{ __('admin.duration_minutes_label') }}</label>
         <select name="duration_minutes" required
@@ -150,14 +174,15 @@
         @enderror
     </div>
 
-    {{-- 8. Room --}}
+    {{-- 9. Room — sourced from the rooms table (active only), replacing the
+         previous hardcoded list --}}
     <div>
         <label class="mb-1.5 block text-sm font-medium text-gray-300">{{ __('admin.room') }}</label>
         <select name="room" required
                 class="block w-full rounded-lg border border-gray-700 bg-gray-800/50 px-4 py-3 text-sm text-gray-100 transition focus:border-amber-500/50 focus:outline-none focus:ring-2 focus:ring-amber-500/20">
             <option value="">{{ __('admin.select_room_placeholder') }}</option>
-            @foreach (['A101', 'A102', 'A103'] as $room)
-                <option value="{{ $room }}" {{ old('room') === $room ? 'selected' : '' }}>{{ $room }}</option>
+            @foreach ($rooms as $room)
+                <option value="{{ $room->name }}" {{ old('room') === $room->name ? 'selected' : '' }}>{{ $room->name }}</option>
             @endforeach
         </select>
         @error('room')
@@ -165,13 +190,13 @@
         @enderror
     </div>
 
-    {{-- 9. Session Fee --}}
+    {{-- 10. Session Fee (manual, admin can override the base-fee suggestion above) --}}
     <div>
         <label class="mb-1.5 block text-sm font-medium text-gray-300">
             {{ __('admin.session_fee') }}
             <span class="text-gray-500 text-xs">({{ __('admin.currency_toman') }}) ({{ __('admin.optional') }})</span>
         </label>
-        <input type="number" name="session_fee" value="{{ old('session_fee') }}"
+        <input type="number" name="session_fee" x-model="sessionFee" value="{{ old('session_fee') }}"
                min="0" step="1000"
                class="block w-full rounded-lg border border-gray-700 bg-gray-800/50 px-4 py-3 text-sm text-gray-100 transition focus:border-amber-500/50 focus:outline-none focus:ring-2 focus:ring-amber-500/20"
                placeholder="0">
@@ -180,7 +205,7 @@
         @enderror
     </div>
 
-    {{-- 10. Discount --}}
+    {{-- 11. Discount --}}
     <div>
         <label class="mb-1.5 block text-sm font-medium text-gray-300">
             {{ __('admin.discount') }}
@@ -195,7 +220,7 @@
         @enderror
     </div>
 
-    {{-- 11. Notes --}}
+    {{-- 12. Notes --}}
     <div>
         <label class="mb-1.5 block text-sm font-medium text-gray-300">
             {{ __('admin.notes') }}
@@ -221,48 +246,75 @@
 
 <script>
 function sessionCreateForm() {
-    const allEnrollments = @json($enrollmentsJson);
-    const oldStudentId   = '{{ old("student_id", "") }}';
+    const enrollmentMeta  = @json($enrollmentMeta);
+    const oldStudentId    = '{{ old("student_id", "") }}';
     const oldEnrollmentId = '{{ old("enrollment_id", "") }}';
 
     return {
-        studentId:      oldStudentId,
-        enrollmentId:   oldEnrollmentId,
-        teacherName:    '',
-        instrumentName: '',
-        enrollments:    allEnrollments,
-
-        get filteredEnrollments() {
-            if (!this.studentId) return [];
-            return this.enrollments.filter(
-                e => String(e.student_id) === String(this.studentId)
-            );
-        },
+        studentId:            oldStudentId,
+        enrollmentId:         oldEnrollmentId,
+        teacherName:          '',
+        instrumentName:       '',
+        baseFee:              null,
+        sessionFee:           '{{ old('session_fee', '') }}',
+        visibleEnrollmentCount: 0,
 
         init() {
-            // If there is a previously selected enrollment (e.g. after validation error),
-            // auto-restore teacher and instrument from the JSON data.
-            if (this.enrollmentId) {
-                this._fillFromEnrollment(this.enrollmentId);
-            }
+            // Apply the initial student filter (handles old-input restore
+            // after a validation error) and restore auto-filled fields.
+            this.$nextTick(() => {
+                this.filterEnrollmentOptions();
+                if (this.enrollmentId) {
+                    this._fillFromEnrollment(this.enrollmentId);
+                }
+            });
         },
 
         onStudentChange() {
             this.enrollmentId   = '';
             this.teacherName    = '';
             this.instrumentName = '';
+            this.baseFee        = null;
+            if (this.$refs.enrollmentSelect) {
+                this.$refs.enrollmentSelect.value = '';
+            }
+            this.filterEnrollmentOptions();
         },
 
-        onEnrollmentChange() {
-            this._fillFromEnrollment(this.enrollmentId);
+        onEnrollmentChange(id) {
+            this.enrollmentId = id;
+            this._fillFromEnrollment(id);
+        },
+
+        /**
+         * Toggle the `hidden` attribute on each <option> based on the
+         * selected student. All options are already rendered server-side,
+         * so this only affects visibility — no re-render, no sync issues.
+         */
+        filterEnrollmentOptions() {
+            const select = this.$refs.enrollmentSelect;
+            if (!select) return;
+
+            let visible = 0;
+            Array.from(select.options).forEach((opt) => {
+                if (!opt.value) return; // keep the placeholder always visible
+                const matches = !this.studentId || opt.dataset.studentId === String(this.studentId);
+                opt.hidden = !matches;
+                if (matches) visible++;
+            });
+            this.visibleEnrollmentCount = visible;
         },
 
         _fillFromEnrollment(id) {
-            const found = this.enrollments.find(
-                e => String(e.id) === String(id)
-            );
-            this.teacherName    = found ? found.teacher_name    : '';
-            this.instrumentName = found ? found.instrument_name : '';
+            const meta = enrollmentMeta[id];
+            this.teacherName    = meta ? meta.teacher_name    : '';
+            this.instrumentName = meta ? meta.instrument_name : '';
+            this.baseFee        = meta ? meta.base_fee        : null;
+            // Pre-fill the editable session fee with the suggested base fee
+            // only if the admin hasn't already typed a value.
+            if (meta && meta.base_fee !== null && !this.sessionFee) {
+                this.sessionFee = meta.base_fee;
+            }
         },
     };
 }

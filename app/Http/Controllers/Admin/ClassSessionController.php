@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Models\ClassSession;
 use App\Models\Instrument;
 use App\Models\RecurringSchedule;
+use App\Models\Room;
 use App\Models\Student;
 use App\Models\StudentEnrollment;
 use App\Models\Teacher;
@@ -16,6 +17,7 @@ use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 
@@ -102,16 +104,27 @@ class ClassSessionController extends Controller
             ->active()
             ->get();
 
-        // Distinct students that have at least one active enrollment,
-        // used to drive the cascading student → enrollment selector.
-        $students = $enrollments
-            ->map(fn ($e) => $e->student)
-            ->filter()
-            ->unique('id')
-            ->sortBy('full_name')
-            ->values();
+        // All students, independent of enrollment status — the enrollment
+        // dropdown is filtered client-side per selected student, so the
+        // student list itself must not be limited to only those who
+        // already have an active enrollment.
+        $students = Student::orderBy('full_name')->get();
 
-        return view('admin.sessions.create', compact('enrollments', 'students'));
+        $rooms = Room::active()->orderBy('name')->get();
+
+        // Base-fee suggestion per enrollment: the session_fee of that
+        // enrollment's most recent prior session (nullable if none exists).
+        // No schema change — reuses the existing class_sessions.session_fee
+        // column as the source of truth, admin can still override it.
+        $lastFees = ClassSession::whereIn('enrollment_id', $enrollments->pluck('id'))
+            ->whereNotNull('session_fee')
+            ->orderByDesc('session_date')
+            ->orderByDesc('start_time')
+            ->get(['enrollment_id', 'session_fee'])
+            ->unique('enrollment_id')
+            ->pluck('session_fee', 'enrollment_id');
+
+        return view('admin.sessions.create', compact('enrollments', 'students', 'rooms', 'lastFees'));
     }
     public function store(Request $request, ConflictDetectionService $conflictDetector): RedirectResponse
     {
@@ -120,7 +133,7 @@ class ClassSessionController extends Controller
             'session_date' => ['required', 'date'],
             'start_time' => ['required', 'date_format:H:i', 'after_or_equal:15:00', 'before_or_equal:21:30'],
             'duration_minutes' => ['required', 'integer', 'min:30', 'max:120'],
-            'room' => ['required', 'string'],
+            'room' => ['required', 'string', Rule::exists('rooms', 'name')->where('is_active', true)],
             'session_fee' => ['nullable', 'integer', 'min:0'],
             'discount' => ['nullable', 'integer', 'min:0'],
             'notes' => ['nullable', 'string'],
