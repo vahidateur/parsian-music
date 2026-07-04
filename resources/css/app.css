@@ -49,5 +49,35 @@ select option {
     .sidebar-transition {
         @apply transition-all duration-300 ease-in-out;
     }
+
+    /* ── Sidebar layout system ─────────────────────────────────────────────
+       CSS-variable driven width/offset. Replaces the old padding-based
+       offset (lg:pl-64 / lg:pr-64) which relied on Tailwind classes that
+       could drift out of sync with the actual sidebar width.
+       --sidebar-width is set inline (reactively, via Alpine :style) on the
+       .app-shell wrapper, so it cascades to both the sidebar and the main
+       content regardless of Alpine component scope. ────────────────────── */
+    .app-shell {
+        --sidebar-width: 280px;
+    }
+
+    .sidebar-fixed-width {
+        width: var(--sidebar-width);
+    }
+
+    /* Mobile: sidebar is hidden (overlay pattern), content takes full width. */
+    .main-content-offset {
+        margin-inline-start: 0;
+    }
+
+    /* Desktop: offset content by exactly the sidebar width using a logical
+       margin so it correctly maps to margin-right in RTL and margin-left
+       in LTR automatically (based on the <html dir> attribute). */
+    @media (min-width: 1024px) {
+        .main-content-offset {
+            margin-inline-start: var(--sidebar-width);
+            transition: margin-inline-start 0.3s ease-in-out;
+        }
+    }
 }
 

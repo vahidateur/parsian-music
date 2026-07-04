@@ -30,7 +30,7 @@ class Student extends Model
         static::creating(function (self $student) {
             if (empty($student->student_code)) {
                 $student->student_code = 'S-' . str_pad(
-                    (static::withTrashed()->max('id') ?? 0) + 1,
+                    (static::max('id') ?? 0) + 1,
                     5, '0', STR_PAD_LEFT
                 );
             }

@@ -1,0 +1,71 @@
+[1mdiff --git a/resources/views/layouts/dashboard.blade.php b/resources/views/layouts/dashboard.blade.php[m
+[1mindex 2d2cf75..93b8938 100644[m
+[1m--- a/resources/views/layouts/dashboard.blade.php[m
+[1m+++ b/resources/views/layouts/dashboard.blade.php[m
+[36m@@ -52,12 +52,14 @@[m [mclass="sidebar-transition fixed inset-y-0 z-30 hidden flex-col bg-gray-900/70 ba[m
+                     @click="toggleCollapse()"[m
+                     class="flex-shrink-0 rounded-lg p-1.5 text-gray-400 transition hover:bg-gray-800/50 hover:text-amber-300"[m
+                     :title="collapsed ? 'بسط' : 'جمع'">[m
+[31m-                    <svg x-show="!collapsed" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">[m
+[31m-                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />[m
+[31m-                    </svg>[m
+[31m-                    <svg x-show="collapsed" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">[m
+[32m+[m[32m                    {{-- Expanded: show {{ $isRtl ? 'RIGHT' : 'LEFT' }} arrow --}}[m
+[32m+[m[32m                    <svg x-show="!collapsed" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 {{ $isRtl ? 'rotate-180' : '' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">[m
+                         <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />[m
+                     </svg>[m
+[32m+[m[32m                    {{-- Collapsed: show {{ $isRtl ? 'LEFT' : 'RIGHT' }} arrow --}}[m
+[32m+[m[32m                    <svg x-show="collapsed" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 {{ $isRtl ? '' : 'rotate-180' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">[m
+[32m+[m[32m                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />[m
+[32m+[m[32m                    </svg>[m
+                 </button>[m
+             </div>[m
+ [m
+[36m@@ -134,6 +136,47 @@[m [mclass="flex-shrink-0 rounded-lg p-1.5 text-gray-400 transition hover:bg-gray-800[m
+                         </a>[m
+                     </li>[m
+ [m
+[32m+[m[32m                    {{-- Settings (Collapsible) --}}[m
+[32m+[m[32m                    <li x-data="{ settingsOpen: false }">[m
+[32m+[m[32m                        <button[m[41m [m
+[32m+[m[32m                            @click="settingsOpen = !settingsOpen"[m
+[32m+[m[32m                            class="w-full {{ $navInactive }} justify-between"[m
+[32m+[m[32m                            :title="collapsed ? 'تنظیمات پنل' : ''">[m
+[32m+[m[32m                            <span class="flex items-center gap-3">[m
+[32m+[m[32m                                <svg xmlns="http://www.w3.org/2000/svg" class="{{ $iconInactive }}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.592c.55 0 1.02.398 1.11.94a6.737 6.737 0 0 0 1.97 3.636 6.737 6.737 0 0 0 3.636 1.97c.54.09.94.56.94 1.11v2.592c0 .55-.398 1.02-.94 1.11a6.738 6.738 0 0 0-3.636 1.97 6.737 6.737 0 0 0-1.97 3.636c-.09.54-.56.94-1.11.94H4.704c-.55 0-1.02-.398-1.11-.94a6.737 6.737 0 0 0-1.97-3.636 6.738 6.738 0 0 0-3.636-1.97C.173 15.99-.227 15.52-.227 14.97V12.38c0-.55.398-1.02.94-1.11a6.737 6.737 0 0 0 3.636-1.97 6.737 6.737 0 0 0 1.97-3.636zM21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z" /></svg>[m
+[32m+[m[32m                                <span x-show="!collapsed">تنظیمات پنل</span>[m
+[32m+[m[32m                            </span>[m
+[32m+[m[32m                            <svg x-show="!collapsed" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 transition {{ $isRtl ? 'rotate-180' : '' }}" :class="settingsOpen ? '{{ $isRtl ? 'rotate-0' : 'rotate-180' }}' : '{{ $isRtl ? 'rotate-180' : '0' }}'" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" /></svg>[m
+[32m+[m[32m                        </button>[m
+[32m+[m[32m                        {{-- Settings submenu --}}[m
+[32m+[m[32m                        <ul x-show="settingsOpen && !collapsed" class="mt-1 space-y-1 {{ $isRtl ? 'pr-6' : 'pl-6' }}">[m
+[32m+[m[32m                            <li>[m
+[32m+[m[32m                                <a href="#" class="{{ $navInactive }}" title="برندینگ">[m
+[32m+[m[32m                                    <svg xmlns="http://www.w3.org/2000/svg" class="{{ $iconInactive }}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M7.5 21L3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5" /></svg>[m
+[32m+[m[32m                                    <span>برندینگ</span>[m
+[32m+[m[32m                                </a>[m
+[32m+[m[32m                            </li>[m
+[32m+[m[32m                            <li>[m
+[32m+[m[32m                                <a href="#" class="{{ $navInactive }}" title="مدیریت کاربران">[m
+[32m+[m[32m                                    <svg xmlns="http://www.w3.org/2000/svg" class="{{ $iconInactive }}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>[m
+[32m+[m[32m                                    <span>مدیریت کاربران</span>[m
+[32m+[m[32m                                </a>[m
+[32m+[m[32m                            </li>[m
+[32m+[m[32m                            <li>[m
+[32m+[m[32m                                <a href="#" class="{{ $navInactive }}" title="ترجمه‌ها">[m
+[32m+[m[32m                                    <svg xmlns="http://www.w3.org/2000/svg" class="{{ $iconInactive }}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 21l5.25-11.25L21 21m-9-3h7.5M3 5.621c0-.2.112-.39.3-.5C5.461 3.431 8.15 3 12 3c3.85 0 6.539.431 8.7 1.121.188.11.3.3.3.5v14.258c0 .205-.112.393-.3.504C18.539 20.569 15.85 21 12 21c-3.85 0-6.539-.431-8.7-1.122a.621.621 0 01-.3-.504V5.621z" /></svg>[m
+[32m+[m[32m                                    <span>ترجمه‌ها</span>[m
+[32m+[m[32m                                </a>[m
+[32m+[m[32m                            </li>[m
+[32m+[m[32m                            <li>[m
+[32m+[m[32m                                <a href="#" class="{{ $navInactive }}" title="تنظیمات ظاهری">[m
+[32m+[m[32m                                    <svg xmlns="http://www.w3.org/2000/svg" class="{{ $iconInactive }}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 2.2M6 5.5a2.5 2.5 0 1 1 5 0 2.5 2.5 0 0 1-5 0Zm9 9a2.5 2.5 0 1 1 5 0 2.5 2.5 0 0 1-5 0Z" /></svg>[m
+[32m+[m[32m                                    <span>تنظیمات ظاهری</span>[m
+[32m+[m[32m                                </a>[m
+[32m+[m[32m                            </li>[m
+[32m+[m[32m                        </ul>[m
+[32m+[m[32m                    </li>[m
+[32m+[m
+                 </ul>[m
+             </nav>[m
+ [m

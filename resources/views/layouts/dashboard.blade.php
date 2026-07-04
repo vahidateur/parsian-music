@@ -19,19 +19,19 @@
     <div class="pointer-events-none fixed top-1/4 {{ $isRtl ? 'right-1/4' : 'left-1/4' }} z-0 h-80 w-80 rounded-full bg-amber-500/[0.04] blur-[120px]"></div>
     <div class="pointer-events-none fixed bottom-0 {{ $isRtl ? 'left-1/4' : 'right-1/4' }} z-0 h-72 w-72 rounded-full bg-amber-400/[0.03] blur-[100px]"></div>
 
-    <div class="relative z-10 flex min-h-screen">
+    <div class="app-shell relative z-10 flex min-h-screen"
+        x-data="{ 
+            collapsed: localStorage.getItem('sidebarCollapsed') === 'true',
+            toggleCollapse() {
+                this.collapsed = !this.collapsed;
+                localStorage.setItem('sidebarCollapsed', this.collapsed);
+            }
+        }"
+        :style="'--sidebar-width: ' + (collapsed ? '80px' : '280px')">
 
         {{-- Sidebar --}}
         <aside
-            x-data="{ 
-                collapsed: localStorage.getItem('sidebarCollapsed') === 'true',
-                toggleCollapse() {
-                    this.collapsed = !this.collapsed;
-                    localStorage.setItem('sidebarCollapsed', this.collapsed);
-                }
-            }"
-            :class="collapsed ? 'w-20' : 'w-64'"
-            class="sidebar-transition fixed inset-y-0 z-30 hidden flex-col bg-gray-900/70 backdrop-blur-xl lg:flex {{ $isRtl ? 'right-0 border-l border-gray-800/60' : 'left-0 border-r border-gray-800/60' }}">
+            class="sidebar-transition sidebar-fixed-width fixed inset-y-0 z-30 hidden flex-col bg-gray-900/70 backdrop-blur-xl lg:flex {{ $isRtl ? 'right-0 border-l border-gray-800/60' : 'left-0 border-r border-gray-800/60' }}">
 
             {{-- Brand + Collapse Toggle --}}
             <div class="relative flex h-20 items-center justify-between overflow-hidden border-b border-gray-800/60 px-4">
@@ -52,11 +52,13 @@
                     @click="toggleCollapse()"
                     class="flex-shrink-0 rounded-lg p-1.5 text-gray-400 transition hover:bg-gray-800/50 hover:text-amber-300"
                     :title="collapsed ? 'بسط' : 'جمع'">
+                    {{-- Expanded: always show RIGHT-pointing arrow (collapse direction) --}}
                     <svg x-show="!collapsed" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
-                    </svg>
-                    <svg x-show="collapsed" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+                    </svg>
+                    {{-- Collapsed: always show LEFT-pointing arrow (expand direction) --}}
+                    <svg x-show="collapsed" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
                     </svg>
                 </button>
             </div>
@@ -134,8 +136,48 @@
                         </a>
                     </li>
 
-                </ul>
-            </nav>
+                    {{-- Settings (Collapsible) --}}
+                    <li x-data="{ settingsOpen: false }">
+                        <button 
+                            @click="settingsOpen = !settingsOpen"
+                            class="w-full {{ $navInactive }} justify-between"
+                            :title="collapsed ? 'تنظیمات پنل' : ''">
+                            <span class="flex items-center gap-3">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="{{ $iconInactive }}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.592c.55 0 1.02.398 1.11.94a6.737 6.737 0 0 0 1.97 3.636 6.737 6.737 0 0 0 3.636 1.97c.54.09.94.56.94 1.11v2.592c0 .55-.398 1.02-.94 1.11a6.738 6.738 0 0 0-3.636 1.97 6.737 6.737 0 0 0-1.97 3.636c-.09.54-.56.94-1.11.94H4.704c-.55 0-1.02-.398-1.11-.94a6.737 6.737 0 0 0-1.97-3.636 6.738 6.738 0 0 0-3.636-1.97C.173 15.99-.227 15.52-.227 14.97V12.38c0-.55.398-1.02.94-1.11a6.737 6.737 0 0 0 3.636-1.97 6.737 6.737 0 0 0 1.97-3.636zM21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z" /></svg>
+                                <span x-show="!collapsed">تنظیمات پنل</span>
+                            </span>
+                            <svg x-show="!collapsed" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 transition {{ $isRtl ? 'rotate-180' : '' }}" :class="settingsOpen ? '{{ $isRtl ? 'rotate-0' : 'rotate-180' }}' : '{{ $isRtl ? 'rotate-180' : '0' }}'" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" /></svg>
+                        </button>
+                        {{-- Settings submenu --}}
+                        <ul x-show="settingsOpen && !collapsed" class="mt-1 space-y-1 {{ $isRtl ? 'pr-6' : 'pl-6' }}">
+                            <li>
+                                <a href="#" class="{{ $navInactive }}" title="برندینگ">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="{{ $iconInactive }}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M7.5 21L3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5" /></svg>
+                                    <span>برندینگ</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" class="{{ $navInactive }}" title="مدیریت کاربران">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="{{ $iconInactive }}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
+                                    <span>مدیریت کاربران</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" class="{{ $navInactive }}" title="ترجمه‌ها">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="{{ $iconInactive }}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 21l5.25-11.25L21 21m-9-3h7.5M3 5.621c0-.2.112-.39.3-.5C5.461 3.431 8.15 3 12 3c3.85 0 6.539.431 8.7 1.121.188.11.3.3.3.5v14.258c0 .205-.112.393-.3.504C18.539 20.569 15.85 21 12 21c-3.85 0-6.539-.431-8.7-1.122a.621.621 0 01-.3-.504V5.621z" /></svg>
+                                    <span>ترجمه‌ها</span>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="#" class="{{ $navInactive }}" title="تنظیمات ظاهری">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="{{ $iconInactive }}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 2.2M6 5.5a2.5 2.5 0 1 1 5 0 2.5 2.5 0 0 1-5 0Zm9 9a2.5 2.5 0 1 1 5 0 2.5 2.5 0 0 1-5 0Z" /></svg>
+                                    <span>تنظیمات ظاهری</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+
+
 
             {{-- Footer + Social Icons --}}
             <div class="flex flex-col border-t border-gray-800/60">
@@ -160,7 +202,7 @@
         </aside>
 
         {{-- Main area --}}
-        <div class="flex flex-1 flex-col" :class="collapsed ? '{{ $isRtl ? 'lg:pr-20' : 'lg:pl-20' }}' : '{{ $isRtl ? 'lg:pr-64' : 'lg:pl-64' }}'">
+        <div class="main-content-offset flex flex-1 flex-col min-w-0">
 
             {{-- Top Navbar --}}
             <header class="relative sticky top-0 z-20 flex h-20 items-center justify-between overflow-hidden border-b border-gray-800/60 bg-gray-950/80 px-6 backdrop-blur-md">
