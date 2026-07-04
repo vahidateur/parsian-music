@@ -22,72 +22,55 @@
     </div>
 @endif
 
-@php
-    $enrollmentsJson = $enrollments->map(function ($e) {
-        return [
-            'id'              => $e->id,
-            'student_id'      => $e->student_id,
-            'teacher_name'    => $e->teacher?->full_name ?? '',
-            'instrument_name' => $e->instrument?->display_name ?? '',
-            'label'           => ($e->instrument?->display_name ?? '—') . ' — ' . ($e->teacher?->full_name ?? '—'),
-        ];
-    })->values();
-@endphp
-
-<form method="POST" action="{{ route('admin.sessions.store') }}" class="max-w-2xl space-y-6"
-      x-data="sessionCreateForm()" x-init="init()">
+<form method="POST" action="{{ route('admin.sessions.store') }}" class="max-w-2xl space-y-6">
     @csrf
 
     {{-- 1. Student --}}
     <div>
         <label class="mb-1.5 block text-sm font-medium text-gray-300">{{ __('admin.student') }}</label>
-        <select x-model="studentId" @change="onStudentChange()"
+        <select name="student_id" required
                 class="block w-full rounded-lg border border-gray-700 bg-gray-800/50 px-4 py-3 text-sm text-gray-100 transition focus:border-amber-500/50 focus:outline-none focus:ring-2 focus:ring-amber-500/20">
             <option value="">{{ __('admin.select_student') }}</option>
             @foreach ($students as $s)
-                <option value="{{ $s->id }}" @if(old('student_id') == $s->id) selected @endif>{{ $s->full_name }}</option>
+                <option value="{{ $s->id }}" {{ old('student_id') == $s->id ? 'selected' : '' }}>{{ $s->full_name }}</option>
             @endforeach
         </select>
-    </div>
-
-    {{-- 2. Active Enrollment --}}
-    <div>
-        <label class="mb-1.5 block text-sm font-medium text-gray-300">{{ __('admin.active_enrollment') }}</label>
-        <select name="enrollment_id" required x-model="enrollmentId" @change="onEnrollmentChange()"
-                class="block w-full rounded-lg border border-gray-700 bg-gray-800/50 px-4 py-3 text-sm text-gray-100 transition focus:border-amber-500/50 focus:outline-none focus:ring-2 focus:ring-amber-500/20">
-            <option value="">{{ __('admin.select_enrollment_placeholder') }}</option>
-            <template x-for="e in filteredEnrollments" :key="e.id">
-                <option :value="e.id" :selected="e.id == enrollmentId" x-text="e.label"></option>
-            </template>
-        </select>
-        <p x-show="studentId && filteredEnrollments.length === 0" class="mt-1 text-xs text-red-400">
-            {{ __('admin.no_active_enrollment_for_student') }}
-        </p>
-        @error('enrollment_id')
+        @error('student_id')
             <p class="mt-1 text-sm text-red-400">{{ $message }}</p>
         @enderror
     </div>
 
-    {{-- 3. Teacher (auto-filled) --}}
+    {{-- 2. Teacher --}}
     <div>
         <label class="mb-1.5 block text-sm font-medium text-gray-300">{{ __('admin.teacher') }}</label>
-        <input type="text" readonly tabindex="-1"
-               :value="teacherName || ''"
-               :placeholder="enrollmentId ? '—' : '{{ __('admin.select_enrollment_placeholder') }}'"
-               class="block w-full rounded-lg border border-gray-700 bg-gray-800/30 px-4 py-3 text-sm text-gray-300 cursor-not-allowed">
-        <p class="mt-1 text-xs text-gray-500">{{ __('admin.auto_filled_hint') }}</p>
+        <select name="teacher_id" required
+                class="block w-full rounded-lg border border-gray-700 bg-gray-800/50 px-4 py-3 text-sm text-gray-100 transition focus:border-amber-500/50 focus:outline-none focus:ring-2 focus:ring-amber-500/20">
+            <option value="">{{ __('admin.select_teacher') }}</option>
+            @foreach ($teachers as $teacher)
+                <option value="{{ $teacher->id }}" {{ old('teacher_id') == $teacher->id ? 'selected' : '' }}>{{ $teacher->full_name }}</option>
+            @endforeach
+        </select>
+        @error('teacher_id')
+            <p class="mt-1 text-sm text-red-400">{{ $message }}</p>
+        @enderror
     </div>
 
-    {{-- 4. Instrument (auto-filled) --}}
+    {{-- 3. Instrument --}}
     <div>
         <label class="mb-1.5 block text-sm font-medium text-gray-300">{{ __('admin.instrument') }}</label>
-        <input type="text" readonly tabindex="-1"
-               :value="instrumentName || ''"
-               :placeholder="enrollmentId ? '—' : '{{ __('admin.select_enrollment_placeholder') }}'"
-               class="block w-full rounded-lg border border-gray-700 bg-gray-800/30 px-4 py-3 text-sm text-gray-300 cursor-not-allowed">
+        <select name="instrument_id" required
+                class="block w-full rounded-lg border border-gray-700 bg-gray-800/50 px-4 py-3 text-sm text-gray-100 transition focus:border-amber-500/50 focus:outline-none focus:ring-2 focus:ring-amber-500/20">
+            <option value="">{{ __('admin.select_instrument') }}</option>
+            @foreach ($instruments as $instrument)
+                <option value="{{ $instrument->id }}" {{ old('instrument_id') == $instrument->id ? 'selected' : '' }}>{{ $instrument->display_name }}</option>
+            @endforeach
+        </select>
+        @error('instrument_id')
+            <p class="mt-1 text-sm text-red-400">{{ $message }}</p>
+        @enderror
     </div>
 
-    {{-- 5. Session Date — split Y/M/D to prevent 5-digit year --}}
+    {{-- 4. Session Date — split Y/M/D to prevent 5-digit year --}}
     <div x-data="dateForm('session_date', '{{ old('session_date', '') }}')" x-init="init()">
         <label class="mb-1.5 block text-sm font-medium text-gray-300">{{ __('admin.date') }}</label>
         <input type="hidden" name="session_date" :value="isoValue">
@@ -123,7 +106,7 @@
         @enderror
     </div>
 
-    {{-- 6. Start Time --}}
+    {{-- 5. Start Time --}}
     <div>
         <label class="mb-1.5 block text-sm font-medium text-gray-300">{{ __('admin.start_time') }} (۱۵:۰۰ – ۲۱:۳۰)</label>
         <input type="time" name="start_time" required value="{{ old('start_time') }}"
@@ -134,7 +117,7 @@
         @enderror
     </div>
 
-    {{-- 7. Duration --}}
+    {{-- 6. Duration --}}
     <div>
         <label class="mb-1.5 block text-sm font-medium text-gray-300">{{ __('admin.duration_minutes_label') }}</label>
         <select name="duration_minutes" required
@@ -150,13 +133,13 @@
         @enderror
     </div>
 
-    {{-- 8. Room --}}
+    {{-- 7. Room — temporary hardcoded list (A101/A102/A103) --}}
     <div>
         <label class="mb-1.5 block text-sm font-medium text-gray-300">{{ __('admin.room') }}</label>
         <select name="room" required
                 class="block w-full rounded-lg border border-gray-700 bg-gray-800/50 px-4 py-3 text-sm text-gray-100 transition focus:border-amber-500/50 focus:outline-none focus:ring-2 focus:ring-amber-500/20">
             <option value="">{{ __('admin.select_room_placeholder') }}</option>
-            @foreach (['A101', 'A102', 'A103'] as $room)
+            @foreach ($rooms as $room)
                 <option value="{{ $room }}" {{ old('room') === $room ? 'selected' : '' }}>{{ $room }}</option>
             @endforeach
         </select>
@@ -165,37 +148,7 @@
         @enderror
     </div>
 
-    {{-- 9. Session Fee --}}
-    <div>
-        <label class="mb-1.5 block text-sm font-medium text-gray-300">
-            {{ __('admin.session_fee') }}
-            <span class="text-gray-500 text-xs">({{ __('admin.currency_toman') }}) ({{ __('admin.optional') }})</span>
-        </label>
-        <input type="number" name="session_fee" value="{{ old('session_fee') }}"
-               min="0" step="1000"
-               class="block w-full rounded-lg border border-gray-700 bg-gray-800/50 px-4 py-3 text-sm text-gray-100 transition focus:border-amber-500/50 focus:outline-none focus:ring-2 focus:ring-amber-500/20"
-               placeholder="0">
-        @error('session_fee')
-            <p class="mt-1 text-sm text-red-400">{{ $message }}</p>
-        @enderror
-    </div>
-
-    {{-- 10. Discount --}}
-    <div>
-        <label class="mb-1.5 block text-sm font-medium text-gray-300">
-            {{ __('admin.discount') }}
-            <span class="text-gray-500 text-xs">({{ __('admin.currency_toman') }}) ({{ __('admin.optional') }})</span>
-        </label>
-        <input type="number" name="discount" value="{{ old('discount') }}"
-               min="0" step="1000"
-               class="block w-full rounded-lg border border-gray-700 bg-gray-800/50 px-4 py-3 text-sm text-gray-100 transition focus:border-amber-500/50 focus:outline-none focus:ring-2 focus:ring-amber-500/20"
-               placeholder="0">
-        @error('discount')
-            <p class="mt-1 text-sm text-red-400">{{ $message }}</p>
-        @enderror
-    </div>
-
-    {{-- 11. Notes --}}
+    {{-- 8. Notes --}}
     <div>
         <label class="mb-1.5 block text-sm font-medium text-gray-300">
             {{ __('admin.notes') }}
@@ -218,54 +171,5 @@
 </form>
 
 @include('admin.partials.date-form-script')
-
-<script>
-function sessionCreateForm() {
-    const allEnrollments = @json($enrollmentsJson);
-    const oldStudentId   = '{{ old("student_id", "") }}';
-    const oldEnrollmentId = '{{ old("enrollment_id", "") }}';
-
-    return {
-        studentId:      oldStudentId,
-        enrollmentId:   oldEnrollmentId,
-        teacherName:    '',
-        instrumentName: '',
-        enrollments:    allEnrollments,
-
-        get filteredEnrollments() {
-            if (!this.studentId) return [];
-            return this.enrollments.filter(
-                e => String(e.student_id) === String(this.studentId)
-            );
-        },
-
-        init() {
-            // If there is a previously selected enrollment (e.g. after validation error),
-            // auto-restore teacher and instrument from the JSON data.
-            if (this.enrollmentId) {
-                this._fillFromEnrollment(this.enrollmentId);
-            }
-        },
-
-        onStudentChange() {
-            this.enrollmentId   = '';
-            this.teacherName    = '';
-            this.instrumentName = '';
-        },
-
-        onEnrollmentChange() {
-            this._fillFromEnrollment(this.enrollmentId);
-        },
-
-        _fillFromEnrollment(id) {
-            const found = this.enrollments.find(
-                e => String(e.id) === String(id)
-            );
-            this.teacherName    = found ? found.teacher_name    : '';
-            this.instrumentName = found ? found.instrument_name : '';
-        },
-    };
-}
-</script>
 
 @endsection

@@ -8,7 +8,6 @@ use App\Models\ClassSession;
 use App\Models\Instrument;
 use App\Models\RecurringSchedule;
 use App\Models\Student;
-use App\Models\StudentEnrollment;
 use App\Models\Teacher;
 use App\Services\ConflictDetectionService;
 use App\Services\SessionGeneratorService;
@@ -98,42 +97,38 @@ class ClassSessionController extends Controller
 
     public function create(): View
     {
-        $enrollments = StudentEnrollment::with(['student', 'teacher', 'instrument'])
-            ->active()
-            ->get();
+        // Phase 1: manual session creation no longer depends on enrollment.
+        // Student, teacher, and instrument are all selected independently.
+        $students = Student::orderBy('full_name')->get();
+        $teachers = Teacher::orderBy('full_name')->get();
+        $instruments = Instrument::active()->orderBy('name_fa')->orderBy('name')->get();
 
-        // Distinct students that have at least one active enrollment,
-        // used to drive the cascading student → enrollment selector.
-        $students = $enrollments
-            ->map(fn ($e) => $e->student)
-            ->filter()
-            ->unique('id')
-            ->sortBy('full_name')
-            ->values();
+        // Temporary hardcoded room list per business rule — no rooms table
+        // query for this form.
+        $rooms = ['A101', 'A102', 'A103'];
 
-        return view('admin.sessions.create', compact('enrollments', 'students'));
+        return view('admin.sessions.create', compact('students', 'teachers', 'instruments', 'rooms'));
     }
+
     public function store(Request $request, ConflictDetectionService $conflictDetector): RedirectResponse
     {
         $validated = $request->validate([
-            'enrollment_id' => ['required', 'exists:student_enrollments,id'],
+            'student_id' => ['required', 'exists:students,id'],
+            'teacher_id' => ['required', 'exists:teachers,id'],
+            'instrument_id' => ['required', 'exists:instruments,id'],
             'session_date' => ['required', 'date'],
             'start_time' => ['required', 'date_format:H:i', 'after_or_equal:15:00', 'before_or_equal:21:30'],
             'duration_minutes' => ['required', 'integer', 'min:30', 'max:120'],
-            'room' => ['required', 'string'],
-            'session_fee' => ['nullable', 'integer', 'min:0'],
-            'discount' => ['nullable', 'integer', 'min:0'],
+            'room' => ['required', 'string', 'in:A101,A102,A103'],
             'notes' => ['nullable', 'string'],
         ]);
 
-        $enrollment = StudentEnrollment::findOrFail($validated['enrollment_id']);
-
         $hasConflict = $conflictDetector->checkTeacherConflict(
-            $enrollment->teacher_id, $validated['session_date'], $validated['start_time'], $validated['duration_minutes']
+            $validated['teacher_id'], $validated['session_date'], $validated['start_time'], $validated['duration_minutes']
         ) || $conflictDetector->checkRoomConflict(
             $validated['room'], $validated['session_date'], $validated['start_time'], $validated['duration_minutes']
-        ) || $conflictDetector->checkTimeOverlap(
-            $enrollment->id, $validated['session_date'], $validated['start_time'], $validated['duration_minutes']
+        ) || $conflictDetector->checkStudentOverlap(
+            $validated['student_id'], $validated['session_date'], $validated['start_time'], $validated['duration_minutes']
         );
 
         if ($hasConflict) {

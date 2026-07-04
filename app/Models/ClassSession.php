@@ -15,6 +15,9 @@ class ClassSession extends Model
 
     protected $fillable = [
         'enrollment_id',
+        'student_id',
+        'teacher_id',
+        'instrument_id',
         'recurring_schedule_id',
         'session_date',
         'start_time',
@@ -38,6 +41,21 @@ class ClassSession extends Model
     public function enrollment(): BelongsTo
     {
         return $this->belongsTo(StudentEnrollment::class, 'enrollment_id');
+    }
+
+    public function student(): BelongsTo
+    {
+        return $this->belongsTo(Student::class);
+    }
+
+    public function teacher(): BelongsTo
+    {
+        return $this->belongsTo(Teacher::class);
+    }
+
+    public function instrument(): BelongsTo
+    {
+        return $this->belongsTo(Instrument::class);
     }
 
     public function recurringSchedule(): BelongsTo

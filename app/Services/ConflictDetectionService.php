@@ -19,6 +19,10 @@ class ConflictDetectionService
     /**
      * Check if a teacher already has a session overlapping the proposed time.
      *
+     * Matches sessions via either the direct `teacher_id` column (manually
+     * created sessions) or the legacy `enrollment.teacher_id` path
+     * (sessions created by SessionGeneratorService from a RecurringSchedule).
+     *
      * @param  mixed  $startTime  Accepts "HH:MM", a DateTime instance, or Carbon.
      */
     public function checkTeacherConflict(int $teacherId, string $date, mixed $startTime, int $duration): bool
@@ -26,7 +30,10 @@ class ConflictDetectionService
         [$start, $end] = $this->resolveTimeRange($date, $startTime, $duration);
 
         return $this->hasOverlappingSession(
-            fn ($q) => $q->whereHas('enrollment', fn ($e) => $e->where('teacher_id', $teacherId)),
+            fn ($q) => $q->where(function ($sub) use ($teacherId) {
+                $sub->where('teacher_id', $teacherId)
+                    ->orWhereHas('enrollment', fn ($e) => $e->where('teacher_id', $teacherId));
+            }),
             $date,
             $start,
             $end
@@ -53,6 +60,9 @@ class ConflictDetectionService
     /**
      * Check if an enrollment already has a session at an overlapping time.
      *
+     * Used by SessionGeneratorService for enrollment-linked recurring
+     * sessions. Unchanged from before Phase 1.
+     *
      * @param  mixed  $startTime  Accepts "HH:MM", a DateTime instance, or Carbon.
      */
     public function checkTimeOverlap(int $enrollmentId, string $date, mixed $startTime, int $duration): bool
@@ -61,6 +71,28 @@ class ConflictDetectionService
 
         return $this->hasOverlappingSession(
             fn ($q) => $q->where('enrollment_id', $enrollmentId),
+            $date,
+            $start,
+            $end
+        );
+    }
+
+    /**
+     * Check if a student already has a session overlapping the proposed
+     * time. Used by manually-created sessions (Phase 1), which reference
+     * the student directly rather than through an enrollment.
+     *
+     * Back-to-back sessions (e.g. 16:00–17:00 followed by 17:00–18:00) are
+     * NOT a conflict — the overlap rule below only flags true overlaps.
+     *
+     * @param  mixed  $startTime  Accepts "HH:MM", a DateTime instance, or Carbon.
+     */
+    public function checkStudentOverlap(int $studentId, string $date, mixed $startTime, int $duration): bool
+    {
+        [$start, $end] = $this->resolveTimeRange($date, $startTime, $duration);
+
+        return $this->hasOverlappingSession(
+            fn ($q) => $q->where('student_id', $studentId),
             $date,
             $start,
             $end

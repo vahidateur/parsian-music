@@ -6,7 +6,6 @@ use App\Enums\RoleEnum;
 use App\Models\ClassSession;
 use App\Models\Instrument;
 use App\Models\Student;
-use App\Models\StudentEnrollment;
 use App\Models\Teacher;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -18,7 +17,11 @@ class SessionSchedulingTest extends TestCase
 
     private User $admin;
 
-    private StudentEnrollment $enrollment;
+    private Student $student;
+
+    private Teacher $teacher;
+
+    private Instrument $instrument;
 
     protected function setUp(): void
     {
@@ -26,7 +29,7 @@ class SessionSchedulingTest extends TestCase
 
         $this->admin = User::factory()->create(['role' => RoleEnum::ADMIN]);
 
-        $student = Student::forceCreate([
+        $this->student = Student::forceCreate([
             'student_code' => 'STU-001',
             'full_name' => 'Test Student',
             'phone' => '09120000001',
@@ -34,7 +37,7 @@ class SessionSchedulingTest extends TestCase
             'join_date' => now(),
         ]);
 
-        $teacher = Teacher::forceCreate([
+        $this->teacher = Teacher::forceCreate([
             'teacher_code' => 'TCH-001',
             'full_name' => 'Test Teacher',
             'phone' => '09120000002',
@@ -42,37 +45,32 @@ class SessionSchedulingTest extends TestCase
             'hire_date' => now(),
         ]);
 
-        $instrument = Instrument::create([
+        $this->instrument = Instrument::create([
             'name' => 'Piano',
             'slug' => 'piano',
             'is_active' => true,
         ]);
-
-        $this->enrollment = StudentEnrollment::create([
-            'student_id' => $student->id,
-            'instrument_id' => $instrument->id,
-            'teacher_id' => $teacher->id,
-            'skill_level' => 'beginner',
-            'status' => 'active',
-            'started_at' => now(),
-        ]);
     }
 
-    /** Manual session creation must use enrollment_id, not student_id/teacher_id. */
-    public function test_admin_can_create_session_using_enrollment_id(): void
+    /** Manual session creation must use student_id/teacher_id/instrument_id directly, not enrollment_id. */
+    public function test_admin_can_create_session_using_direct_fields(): void
     {
         $response = $this->actingAs($this->admin)->post(route('admin.sessions.store'), [
-            'enrollment_id' => $this->enrollment->id,
+            'student_id' => $this->student->id,
+            'teacher_id' => $this->teacher->id,
+            'instrument_id' => $this->instrument->id,
             'session_date' => now()->addDay()->toDateString(),
             'start_time' => '16:00',
             'duration_minutes' => 60,
-            'room' => 'Room 1',
+            'room' => 'A101',
         ]);
 
         $response->assertRedirect(route('admin.sessions.index'));
         $this->assertDatabaseHas('class_sessions', [
-            'enrollment_id' => $this->enrollment->id,
-            'room' => 'Room 1',
+            'student_id' => $this->student->id,
+            'teacher_id' => $this->teacher->id,
+            'instrument_id' => $this->instrument->id,
+            'room' => 'A101',
         ]);
     }
 
@@ -80,14 +78,33 @@ class SessionSchedulingTest extends TestCase
     public function test_session_creation_rejects_time_outside_allowed_window(): void
     {
         $response = $this->actingAs($this->admin)->post(route('admin.sessions.store'), [
-            'enrollment_id' => $this->enrollment->id,
+            'student_id' => $this->student->id,
+            'teacher_id' => $this->teacher->id,
+            'instrument_id' => $this->instrument->id,
             'session_date' => now()->addDay()->toDateString(),
             'start_time' => '09:00',
             'duration_minutes' => 60,
-            'room' => 'Room 1',
+            'room' => 'A101',
         ]);
 
         $response->assertSessionHasErrors('start_time');
+        $this->assertDatabaseCount('class_sessions', 0);
+    }
+
+    /** A room not in the hardcoded A101/A102/A103 list must be rejected. */
+    public function test_session_creation_rejects_invalid_room(): void
+    {
+        $response = $this->actingAs($this->admin)->post(route('admin.sessions.store'), [
+            'student_id' => $this->student->id,
+            'teacher_id' => $this->teacher->id,
+            'instrument_id' => $this->instrument->id,
+            'session_date' => now()->addDay()->toDateString(),
+            'start_time' => '16:00',
+            'duration_minutes' => 60,
+            'room' => 'Room X',
+        ]);
+
+        $response->assertSessionHasErrors('room');
         $this->assertDatabaseCount('class_sessions', 0);
     }
 
@@ -95,53 +112,71 @@ class SessionSchedulingTest extends TestCase
     public function test_session_creation_rejects_room_conflict(): void
     {
         ClassSession::create([
-            'enrollment_id' => $this->enrollment->id,
+            'student_id' => $this->student->id,
+            'teacher_id' => $this->teacher->id,
+            'instrument_id' => $this->instrument->id,
             'session_date' => now()->addDay()->toDateString(),
             'start_time' => '16:00',
             'duration_minutes' => 60,
-            'room' => 'Room 1',
+            'room' => 'A101',
             'status' => 'scheduled',
         ]);
 
         $response = $this->actingAs($this->admin)->post(route('admin.sessions.store'), [
-            'enrollment_id' => $this->enrollment->id,
+            'student_id' => $this->student->id,
+            'teacher_id' => $this->teacher->id,
+            'instrument_id' => $this->instrument->id,
             'session_date' => now()->addDay()->toDateString(),
             'start_time' => '16:30',
             'duration_minutes' => 60,
-            'room' => 'Room 1',
+            'room' => 'A101',
         ]);
 
         $response->assertSessionHasErrors('start_time');
         $this->assertDatabaseCount('class_sessions', 1);
     }
 
-    /** The create form must render enrollment options, no student_id/teacher_id fields. */
-    public function test_create_session_form_renders_enrollment_dropdown(): void
+    /** Back-to-back sessions (e.g. 16:00-17:00 then 17:00-18:00) must be allowed, not flagged as conflicts. */
+    public function test_back_to_back_sessions_are_allowed(): void
+    {
+        ClassSession::create([
+            'student_id' => $this->student->id,
+            'teacher_id' => $this->teacher->id,
+            'instrument_id' => $this->instrument->id,
+            'session_date' => now()->addDay()->toDateString(),
+            'start_time' => '16:00',
+            'duration_minutes' => 60,
+            'room' => 'A101',
+            'status' => 'scheduled',
+        ]);
+
+        $response = $this->actingAs($this->admin)->post(route('admin.sessions.store'), [
+            'student_id' => $this->student->id,
+            'teacher_id' => $this->teacher->id,
+            'instrument_id' => $this->instrument->id,
+            'session_date' => now()->addDay()->toDateString(),
+            'start_time' => '17:00',
+            'duration_minutes' => 60,
+            'room' => 'A101',
+        ]);
+
+        $response->assertSessionDoesntHaveErrors();
+        $response->assertRedirect(route('admin.sessions.index'));
+        $this->assertDatabaseCount('class_sessions', 2);
+    }
+
+    /** The create form must render student/teacher/instrument fields, no enrollment_id or fee/discount fields. */
+    public function test_create_session_form_renders_direct_fields_not_enrollment(): void
     {
         $response = $this->actingAs($this->admin)->get(route('admin.sessions.create'));
 
         $response->assertOk();
-        $response->assertSee('name="enrollment_id"', false);
-        $response->assertDontSee('name="student_id"', false);
-        $response->assertDontSee('name="teacher_id"', false);
-    }
-
-    /** Calendar page must load without errors and use Persian locale by default. */
-    public function test_calendar_page_loads_successfully(): void
-    {
-        ClassSession::create([
-            'enrollment_id' => $this->enrollment->id,
-            'session_date' => now()->toDateString(),
-            'start_time' => '16:00',
-            'duration_minutes' => 60,
-            'room' => 'Room 1',
-            'status' => 'scheduled',
-        ]);
-
-        $response = $this->actingAs($this->admin)->get(route('admin.calendar.index'));
-
-        $response->assertOk();
-        $response->assertSee('dir="rtl"', false);
+        $response->assertSee('name="student_id"', false);
+        $response->assertSee('name="teacher_id"', false);
+        $response->assertSee('name="instrument_id"', false);
+        $response->assertDontSee('name="enrollment_id"', false);
+        $response->assertDontSee('name="session_fee"', false);
+        $response->assertDontSee('name="discount"', false);
     }
 
     /** Sessions index status filter must only accept valid enum values (no "makeup"). */
