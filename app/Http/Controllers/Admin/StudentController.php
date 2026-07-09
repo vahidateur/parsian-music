@@ -40,6 +40,8 @@ class StudentController extends Controller
         $student->load([
             'enrollments.teacher',
             'enrollments.instrument',
+            'subscriptions.teacher',
+            'subscriptions.instrument',
         ]);
 
         try {

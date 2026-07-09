@@ -25,29 +25,51 @@
 <form method="POST" action="{{ route('admin.sessions.store') }}" class="max-w-2xl space-y-6">
     @csrf
 
-    {{-- 1. Student --}}
-    <div>
+    {{-- 1. Student (Searchable Autocomplete) --}}
+    <div x-data="studentAutocomplete()" class="relative">
         <label class="mb-1.5 block text-sm font-medium text-gray-300">{{ __('admin.student') }}</label>
-        <select name="student_id" required
-                class="block w-full rounded-lg border border-gray-700 bg-gray-800/50 px-4 py-3 text-sm text-gray-100 transition focus:border-amber-500/50 focus:outline-none focus:ring-2 focus:ring-amber-500/20">
-            <option value="">{{ __('admin.select_student') }}</option>
-            @foreach ($students as $s)
-                <option value="{{ $s->id }}" {{ old('student_id') == $s->id ? 'selected' : '' }}>{{ $s->full_name }}</option>
-            @endforeach
-        </select>
+        <input type="hidden" name="student_id" x-model="selectedId" required>
+        <div class="relative">
+            <input type="text" x-model="query" @input="search()" @keydown.down="next()" @keydown.up="prev()" @keydown.enter="select()"
+                   placeholder="جستجو هنرجو..."
+                   class="block w-full rounded-lg border border-gray-700 bg-gray-800/50 px-4 py-3 text-sm text-gray-100 transition focus:border-amber-500/50 focus:outline-none focus:ring-2 focus:ring-amber-500/20"
+                   autocomplete="off">
+            
+            {{-- Dropdown Results --}}
+            <ul x-show="results.length > 0" class="absolute z-10 mt-1 w-full rounded-lg border border-gray-700 bg-gray-900 shadow-lg max-h-48 overflow-y-auto">
+                <template x-for="(result, index) in results" :key="index">
+                    <li @click="selectResult(result)" :class="index === highlighted ? 'bg-amber-500/20' : 'bg-gray-900 hover:bg-gray-800'" 
+                        class="px-4 py-2.5 cursor-pointer text-sm text-gray-200 transition">
+                        <span x-text="`${result.full_name} (${result.id})`"></span>
+                    </li>
+                </template>
+            </ul>
+
+            {{-- No Results Message --}}
+            <div x-show="query.length >= 2 && results.length === 0 && !loading" class="absolute z-10 mt-1 w-full rounded-lg border border-gray-700 bg-gray-900 px-4 py-3 text-sm text-gray-400">
+                هنرجویی یافت نشد
+            </div>
+
+            {{-- Selected Value Display --}}
+            <div x-show="selectedId" class="absolute left-4 top-3 text-sm text-amber-400 font-medium">
+                <span x-text="selectedStudent"></span>
+            </div>
+        </div>
         @error('student_id')
             <p class="mt-1 text-sm text-red-400">{{ $message }}</p>
         @enderror
     </div>
 
-    {{-- 2. Teacher --}}
-    <div>
+    {{-- 2. Teacher — always enabled, server-rendered options --}}
+    <div x-data="teacherDropdown()">
         <label class="mb-1.5 block text-sm font-medium text-gray-300">{{ __('admin.teacher') }}</label>
-        <select name="teacher_id" required
+        <select name="teacher_id" x-ref="teacherSelect" @change="onTeacherChange()" required
                 class="block w-full rounded-lg border border-gray-700 bg-gray-800/50 px-4 py-3 text-sm text-gray-100 transition focus:border-amber-500/50 focus:outline-none focus:ring-2 focus:ring-amber-500/20">
             <option value="">{{ __('admin.select_teacher') }}</option>
             @foreach ($teachers as $teacher)
-                <option value="{{ $teacher->id }}" {{ old('teacher_id') == $teacher->id ? 'selected' : '' }}>{{ $teacher->full_name }}</option>
+                <option value="{{ $teacher->id }}" {{ old('teacher_id') == $teacher->id ? 'selected' : '' }}>
+                    {{ $teacher->full_name }}
+                </option>
             @endforeach
         </select>
         @error('teacher_id')
@@ -55,15 +77,12 @@
         @enderror
     </div>
 
-    {{-- 3. Instrument --}}
-    <div>
+    {{-- 3. Instrument — filtered by teacher via teacher_instruments pivot --}}
+    <div x-data="instrumentDropdown()" @teacher-selected.window="onTeacherSelected($event.detail)">
         <label class="mb-1.5 block text-sm font-medium text-gray-300">{{ __('admin.instrument') }}</label>
-        <select name="instrument_id" required
-                class="block w-full rounded-lg border border-gray-700 bg-gray-800/50 px-4 py-3 text-sm text-gray-100 transition focus:border-amber-500/50 focus:outline-none focus:ring-2 focus:ring-amber-500/20">
-            <option value="">{{ __('admin.select_instrument') }}</option>
-            @foreach ($instruments as $instrument)
-                <option value="{{ $instrument->id }}" {{ old('instrument_id') == $instrument->id ? 'selected' : '' }}>{{ $instrument->display_name }}</option>
-            @endforeach
+        <select name="instrument_id" x-ref="instrumentSelect" @change="onInstrumentChange()" :disabled="!hasTeacher" required
+                class="block w-full rounded-lg border border-gray-700 bg-gray-800/50 px-4 py-3 text-sm text-gray-100 transition focus:border-amber-500/50 focus:outline-none focus:ring-2 focus:ring-amber-500/20 disabled:opacity-50 disabled:cursor-not-allowed">
+            <option value="">ابتدا معلم را انتخاب کنید</option>
         </select>
         @error('instrument_id')
             <p class="mt-1 text-sm text-red-400">{{ $message }}</p>
@@ -148,15 +167,36 @@
         @enderror
     </div>
 
-    {{-- 8. Notes --}}
-    <div>
-        <label class="mb-1.5 block text-sm font-medium text-gray-300">
-            {{ __('admin.notes') }}
-            <span class="text-gray-500 text-xs">({{ __('admin.optional') }})</span>
-        </label>
-        <textarea name="notes" rows="3"
-                  class="block w-full rounded-lg border border-gray-700 bg-gray-800/50 px-4 py-3 text-sm text-gray-100 placeholder-gray-500 transition focus:border-amber-500/50 focus:outline-none focus:ring-2 focus:ring-amber-500/20"
-                  placeholder="{{ __('admin.optional_notes') }}">{{ old('notes') }}</textarea>
+    {{-- 8. Over-quota Warning --}}
+    <div x-data="overageWarning()"
+         @student-selected.window="onStudentSelected($event.detail)"
+         @teacher-selected.window="onTeacherChanged($event.detail)"
+         @instrument-selected.window="onInstrumentChanged($event.detail)">
+        {{-- Overage Warning Box --}}
+        <div x-show="subscription && subscription.sessions_used >= subscription.sessions_allocated"
+             x-cloak
+             class="rounded-lg border border-amber-400 bg-amber-500/10 p-4 space-y-3">
+            <p class="text-sm font-medium text-amber-400">⚠️ Sessions exceeded. Session will be marked as overage.</p>
+            <div>
+                <p class="mb-1.5 text-sm text-amber-300/80">Optional reason for overage:</p>
+                <input type="text" name="notes"
+                       placeholder="Reason..."
+                       maxlength="255"
+                       value="{{ old('notes') }}"
+                       class="block w-full rounded-lg border border-amber-400/40 bg-gray-800/50 px-4 py-2.5 text-sm text-gray-100 placeholder-gray-500 transition focus:border-amber-500/50 focus:outline-none focus:ring-2 focus:ring-amber-500/20">
+            </div>
+        </div>
+
+        {{-- 8. Notes (hidden when overage warning is shown) --}}
+        <div x-show="!(subscription && subscription.sessions_used >= subscription.sessions_allocated)">
+            <label class="mb-1.5 block text-sm font-medium text-gray-300">
+                {{ __('admin.notes') }}
+                <span class="text-gray-500 text-xs">({{ __('admin.optional') }})</span>
+            </label>
+            <textarea name="notes" rows="3"
+                      class="block w-full rounded-lg border border-gray-700 bg-gray-800/50 px-4 py-3 text-sm text-gray-100 placeholder-gray-500 transition focus:border-amber-500/50 focus:outline-none focus:ring-2 focus:ring-amber-500/20"
+                      placeholder="{{ __('admin.optional_notes') }}">{{ old('notes') }}</textarea>
+        </div>
     </div>
 
     {{-- Buttons --}}
@@ -171,5 +211,181 @@
 </form>
 
 @include('admin.partials.date-form-script')
+
+<script>
+@php
+// Build teacher_id → [{id, name}] map from teacher_instruments pivot.
+// Single query; used by Alpine to filter instruments when a teacher is chosen.
+$teacherInstrumentMap = \Illuminate\Support\Facades\DB::table('teacher_instruments')
+    ->join('instruments', 'teacher_instruments.instrument_id', '=', 'instruments.id')
+    ->where('instruments.is_active', true)
+    ->select('teacher_instruments.teacher_id',
+             'instruments.id',
+             'instruments.name_fa',
+             'instruments.name')
+    ->get()
+    ->groupBy('teacher_id')
+    ->map(fn ($rows) => $rows->map(fn ($r) => [
+        'id'   => $r->id,
+        'name' => $r->name_fa ?: $r->name,
+    ])->values());
+@endphp
+
+const teacherInstrumentMap = @json($teacherInstrumentMap);
+
+function rebuildSelectOptions(selectEl, items, placeholder) {
+    if (!selectEl) return;
+    selectEl.innerHTML = '';
+    const ph = document.createElement('option');
+    ph.value = '';
+    ph.textContent = placeholder;
+    selectEl.appendChild(ph);
+    items.forEach(item => {
+        const opt = document.createElement('option');
+        opt.value = item.id;
+        opt.textContent = item.name;
+        selectEl.appendChild(opt);
+    });
+}
+
+// Teacher dropdown: server-rendered static options, always enabled.
+// Dispatches 'teacher-selected' with the raw DOM value to avoid x-model timing race.
+function teacherDropdown() {
+    return {
+        onTeacherChange() {
+            const teacherId = this.$refs.teacherSelect.value;
+            this.$dispatch('teacher-selected', { teacherId });
+        },
+    };
+}
+
+// Instrument dropdown: disabled until a teacher is chosen.
+// Filters options from teacherInstrumentMap (teacher_instruments pivot).
+function instrumentDropdown() {
+    return {
+        hasTeacher: false,
+
+        onTeacherSelected(detail) {
+            const teacherId = detail.teacherId;
+            this.hasTeacher = !!teacherId;
+
+            if (!teacherId) {
+                rebuildSelectOptions(this.$refs.instrumentSelect, [], 'ابتدا معلم را انتخاب کنید');
+                this.$dispatch('instrument-selected', { instrumentId: '' });
+                return;
+            }
+
+            const instruments = teacherInstrumentMap[teacherId] || [];
+            rebuildSelectOptions(
+                this.$refs.instrumentSelect,
+                instruments,
+                instruments.length === 0 ? 'ساز تعریف‌نشده' : '{{ __('admin.select_instrument') }}'
+            );
+        },
+
+        onInstrumentChange() {
+            const instrumentId = this.$refs.instrumentSelect.value;
+            this.$dispatch('instrument-selected', { instrumentId });
+        },
+    };
+}
+
+// Overage warning: checks student subscriptions when teacher + instrument are both chosen.
+function overageWarning() {
+    return {
+        subscription: null,
+        studentSubscriptions: [],
+        teacherId: '',
+        instrumentId: '',
+
+        onStudentSelected(detail) {
+            this.studentSubscriptions = detail.subscriptions || [];
+            this.checkSubscription();
+        },
+
+        onTeacherChanged(detail) {
+            this.teacherId = detail.teacherId || '';
+            this.checkSubscription();
+        },
+
+        onInstrumentChanged(detail) {
+            this.instrumentId = String(detail.instrumentId || '');
+            this.checkSubscription();
+        },
+
+        checkSubscription() {
+            if (!this.teacherId || !this.instrumentId) {
+                this.subscription = null;
+                return;
+            }
+            this.subscription = this.studentSubscriptions.find(sub =>
+                String(sub.teacher_id) === String(this.teacherId) &&
+                String(sub.instrument_id) === this.instrumentId
+            ) || null;
+        },
+    };
+}
+
+function studentAutocomplete() {
+    return {
+        query: '',
+        results: [],
+        highlighted: -1,
+        selectedId: '',
+        selectedStudent: '',
+        selectedSubscriptions: [],
+        loading: false,
+        allStudents: @json($students),
+
+        search() {
+            this.highlighted = -1;
+            
+            if (this.query.length < 2) {
+                this.results = [];
+                return;
+            }
+
+            const q = this.query.toLowerCase();
+            this.results = this.allStudents
+                .filter(s => 
+                    s.full_name.toLowerCase().includes(q) || 
+                    s.id.toString().includes(q)
+                )
+                .slice(0, 10);
+        },
+
+        selectResult(result) {
+            this.selectedId = result.id;
+            this.selectedStudent = `${result.full_name}`;
+            this.selectedSubscriptions = result.subscriptions || [];
+            this.query = '';
+            this.results = [];
+            // Notify teacher/instrument dropdowns that a student was selected
+            this.$dispatch('student-selected', {
+                studentId: result.id,
+                subscriptions: result.subscriptions || [],
+            });
+        },
+
+        select() {
+            if (this.highlighted >= 0 && this.results[this.highlighted]) {
+                this.selectResult(this.results[this.highlighted]);
+            }
+        },
+
+        next() {
+            if (this.highlighted < this.results.length - 1) {
+                this.highlighted++;
+            }
+        },
+
+        prev() {
+            if (this.highlighted > 0) {
+                this.highlighted--;
+            }
+        }
+    };
+}
+</script>
 
 @endsection

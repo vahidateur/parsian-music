@@ -35,7 +35,7 @@ class TeacherController extends Controller
             $query->where('status', trim($request->status));
         }
 
-        $teachers = $query->orderBy($sortCol, $sortDir)->paginate(15)->withQueryString();
+        $teachers = $query->with('instruments')->orderBy($sortCol, $sortDir)->paginate(15)->withQueryString();
 
         return view('admin.teachers.index', compact('teachers', 'sortCol', 'sortDir'));
     }

@@ -23,34 +23,44 @@ trait ScopesForSessionFilters
 
     /**
      * Filter sessions belonging to a specific teacher.
-     * Uses enrollment.teacher_id as the canonical join path.
+     * Checks both the enrollment path and the direct teacher_id column
+     * (set on manually created sessions that have no enrollment).
      */
     public function scopeForTeacher(Builder $query, int $teacherId): Builder
     {
-        return $query->whereHas('enrollment', fn (Builder $q) => $q->where('teacher_id', $teacherId));
+        return $query->where(function (Builder $q) use ($teacherId) {
+            $q->whereHas('enrollment', fn (Builder $inner) => $inner->where('teacher_id', $teacherId))
+              ->orWhere('class_sessions.teacher_id', $teacherId);
+        });
     }
 
     /**
      * Filter sessions belonging to a specific student.
-     * Uses enrollment.student_id as the canonical join path.
+     * Checks both the enrollment path and the direct student_id column.
      */
     public function scopeForStudent(Builder $query, int $studentId): Builder
     {
-        return $query->whereHas('enrollment', fn (Builder $q) => $q->where('student_id', $studentId));
+        return $query->where(function (Builder $q) use ($studentId) {
+            $q->whereHas('enrollment', fn (Builder $inner) => $inner->where('student_id', $studentId))
+              ->orWhere('class_sessions.student_id', $studentId);
+        });
     }
 
     /**
      * Filter sessions for a specific instrument.
-     * Uses enrollment.instrument_id as the canonical join path.
+     * Checks both the enrollment path and the direct instrument_id column.
      */
     public function scopeForInstrument(Builder $query, int $instrumentId): Builder
     {
-        return $query->whereHas('enrollment', fn (Builder $q) => $q->where('instrument_id', $instrumentId));
+        return $query->where(function (Builder $q) use ($instrumentId) {
+            $q->whereHas('enrollment', fn (Builder $inner) => $inner->where('instrument_id', $instrumentId))
+              ->orWhere('class_sessions.instrument_id', $instrumentId);
+        });
     }
 
     /**
-     * Eager-load the enrollment with student, teacher, and instrument.
-     * Replaces 3+ copy-pasted with() calls across controllers.
+     * Eager-load enrollment details AND direct student/teacher/instrument relations.
+     * Direct relations are populated for manually created sessions without enrollment.
      */
     public function scopeWithEnrollmentDetails(Builder $query): Builder
     {
@@ -58,6 +68,9 @@ trait ScopesForSessionFilters
             'enrollment.student',
             'enrollment.teacher',
             'enrollment.instrument',
+            'student',
+            'teacher',
+            'instrument',
         ]);
     }
 

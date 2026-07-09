@@ -78,4 +78,9 @@ class Teacher extends Model
             ->distinct()
             ->count('student_id');
     }
+
+    public function subscriptions(): HasMany
+    {
+        return $this->hasMany(Subscription::class);
+    }
 }

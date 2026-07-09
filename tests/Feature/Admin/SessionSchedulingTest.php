@@ -6,6 +6,7 @@ use App\Enums\RoleEnum;
 use App\Models\ClassSession;
 use App\Models\Instrument;
 use App\Models\Student;
+use App\Models\Subscription;
 use App\Models\Teacher;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -22,6 +23,8 @@ class SessionSchedulingTest extends TestCase
     private Teacher $teacher;
 
     private Instrument $instrument;
+
+    private Subscription $subscription;
 
     protected function setUp(): void
     {
@@ -49,6 +52,12 @@ class SessionSchedulingTest extends TestCase
             'name' => 'Piano',
             'slug' => 'piano',
             'is_active' => true,
+        ]);
+
+        $this->subscription = Subscription::create([
+            'student_id' => $this->student->id,
+            'teacher_id' => $this->teacher->id,
+            'instrument_id' => $this->instrument->id,
         ]);
     }
 

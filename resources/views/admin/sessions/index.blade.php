@@ -117,9 +117,9 @@
                         $badgeStyle = $statusStyles[$statusValue] ?? 'bg-gray-700/50 text-gray-400';
                     @endphp
                     <tr class="transition hover:bg-gray-800/20">
-                        <td class="px-5 py-3.5 font-medium text-gray-100">{{ $session->enrollment?->student?->full_name ?? '—' }}</td>
-                        <td class="px-5 py-3.5 text-gray-400">{{ $session->enrollment?->teacher?->full_name ?? '—' }}</td>
-                        <td class="px-5 py-3.5 text-gray-400">{{ $session->enrollment?->instrument?->display_name ?? '—' }}</td>
+                        <td class="px-5 py-3.5 font-medium text-gray-100">{{ $session->enrollment?->student?->full_name ?? $session->student?->full_name ?? '—' }}</td>
+                        <td class="px-5 py-3.5 text-gray-400">{{ $session->enrollment?->teacher?->full_name ?? $session->teacher?->full_name ?? '—' }}</td>
+                        <td class="px-5 py-3.5 text-gray-400">{{ $session->enrollment?->instrument?->display_name ?? $session->instrument?->display_name ?? '—' }}</td>
                         <td class="px-5 py-3.5 text-gray-400">{{ \App\Helpers\Jalalian::fromCarbon($session->session_date) ?? '—' }}</td>
                         @php
                             $startTime = is_string($session->start_time) ? $session->start_time : $session->start_time?->format('H:i');

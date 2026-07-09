@@ -9,6 +9,7 @@ use App\Models\Instrument;
 use App\Models\RecurringSchedule;
 use App\Models\Student;
 use App\Models\Teacher;
+use App\Models\Subscription;
 use App\Services\ConflictDetectionService;
 use App\Services\SessionGeneratorService;
 use Carbon\Carbon;
@@ -99,7 +100,22 @@ class ClassSessionController extends Controller
     {
         // Phase 1: manual session creation no longer depends on enrollment.
         // Student, teacher, and instrument are all selected independently.
-        $students = Student::orderBy('full_name')->get();
+        // Subscriptions are embedded so Alpine.js can filter teachers/instruments client-side.
+        $students = Student::with(['subscriptions.teacher', 'subscriptions.instrument'])
+            ->orderBy('full_name')
+            ->get()
+            ->map(fn ($s) => [
+                'id'        => $s->id,
+                'full_name' => $s->full_name,
+                'subscriptions' => $s->subscriptions->map(fn ($sub) => [
+                    'teacher_id'    => $sub->teacher_id,
+                    'teacher_name'  => $sub->teacher?->full_name,
+                    'instrument_id' => $sub->instrument_id,
+                    'instrument_name' => $sub->instrument?->name_fa ?? $sub->instrument?->name,
+                    'sessions_used'       => $sub->sessions_used,
+                    'sessions_allocated'  => $sub->sessions_allocated,
+                ])->values(),
+            ]);
         $teachers = Teacher::orderBy('full_name')->get();
         $instruments = Instrument::active()->orderBy('name_fa')->orderBy('name')->get();
 
@@ -123,6 +139,12 @@ class ClassSessionController extends Controller
             'notes' => ['nullable', 'string'],
         ]);
 
+        $subscription = Subscription::where([
+            'student_id' => $request->student_id,
+            'teacher_id' => $request->teacher_id,
+            'instrument_id' => $request->instrument_id,
+        ])->first();
+
         $hasConflict = $conflictDetector->checkTeacherConflict(
             $validated['teacher_id'], $validated['session_date'], $validated['start_time'], $validated['duration_minutes']
         ) || $conflictDetector->checkRoomConflict(
@@ -138,6 +160,12 @@ class ClassSessionController extends Controller
         }
 
         ClassSession::create($validated);
+
+        // Increment sessions_used only when a subscription exists for this combination.
+        if ($subscription) {
+            $subscription->sessions_used += 1;
+            $subscription->save();
+        }
 
         return redirect()->route('admin.sessions.index')
             ->with('success', __('admin.session_created_successfully'));

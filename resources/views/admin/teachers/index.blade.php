@@ -59,6 +59,7 @@
                         @include('admin.partials.sort-th', ['col'=>'full_name', 'label'=>__('admin.full_name'), 'currentSort'=>$sortCol, 'currentDir'=>$sortDir, 'route'=>'admin.teachers.index'])
                         @include('admin.partials.sort-th', ['col'=>'phone',     'label'=>__('admin.phone'),     'currentSort'=>$sortCol, 'currentDir'=>$sortDir, 'route'=>'admin.teachers.index'])
                         @include('admin.partials.sort-th', ['col'=>'status',    'label'=>__('admin.status'),    'currentSort'=>$sortCol, 'currentDir'=>$sortDir, 'route'=>'admin.teachers.index'])
+                        <th class="px-6 py-4 text-xs font-medium uppercase tracking-wider text-gray-500">{{ __('admin.instruments') }}</th>
                         <th class="px-6 py-4 text-xs font-medium uppercase tracking-wider text-gray-500">{{ __('admin.actions') }}</th>
                     </tr>
                 </thead>
@@ -74,6 +75,18 @@
                                 <span class="rounded-full {{ $statusValue === 'active' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-gray-700/50 text-gray-400' }} px-2.5 py-0.5 text-xs font-medium">
                                     {{ __('admin.statuses.'.$statusValue) }}
                                 </span>
+                            </td>
+                            <td class="px-6 py-4">
+                                <div class="flex flex-wrap gap-1.5">
+                                    @forelse ($teacher->instruments as $instrument)
+                                        <span class="rounded-full bg-amber-500/10 px-2.5 py-0.5 text-xs font-medium text-amber-300
+                                                     {{ $instrument->pivot->is_primary ? 'ring-1 ring-amber-500/40' : '' }}">
+                                            {{ $instrument->name_fa ?: $instrument->name }}
+                                        </span>
+                                    @empty
+                                        <span class="text-xs text-gray-600">—</span>
+                                    @endforelse
+                                </div>
                             </td>
                             <td class="px-6 py-4 text-right">
                                 <div class="flex items-center gap-3">
@@ -95,7 +108,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="4" class="px-6 py-12 text-center text-gray-500">{{ __('admin.no_teachers_found') }}</td>
+                            <td colspan="5" class="px-6 py-12 text-center text-gray-500">{{ __('admin.no_teachers_found') }}</td>
                         </tr>
                     @endforelse
                 </tbody>
