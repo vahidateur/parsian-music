@@ -7,7 +7,28 @@
 ════════════════════════════════════════════════════════ --}}
 <x-dashboard.section-header :title="__('admin.dashboard')" :subtitle="__('admin.welcome_message')">
     <x-slot:actions>
-        <p class="text-sm text-gray-500" aria-label="تاریخ امروز">{{ \App\Helpers\Jalalian::fromCarbon(now()) }}</p>
+        @php
+            $persianDays = ['Saturday'=>'شنبه','Sunday'=>'یک‌شنبه','Monday'=>'دوشنبه','Tuesday'=>'سه‌شنبه','Wednesday'=>'چهارشنبه','Thursday'=>'پنج‌شنبه','Friday'=>'جمعه'];
+            $dayName = $persianDays[now()->format('l')] ?? now()->format('l');
+        @endphp
+        <p class="flex items-center gap-2 text-sm text-gray-500" aria-label="تاریخ و ساعت امروز">
+            <span>{{ $dayName }}،</span>
+            <span>{{ \App\Helpers\Jalalian::fromCarbon(now()) }}</span>
+            <span class="text-gray-700">|</span>
+            <span id="live-clock" class="tabular-nums text-amber-400/80" dir="ltr">{{ now()->format('H:i') }}</span>
+        </p>
+        <script>
+            (function () {
+                const el = document.getElementById('live-clock');
+                if (!el) return;
+                function tick() {
+                    const d = new Date();
+                    el.textContent = String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0') + ':' + String(d.getSeconds()).padStart(2,'0');
+                }
+                tick();
+                setInterval(tick, 1000);
+            })();
+        </script>
     </x-slot:actions>
 </x-dashboard.section-header>
 

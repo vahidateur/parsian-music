@@ -56,7 +56,7 @@
                 {{-- Collapse Toggle Button --}}
                 <button 
                     @click="toggleCollapse()"
-                    class="flex-shrink-0 rounded-lg p-1.5 text-gray-400 transition hover:bg-gray-800/50 hover:text-amber-300"
+                    class="flex-shrink-0 rounded-lg p-1.5 text-gray-400 transition duration-150 hover:bg-gray-800/50 hover:text-amber-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-500/40"
                     :title="collapsed ? 'بسط' : 'جمع'">
                     {{-- Expanded: always show RIGHT-pointing arrow (collapse direction) --}}
                     <svg x-show="!collapsed" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
@@ -72,8 +72,8 @@
             {{-- Navigation --}}
             <nav class="flex-1 overflow-y-auto px-3 py-5">
                 @php
-                    $navActive   = 'flex items-center gap-3 rounded-lg bg-amber-500/10 px-3 py-2.5 text-sm font-medium text-amber-300 ring-1 ring-amber-500/20';
-                    $navInactive = 'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-gray-300 transition hover:bg-gray-800/50 hover:text-amber-300';
+                    $navActive   = 'flex items-center gap-3 rounded-lg bg-amber-500/10 px-3 py-2.5 text-sm font-medium text-amber-300 ring-1 ring-amber-500/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500/50';
+                    $navInactive = 'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-gray-300 transition duration-150 hover:bg-gray-800/50 hover:text-amber-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-500/40';
                     $iconActive  = 'h-5 w-5 text-amber-400';
                     $iconInactive= 'h-5 w-5 text-amber-400/80';
                     $isDash        = request()->routeIs('admin.dashboard');
@@ -183,7 +183,8 @@
                         </ul>
                     </li>
 
-
+                </ul>
+            </nav>
 
             {{-- Footer + Social Icons --}}
             <div class="flex flex-col border-t border-gray-800/60">
@@ -231,7 +232,7 @@
                     {{-- Logout --}}
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
-                        <button type="submit" class="inline-flex items-center gap-2 rounded-lg border border-gray-700/60 bg-gray-800/40 px-3 py-2 text-sm font-medium text-gray-300 transition hover:border-red-500/50 hover:bg-red-500/10 hover:text-red-400">
+                        <button type="submit" class="inline-flex items-center gap-2 rounded-lg border border-gray-700/60 bg-gray-800/40 px-3 py-2 text-sm font-medium text-gray-300 transition duration-150 hover:border-red-500/50 hover:bg-red-500/10 hover:text-red-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-500/40">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9" />
                             </svg>
@@ -247,7 +248,7 @@
                 {{-- Breadcrumb bar (rendered if any child view yields 'breadcrumb') --}}
                 @hasSection('breadcrumb')
                     <nav class="mb-6 flex items-center gap-2 text-xs text-gray-500">
-                        <a href="{{ route('admin.dashboard') }}" class="transition hover:text-amber-400">{{ __('admin.dashboard') }}</a>
+                        <a href="{{ route('admin.dashboard') }}" class="transition duration-150 hover:text-amber-400 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-amber-500/40">{{ __('admin.dashboard') }}</a>
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 shrink-0 {{ $isRtl ? 'rotate-180' : '' }}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" /></svg>
                         <span class="text-amber-300/80">@yield('breadcrumb')</span>
                     </nav>
