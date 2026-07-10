@@ -2,18 +2,29 @@
 
 namespace App\Services;
 
+use App\Models\AppSetting;
+
 /**
  * Central settings hub.
  *
- * Returns typed sub-services so call sites look like:
+ * Public API (unchanged — call sites need no modification):
  *   settings()->institute()->name
+ *   settings()->general()
  *   settings()->timezone()
+ *   settings()->locale()
  *   settings()->email()
  *   settings()->telegram()
+ *   settings()->notificationChannels()
  *
- * Every method delegates to a singleton, so the DB is hit once per request
- * per sub-service.  Add caching, multi-branch, or new sub-services here
- * without touching any call site.
+ * Storage backend: all settings are now persisted in the `app_settings` DB table
+ * via AppSetting::getGroup() / AppSetting::setGroup().  AppSetting applies a
+ * request-level in-memory cache so the DB is hit at most once per group per request.
+ * Config values are used as fallbacks when a group has no DB row yet.
+ *
+ * Adding a new settings group:
+ *   1. Add a partial view in resources/views/admin/settings/sections/{group}.blade.php
+ *   2. Register the group in config/settings.php
+ *   3. Add a typed accessor method below (optional but recommended for autocomplete).
  */
 class SettingsManager
 {
@@ -28,68 +39,122 @@ class SettingsManager
         return $this->institute;
     }
 
-    // ── Scalar shortcuts ─────────────────────────────────────────────────────
-    // These read from config/env for now.
-    // When an Email/Telegram settings table is added, swap the source here only.
+    // ── General ──────────────────────────────────────────────────────────────
+
+    /**
+     * All general/system settings as an array.
+     * Falls back gracefully to sensible defaults when the DB row doesn't exist yet.
+     */
+    public function general(): array
+    {
+        $db = AppSetting::getGroup('general');
+
+        return array_merge([
+            'app_name'                 => config('app.name', 'آموزشگاه موسیقی پارسیان'),
+            'locale'                   => config('app.locale', 'fa'),
+            'timezone'                 => config('app.timezone', 'Asia/Tehran'),
+            'date_format'              => 'jalali',
+            'week_start'               => 'saturday',
+            'per_page'                 => 15,
+            'session_default_duration' => 60,
+        ], $db);
+    }
+
+    // ── Scalar shortcuts ──────────────────────────────────────────────────────
 
     public function timezone(): string
     {
-        return config('app.timezone', 'Asia/Tehran');
+        return AppSetting::getValue('general', 'timezone', config('app.timezone', 'Asia/Tehran'));
     }
 
     public function locale(): string
     {
-        return config('app.locale', 'fa');
+        return AppSetting::getValue('general', 'locale', config('app.locale', 'fa'));
     }
 
+    public function appName(): string
+    {
+        return AppSetting::getValue('general', 'app_name', config('app.name', 'آموزشگاه موسیقی پارسیان'));
+    }
+
+    // ── Email ─────────────────────────────────────────────────────────────────
+
     /**
-     * SMTP / email settings.
-     * Returns an array; extend to a typed EmailSettings service when the
-     * Email settings page is persisted to the database.
+     * SMTP / email settings — DB values override .env/config.
      *
      * @return array{host:string,port:int,username:string,encryption:string,from_name:string,from_address:string}
      */
     public function email(): array
     {
+        $db = AppSetting::getGroup('email');
+
         return [
-            'host'         => config('mail.mailers.smtp.host', ''),
-            'port'         => (int) config('mail.mailers.smtp.port', 587),
-            'username'     => config('mail.mailers.smtp.username', ''),
-            'encryption'   => config('mail.mailers.smtp.encryption', 'tls'),
-            'from_name'    => config('mail.from.name', ''),
-            'from_address' => config('mail.from.address', ''),
+            'host'         => $db['mail_host']         ?? config('mail.mailers.smtp.host', ''),
+            'port'         => (int) ($db['mail_port']  ?? config('mail.mailers.smtp.port', 587)),
+            'username'     => $db['mail_username']     ?? config('mail.mailers.smtp.username', ''),
+            'encryption'   => $db['mail_encryption']   ?? config('mail.mailers.smtp.encryption', 'tls'),
+            'from_name'    => $db['mail_from_name']    ?? config('mail.from.name', ''),
+            'from_address' => $db['mail_from_address'] ?? config('mail.from.address', ''),
         ];
     }
 
-    /**
-     * Returns the notification channels enabled by the admin.
-     *
-     * Currently returns all channels (all enabled by default).
-     * When the Notification settings page gains DB persistence, replace the
-     * return value with a query on the settings table and wire up a
-     * dedicated NotificationSettings sub-service, e.g.:
-     *
-     *   return $this->notificationSettings->enabledChannels();
-     *
-     * @return \App\Enums\NotificationChannelEnum[]
-     */
-    public function notificationChannels(): array
-    {
-        return \App\Enums\NotificationChannelEnum::cases();
-    }
+    // ── Telegram ──────────────────────────────────────────────────────────────
 
     /**
-     * Telegram bot settings.
-     * Swap with a DB-backed TelegramSettings service when that page is persisted.
+     * Telegram bot settings — DB values override .env/config.
      *
      * @return array{token:string,chat_id:string,enabled:bool}
      */
     public function telegram(): array
     {
+        $db = AppSetting::getGroup('telegram');
+
         return [
-            'token'   => config('services.telegram.token', ''),
-            'chat_id' => config('services.telegram.chat_id', ''),
-            'enabled' => (bool) config('services.telegram.enabled', false),
+            'token'   => $db['telegram_bot_token'] ?? config('services.telegram.token', ''),
+            'chat_id' => $db['telegram_chat_id']   ?? config('services.telegram.chat_id', ''),
+            'enabled' => (bool) ($db['telegram_enabled'] ?? config('services.telegram.enabled', false)),
+        ];
+    }
+
+    // ── Notifications ─────────────────────────────────────────────────────────
+
+    /**
+     * Returns the notification channels enabled by the admin.
+     *
+     * Reads from the DB notifications group first.
+     * Falls back to all channels when no preference has been saved.
+     *
+     * @return \App\Enums\NotificationChannelEnum[]
+     */
+    public function notificationChannels(): array
+    {
+        $db       = AppSetting::getGroup('notifications');
+        $saved    = $db['channels'] ?? [];
+
+        if (empty($saved)) {
+            return \App\Enums\NotificationChannelEnum::cases();
+        }
+
+        return collect(\App\Enums\NotificationChannelEnum::cases())
+            ->filter(fn ($ch) => in_array(strtolower($ch->value), $saved))
+            ->values()
+            ->all();
+    }
+
+    /**
+     * Returns the notification events that have been enabled by the admin.
+     *
+     * @return string[]  e.g. ['session_reminder', 'enrollment_created']
+     */
+    public function enabledNotificationEvents(): array
+    {
+        $db = AppSetting::getGroup('notifications');
+
+        return $db['events'] ?? [
+            'session_reminder',
+            'session_cancelled',
+            'enrollment_created',
+            'attendance_recorded',
         ];
     }
 }

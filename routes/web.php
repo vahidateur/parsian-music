@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\AttendanceReportController;
+use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\SettingsController;
 use App\Http\Controllers\Admin\ClassAttendanceController;
 use App\Http\Controllers\Admin\ClassSessionController;
@@ -28,8 +29,9 @@ Route::get('/dashboard', function (\Illuminate\Http\Request $request) {
 })->middleware(['auth'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::get('/profile',    [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile',  [ProfileController::class, 'update'])->name('profile.update');
+    Route::put('/password',   [ProfileController::class, 'updatePassword'])->name('password.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
@@ -101,9 +103,22 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin/reports')->name('admin.
 });
 
 Route::middleware(['auth', 'role:admin'])->prefix('admin/settings')->name('admin.settings.')->group(function () {
-    Route::get('/', [SettingsController::class, 'index'])->name('index');
-    Route::post('/institute', [SettingsController::class, 'updateInstitute'])->name('institute.update');
-    Route::get('/{section}', [SettingsController::class, 'show'])->name('show');
+    Route::get('/',                                         [SettingsController::class, 'index'])           ->name('index');
+    Route::post('/institute',                               [SettingsController::class, 'updateInstitute']) ->name('institute.update');
+    Route::put('/{section}',                               [SettingsController::class, 'update'])          ->name('update');
+    Route::get('/{section}',                               [SettingsController::class, 'show'])            ->name('show');
+});
+
+// User management — super_admin only (admins cannot manage other admins or super_admins)
+Route::middleware(['auth', 'role:super_admin,admin'])->prefix('admin/users')->name('admin.users.')->group(function () {
+    Route::get('/',                         [UserController::class, 'index'])->name('index');
+    Route::get('/create',                   [UserController::class, 'create'])->name('create');
+    Route::post('/',                        [UserController::class, 'store'])->name('store');
+    Route::get('/{user}/edit',              [UserController::class, 'edit'])->name('edit');
+    Route::put('/{user}',                   [UserController::class, 'update'])->name('update');
+    Route::delete('/{user}',                [UserController::class, 'destroy'])->name('destroy');
+    Route::patch('/{user}/toggle',          [UserController::class, 'toggle'])->name('toggle');
+    Route::post('/{user}/reset-password',   [UserController::class, 'resetPassword'])->name('resetPassword');
 });
 
 Route::middleware(['auth', 'role:admin'])->prefix('admin/instruments')->name('admin.instruments.')->group(function () {
