@@ -1,7 +1,7 @@
 <?php
 
-use App\Enums\RoleEnum;
 use App\Http\Controllers\Admin\AttendanceReportController;
+use App\Http\Controllers\Admin\SettingsController;
 use App\Http\Controllers\Admin\ClassAttendanceController;
 use App\Http\Controllers\Admin\ClassSessionController;
 use App\Http\Controllers\Admin\InstrumentController;
@@ -98,6 +98,12 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin/enrollments')->name('ad
 Route::middleware(['auth', 'role:admin'])->prefix('admin/reports')->name('admin.reports.')->group(function () {
     Route::get('/attendance', [AttendanceReportController::class, 'index'])->name('attendance');
     Route::get('/teachers', [TeacherReportController::class, 'index'])->name('teachers');
+});
+
+Route::middleware(['auth', 'role:admin'])->prefix('admin/settings')->name('admin.settings.')->group(function () {
+    Route::get('/', [SettingsController::class, 'index'])->name('index');
+    Route::post('/institute', [SettingsController::class, 'updateInstitute'])->name('institute.update');
+    Route::get('/{section}', [SettingsController::class, 'show'])->name('show');
 });
 
 Route::middleware(['auth', 'role:admin'])->prefix('admin/instruments')->name('admin.instruments.')->group(function () {

@@ -83,6 +83,7 @@
                     $isCalendar    = request()->routeIs('admin.calendar.*');
                     $isReports     = request()->routeIs('admin.reports.*');
                     $isInstruments = request()->routeIs('admin.instruments.*');
+                    $isSettings    = request()->routeIs('admin.settings.*');
                 @endphp
                 <ul class="space-y-1">
 
@@ -142,45 +143,12 @@
                         </a>
                     </li>
 
-                    {{-- Settings (Collapsible) --}}
-                    <li x-data="{ settingsOpen: false }">
-                        <button 
-                            @click="settingsOpen = !settingsOpen"
-                            class="w-full {{ $navInactive }} justify-between"
-                            :title="collapsed ? 'تنظیمات پنل' : ''">
-                            <span class="flex items-center gap-3">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="{{ $iconInactive }}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.592c.55 0 1.02.398 1.11.94a6.737 6.737 0 0 0 1.97 3.636 6.737 6.737 0 0 0 3.636 1.97c.54.09.94.56.94 1.11v2.592c0 .55-.398 1.02-.94 1.11a6.738 6.738 0 0 0-3.636 1.97 6.737 6.737 0 0 0-1.97 3.636c-.09.54-.56.94-1.11.94H4.704c-.55 0-1.02-.398-1.11-.94a6.737 6.737 0 0 0-1.97-3.636 6.738 6.738 0 0 0-3.636-1.97C.173 15.99-.227 15.52-.227 14.97V12.38c0-.55.398-1.02.94-1.11a6.737 6.737 0 0 0 3.636-1.97 6.737 6.737 0 0 0 1.97-3.636zM21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z" /></svg>
-                                <span x-show="!collapsed">تنظیمات پنل</span>
-                            </span>
-                            <svg x-show="!collapsed" xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 transition {{ $isRtl ? 'rotate-180' : '' }}" :class="settingsOpen ? '{{ $isRtl ? 'rotate-0' : 'rotate-180' }}' : '{{ $isRtl ? 'rotate-180' : '0' }}'" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" /></svg>
-                        </button>
-                        {{-- Settings submenu --}}
-                        <ul x-show="settingsOpen && !collapsed" class="mt-1 space-y-1 {{ $isRtl ? 'pr-6' : 'pl-6' }}">
-                            <li>
-                                <a href="#" class="{{ $navInactive }}" title="برندینگ">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="{{ $iconInactive }}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M7.5 21L3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5" /></svg>
-                                    <span>برندینگ</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="#" class="{{ $navInactive }}" title="مدیریت کاربران">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="{{ $iconInactive }}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
-                                    <span>مدیریت کاربران</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="#" class="{{ $navInactive }}" title="ترجمه‌ها">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="{{ $iconInactive }}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M10.5 21l5.25-11.25L21 21m-9-3h7.5M3 5.621c0-.2.112-.39.3-.5C5.461 3.431 8.15 3 12 3c3.85 0 6.539.431 8.7 1.121.188.11.3.3.3.5v14.258c0 .205-.112.393-.3.504C18.539 20.569 15.85 21 12 21c-3.85 0-6.539-.431-8.7-1.122a.621.621 0 01-.3-.504V5.621z" /></svg>
-                                    <span>ترجمه‌ها</span>
-                                </a>
-                            </li>
-                            <li>
-                                <a href="#" class="{{ $navInactive }}" title="تنظیمات ظاهری">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="{{ $iconInactive }}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 2.2M6 5.5a2.5 2.5 0 1 1 5 0 2.5 2.5 0 0 1-5 0Zm9 9a2.5 2.5 0 1 1 5 0 2.5 2.5 0 0 1-5 0Z" /></svg>
-                                    <span>تنظیمات ظاهری</span>
-                                </a>
-                            </li>
-                        </ul>
+                    {{-- Settings --}}
+                    <li>
+                        <a href="{{ route('admin.settings.index') }}" class="{{ $isSettings ? $navActive : $navInactive }}" :title="collapsed ? 'تنظیمات' : ''">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="{{ $isSettings ? $iconActive : $iconInactive }}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5"><path stroke-linecap="round" stroke-linejoin="round" d="M10.343 3.94c.09-.542.56-.94 1.11-.94h1.093c.55 0 1.02.398 1.11.94l.149.894c.07.424.384.764.78.93.398.164.855.142 1.205-.108l.737-.527a1.125 1.125 0 011.45.12l.773.774c.39.389.44 1.002.12 1.45l-.527.737c-.25.35-.272.806-.107 1.204.165.397.505.71.93.78l.893.15c.543.09.94.56.94 1.109v1.094c0 .55-.397 1.02-.94 1.11l-.893.149c-.425.07-.765.383-.93.78-.165.398-.143.854.107 1.204l.527.738c.32.447.269 1.06-.12 1.45l-.774.773a1.125 1.125 0 01-1.449.12l-.738-.527c-.35-.25-.806-.272-1.203-.107-.397.165-.71.505-.781.929l-.149.894c-.09.542-.56.94-1.11.94h-1.094c-.55 0-1.019-.398-1.11-.94l-.148-.894c-.071-.424-.384-.764-.781-.93-.398-.164-.854-.142-1.204.108l-.738.527c-.447.32-1.06.269-1.45-.12l-.773-.774a1.125 1.125 0 01-.12-1.45l.527-.737c.25-.35.273-.806.108-1.204-.165-.397-.505-.71-.93-.78l-.894-.15c-.542-.09-.94-.56-.94-1.109v-1.094c0-.55.398-1.02.94-1.11l.894-.149c.424-.07.765-.383.93-.78.165-.398.143-.854-.108-1.204l-.526-.738a1.125 1.125 0 01.12-1.45l.773-.773a1.125 1.125 0 011.45-.12l.737.527c.35.25.807.272 1.204.107.397-.165.71-.505.78-.929l.15-.894z M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                            <span x-show="!collapsed">تنظیمات</span>
+                        </a>
                     </li>
 
                 </ul>

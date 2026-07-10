@@ -5,12 +5,11 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Services\Reports\TeacherReportService;
 use Carbon\CarbonImmutable;
-use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class TeacherReportController extends Controller
 {
-    public function index(Request $request, TeacherReportService $service): View
+    public function index(TeacherReportService $service): View
     {
         // Fixed 30-day window (last 30 days).
         $endDate = CarbonImmutable::today()->endOfDay();

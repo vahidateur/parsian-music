@@ -12,6 +12,15 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 
+/**
+ * @deprecated No routes are registered for this controller (RC0 audit finding C-05).
+ *
+ * The legacy Payment model conflicts with the new billing domain introduced in Sprint 19.4–19.5.
+ * This controller will be either removed or migrated to use {@see \App\Services\InvoiceService}
+ * in a dedicated billing sprint before RC1.
+ *
+ * Do NOT add new routes pointing to this controller.
+ */
 class PaymentController extends Controller
 {
     public function index(Request $request): View

@@ -6,6 +6,7 @@ use App\Enums\StudentStatusEnum;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Student extends Model
 {
@@ -50,5 +51,16 @@ class Student extends Model
     public function subscriptions(): HasMany
     {
         return $this->hasMany(Subscription::class);
+    }
+
+    public function invoices(): HasMany
+    {
+        return $this->hasMany(Invoice::class);
+    }
+
+    /** The lead that originated this student, if converted from CRM. */
+    public function lead(): HasOne
+    {
+        return $this->hasOne(Lead::class, 'converted_student_id');
     }
 }

@@ -13,14 +13,13 @@ use App\Models\Subscription;
 use App\Models\Teacher;
 use App\Services\Reports\DashboardService;
 use Carbon\CarbonImmutable;
-use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 
 class DashboardController extends Controller
 {
-    public function index(Request $request, DashboardService $service): View
+    public function index(DashboardService $service): View
     {
         $today = CarbonImmutable::today();
 
@@ -109,8 +108,12 @@ class DashboardController extends Controller
     }
 
     /**
-     * Placeholder revenue dataset.
-     * TODO: Replace with real data once the Payment module is complete.
+     * Placeholder revenue dataset — returns zeroed months for the current Jalali half-year.
+     *
+     * Replace with real invoice_payments aggregation once Sprint 27 (Billing UI) is complete:
+     *   InvoicePayment::selectRaw('MONTH(paid_at) as month, SUM(amount) as revenue')
+     *       ->where('status', PaymentStatusEnum::Completed)
+     *       ->groupBy('month')->get()
      */
     private function monthlyRevenuePlaceholder(): array
     {

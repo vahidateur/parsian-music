@@ -57,6 +57,11 @@ class StudentEnrollment extends Model
         return $this->hasMany(ClassSession::class, 'enrollment_id');
     }
 
+    public function invoices(): HasMany
+    {
+        return $this->hasMany(Invoice::class, 'enrollment_id');
+    }
+
     /**
      * Scope for active enrollments only.
      */
