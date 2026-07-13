@@ -1,0 +1,38 @@
+/**
+ * Academy Gold Theme - Parsian Music Academy
+ * 
+ * Enhanced golden theme with more prominent gold accents.
+ * Alternative theme for special occasions or premium features.
+ */
+
+[data-theme="academy-gold"] {
+  /* Surfaces */
+  --color-surface: #0A0806;
+  --color-surface-elevated: #14100A;
+  --color-surface-glass: rgba(20, 16, 10, 0.6);
+  
+  /* Text */
+  --color-text: var(--gold-100);
+  --color-text-muted: var(--gold-200);
+  --color-text-disabled: rgba(248, 231, 181, 0.5);
+  
+  /* Primary (More saturated gold) */
+  --color-primary: var(--gold-200);
+  --color-primary-hover: var(--gold-100);
+  --color-primary-active: var(--gold-300);
+  
+  /* Borders */
+  --color-border: rgba(213, 175, 88, 0.3);
+  --color-border-light: rgba(213, 175, 88, 0.2);
+  
+  /* Status */
+  --color-success: #22C55E;
+  --color-error: #EF4444;
+  --color-warning: #F59E0B;
+  --color-info: #3B82F6;
+  
+  /* Glass effect with warmer tones */
+  --glass-bg: rgba(20, 16, 10, 0.6);
+  --glass-border: rgba(213, 175, 88, 0.3);
+  --glass-shadow: 0 40px 120px rgba(213, 175, 88, 0.15);
+}

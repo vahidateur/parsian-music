@@ -28,7 +28,17 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        return redirect()->intended(route('dashboard', absolute: false));
+        $user = $request->user();
+
+        $destination = match ($user->role) {
+            \App\Enums\RoleEnum::SUPER_ADMIN => '/admin/dashboard',
+            \App\Enums\RoleEnum::ADMIN       => '/admin/dashboard',
+            \App\Enums\RoleEnum::TEACHER     => '/teacher/dashboard',
+            \App\Enums\RoleEnum::STUDENT     => '/student/dashboard',
+            default                          => route('dashboard', absolute: false),
+        };
+
+        return redirect()->intended($destination);
     }
 
     /**

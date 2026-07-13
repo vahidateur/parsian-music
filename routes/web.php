@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\SettingsController;
 use App\Http\Controllers\Admin\ClassAttendanceController;
 use App\Http\Controllers\Admin\ClassSessionController;
 use App\Http\Controllers\Admin\InstrumentController;
+use App\Http\Controllers\Admin\LeadController;
 use App\Http\Controllers\Admin\RoomController;
 use App\Http\Controllers\Admin\StudentController;
 use App\Http\Controllers\Admin\StudentEnrollmentController;
@@ -22,9 +23,10 @@ Route::get('/', function () {
 
 Route::get('/dashboard', function (\Illuminate\Http\Request $request) {
     return match ($request->user()->role) {
-        \App\Enums\RoleEnum::ADMIN => redirect()->intended('/admin/dashboard'),
-        \App\Enums\RoleEnum::TEACHER => redirect()->intended('/teacher/dashboard'),
-        \App\Enums\RoleEnum::STUDENT => redirect()->intended('/student/dashboard'),
+        \App\Enums\RoleEnum::SUPER_ADMIN => redirect()->intended('/admin/dashboard'),
+        \App\Enums\RoleEnum::ADMIN       => redirect()->intended('/admin/dashboard'),
+        \App\Enums\RoleEnum::TEACHER     => redirect()->intended('/teacher/dashboard'),
+        \App\Enums\RoleEnum::STUDENT     => redirect()->intended('/student/dashboard'),
     };
 })->middleware(['auth'])->name('dashboard');
 
@@ -48,6 +50,21 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin/students')->name('admin
     Route::get('/{student}/edit', [StudentController::class, 'edit'])->name('edit');
     Route::put('/{student}', [StudentController::class, 'update'])->name('update');
     Route::delete('/{student}', [StudentController::class, 'destroy'])->name('destroy');
+});
+
+Route::middleware(['auth', 'role:admin'])->prefix('admin/leads')->name('admin.leads.')->group(function () {
+    Route::get('/', [LeadController::class, 'index'])->name('index');
+    Route::get('/kanban', [LeadController::class, 'kanban'])->name('kanban');
+    Route::get('/create', [LeadController::class, 'create'])->name('create');
+    Route::post('/', [LeadController::class, 'store'])->name('store');
+    Route::get('/{lead}', [LeadController::class, 'show'])->name('show');
+    Route::get('/{lead}/edit', [LeadController::class, 'edit'])->name('edit');
+    Route::put('/{lead}', [LeadController::class, 'update'])->name('update');
+    Route::delete('/{lead}', [LeadController::class, 'destroy'])->name('destroy');
+    Route::patch('/{lead}/assign', [LeadController::class, 'assign'])->name('assign');
+    Route::patch('/{lead}/follow-up', [LeadController::class, 'scheduleFollowUp'])->name('followUp');
+    Route::patch('/{lead}/status', [LeadController::class, 'updateStatus'])->name('updateStatus');
+    Route::post('/{lead}/convert', [LeadController::class, 'convert'])->name('convert');
 });
 
 Route::middleware(['auth', 'role:admin'])->prefix('admin/rooms')->name('admin.rooms.')->group(function () {
@@ -102,7 +119,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin/reports')->name('admin.
     Route::get('/teachers', [TeacherReportController::class, 'index'])->name('teachers');
 });
 
-Route::middleware(['auth', 'role:admin'])->prefix('admin/settings')->name('admin.settings.')->group(function () {
+Route::middleware(['auth', 'role:admin,super_admin'])->prefix('admin/settings')->name('admin.settings.')->group(function () {
     Route::get('/',                                         [SettingsController::class, 'index'])           ->name('index');
     Route::post('/institute',                               [SettingsController::class, 'updateInstitute']) ->name('institute.update');
     Route::put('/{section}',                               [SettingsController::class, 'update'])          ->name('update');

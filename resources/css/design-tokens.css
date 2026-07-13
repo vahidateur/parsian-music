@@ -1,0 +1,221 @@
+/**
+ * Design Tokens - Parsian Music Academy
+ * 
+ * Centralized design values for the entire academy design system.
+ * These tokens are used across all pages: Login, Register, Dashboard, 
+ * Student Panel, Teacher Panel, and Admin Panel.
+ * 
+ * @see resources/design/ for complete documentation
+ */
+
+:root {
+  /* ═══════════════════════════════════════════════════════════
+     COLORS
+  ═══════════════════════════════════════════════════════════ */
+  
+  /* Gold Palette (Primary Brand) */
+  --gold-100: #F8E7B5;
+  --gold-200: #F4D28B;
+  --gold-300: #D5AF58;
+  --gold-400: #B98D36;
+  
+  /* Neutral Palette */
+  --neutral-950: #0E1018;
+  --neutral-900: #11131B;
+  --neutral-850: #1C2230;
+  
+  /* Text Colors */
+  --text-primary: #FFFFFF;
+  --text-secondary: #CFC7B2;
+  --text-tertiary: rgba(255, 255, 255, 0.70);
+  
+  /* Semantic Colors */
+  --success-500: #10B981;
+  --success-bg: rgba(16, 185, 129, 0.10);
+  --error-500: #EF4444;
+  --error-bg: rgba(239, 68, 68, 0.10);
+  --warning-500: #F59E0B;
+  --warning-bg: rgba(245, 158, 11, 0.10);
+  --info-500: #3B82F6;
+  --info-bg: rgba(59, 130, 246, 0.10);
+
+  /* ═══════════════════════════════════════════════════════════
+     GLASS EFFECT
+  ═══════════════════════════════════════════════════════════ */
+  
+  /* Glass Backgrounds */
+  --glass-bg: rgba(10, 12, 18, 0.42);
+  --glass-bg-panel: rgba(10, 12, 18, 0.25);
+  --glass-overlay: rgba(0, 0, 0, 0.45);
+  
+  /* Glass Blur */
+  --glass-blur: 32px;
+  --glass-blur-light: 16px;
+  
+  /* Glass Borders */
+  --glass-border: rgba(213, 175, 88, 0.18);
+  --glass-border-light: rgba(213, 175, 88, 0.12);
+  
+  /* Glass Shadows */
+  --glass-shadow: 0 40px 120px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  --glass-shadow-panel: 0 20px 60px rgba(0, 0, 0, 0.35);
+
+  /* ═══════════════════════════════════════════════════════════
+     BORDER RADIUS
+  ═══════════════════════════════════════════════════════════ */
+  
+  --radius-xs: 8px;
+  --radius-sm: 12px;
+  --radius-md: 18px;
+  --radius-lg: 28px;
+  --radius-xl: 40px;
+  --radius-full: 50%;
+
+  /* ═══════════════════════════════════════════════════════════
+     SPACING (8px Grid System)
+  ═══════════════════════════════════════════════════════════ */
+  
+  --space-1: 8px;
+  --space-2: 16px;
+  --space-3: 24px;
+  --space-4: 32px;
+  --space-5: 40px;
+  --space-6: 48px;
+  --space-8: 64px;
+  --space-10: 80px;
+  --space-12: 96px;
+  --space-15: 120px;
+  
+  /* Page Spacing */
+  --space-page-mobile: 16px;
+  --space-page-tablet: 24px;
+  --space-page-desktop: 32px;
+
+  /* ═══════════════════════════════════════════════════════════
+     TYPOGRAPHY
+  ═══════════════════════════════════════════════════════════ */
+  
+  /* Type Scale */
+  --text-xs: 12px;
+  --text-sm: 13px;
+  --text-base: 15px;
+  --text-md: 16px;
+  --text-lg: 18px;
+  --text-xl: 22px;
+  --text-2xl: 26px;
+  --text-3xl: 32px;
+  --text-4xl: 40px;
+
+  /* ═══════════════════════════════════════════════════════════
+     SHADOWS
+  ═══════════════════════════════════════════════════════════ */
+  
+  /* Elevation Levels */
+  --shadow-none: none;
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.15);
+  --shadow-md: 0 10px 30px rgba(0, 0, 0, 0.25);
+  --shadow-lg: 0 20px 60px rgba(0, 0, 0, 0.35);
+  --shadow-xl: 0 40px 120px rgba(0, 0, 0, 0.45);
+  
+  /* Glow Shadows (Golden) */
+  --shadow-button: 0 10px 30px rgba(213, 175, 88, 0.35);
+  --shadow-button-hover: 0 14px 40px rgba(213, 175, 88, 0.5);
+  --shadow-input-focus: 0 0 0 4px rgba(213, 175, 88, 0.12);
+  --shadow-social-hover: 0 0 20px rgba(213, 175, 88, 0.3);
+
+  /* ═══════════════════════════════════════════════════════════
+     MOTION & ANIMATION
+  ═══════════════════════════════════════════════════════════ */
+  
+  /* Durations */
+  --duration-instant: 100ms;
+  --duration-fast: 200ms;
+  --duration-normal: 300ms;
+  --duration-slow: 500ms;
+  --duration-slower: 800ms;
+  
+  /* Easing */
+  --ease-standard: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-enter: cubic-bezier(0, 0, 0.2, 1);
+  --ease-exit: cubic-bezier(0.4, 0, 1, 1);
+  --ease-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+
+  /* ═══════════════════════════════════════════════════════════
+     ICONS
+  ═══════════════════════════════════════════════════════════ */
+  
+  --icon-xs: 16px;
+  --icon-sm: 20px;
+  --icon-md: 24px;
+  --icon-lg: 32px;
+  --icon-xl: 48px;
+  
+  /* Icon Colors */
+  --icon-default: var(--text-secondary);
+  --icon-active: var(--gold-300);
+  --icon-disabled: rgba(255, 255, 255, 0.3);
+
+  /* ═══════════════════════════════════════════════════════════
+     LAYOUT & Z-INDEX
+  ═══════════════════════════════════════════════════════════ */
+  
+  /* Container Widths */
+  --container-xs: 640px;
+  --container-sm: 768px;
+  --container-md: 1024px;
+  --container-lg: 1280px;
+  --container-xl: 1536px;
+  
+  /* Z-Index Scale */
+  --z-base: 0;
+  --z-dropdown: 10;
+  --z-sticky: 20;
+  --z-fixed: 30;
+  --z-modal-backdrop: 40;
+  --z-modal: 50;
+  --z-popover: 60;
+  --z-toast: 70;
+
+  /* ═══════════════════════════════════════════════════════════
+     COMPONENT DIMENSIONS
+  ═══════════════════════════════════════════════════════════ */
+  
+  /* Card Dimensions */
+  --card-width: 470px;
+  --card-height: 760px;
+  
+  /* Form Element Heights */
+  --input-height: 70px;
+  --button-height: 68px;
+  --social-button-size: 56px;
+  
+  /* Brand Elements */
+  --logo-size: 64px;
+}
+
+/**
+ * Accessibility: Reduced Motion
+ * 
+ * Respects user's motion preferences by disabling animations
+ * and reducing transition durations to near-instant.
+ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+    
+    /* Disable glass blur for performance */
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+  
+  /* Increase glass background opacity for better readability */
+  :root {
+    --glass-bg: rgba(10, 12, 18, 0.85);
+    --glass-bg-panel: rgba(10, 12, 18, 0.70);
+  }
+}

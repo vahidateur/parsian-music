@@ -1,0 +1,138 @@
+{
+  "version": "1.0.0",
+  "description": "Component variant definitions for Parsian Music Academy",
+  "variants": {
+    "GlassCard": {
+      "default": {
+        "width": "var(--card-width)",
+        "height": "auto",
+        "maxHeight": "var(--card-height)",
+        "padding": "var(--space-6)",
+        "radius": "var(--radius-lg)",
+        "description": "Standard glass card for login, modals"
+      },
+      "compact": {
+        "width": "100%",
+        "maxWidth": "400px",
+        "height": "auto",
+        "padding": "var(--space-4)",
+        "radius": "var(--radius-md)",
+        "description": "Compact card for widgets, small panels"
+      },
+      "modal": {
+        "width": "90%",
+        "maxWidth": "600px",
+        "height": "auto",
+        "padding": "var(--space-6)",
+        "radius": "var(--radius-lg)",
+        "description": "Modal dialog card"
+      },
+      "hero": {
+        "width": "100%",
+        "height": "100vh",
+        "padding": "var(--space-8)",
+        "radius": "0",
+        "description": "Full-screen hero section"
+      }
+    },
+    "Button": {
+      "primary": {
+        "bg": "gradient-to-b from-[var(--gold-200)] to-[var(--gold-300)]",
+        "text": "#14100a",
+        "shadow": "var(--shadow-button)",
+        "hoverShadow": "var(--shadow-button-hover)",
+        "description": "Primary action button (golden gradient)"
+      },
+      "secondary": {
+        "bg": "white/[0.06]",
+        "text": "var(--text-primary)",
+        "border": "var(--glass-border)",
+        "hoverBg": "white/[0.10]",
+        "description": "Secondary action button (glass style)"
+      },
+      "ghost": {
+        "bg": "transparent",
+        "text": "var(--gold-300)",
+        "hoverBg": "white/[0.06]",
+        "description": "Minimal button with no background"
+      },
+      "danger": {
+        "bg": "var(--error-500)",
+        "text": "white",
+        "shadow": "0 10px 30px rgba(239,68,68,0.35)",
+        "hoverShadow": "0 14px 40px rgba(239,68,68,0.5)",
+        "description": "Destructive action button"
+      },
+      "success": {
+        "bg": "var(--success-500)",
+        "text": "white",
+        "shadow": "0 10px 30px rgba(16,185,129,0.35)",
+        "hoverShadow": "0 14px 40px rgba(16,185,129,0.5)",
+        "description": "Success/confirm action button"
+      }
+    },
+    "Input": {
+      "default": {
+        "border": "var(--glass-border-light)",
+        "focusBorder": "var(--gold-300)",
+        "focusShadow": "var(--shadow-input-focus)",
+        "description": "Standard input field"
+      },
+      "error": {
+        "border": "var(--error-500)",
+        "focusBorder": "var(--error-500)",
+        "focusShadow": "0 0 0 4px rgba(239,68,68,0.12)",
+        "description": "Input with error state"
+      }
+    },
+    "Divider": {
+      "default": {
+        "height": "1px",
+        "opacity": "0.18",
+        "description": "Standard divider"
+      },
+      "thick": {
+        "height": "2px",
+        "opacity": "0.3",
+        "description": "Thick divider for major sections"
+      },
+      "dashed": {
+        "height": "1px",
+        "opacity": "0.18",
+        "style": "dashed",
+        "description": "Dashed divider for subtle separation"
+      }
+    }
+  },
+  "sizes": {
+    "Button": {
+      "sm": {
+        "height": "var(--space-6)",
+        "padding": "0 var(--space-2)",
+        "fontSize": "var(--text-sm)"
+      },
+      "md": {
+        "height": "var(--button-height)",
+        "padding": "0 var(--space-3)",
+        "fontSize": "var(--text-md)"
+      },
+      "lg": {
+        "height": "var(--space-10)",
+        "padding": "0 var(--space-4)",
+        "fontSize": "var(--text-lg)"
+      }
+    },
+    "Icon": {
+      "xs": "var(--icon-xs)",
+      "sm": "var(--icon-sm)",
+      "md": "var(--icon-md)",
+      "lg": "var(--icon-lg)",
+      "xl": "var(--icon-xl)"
+    },
+    "Logo": {
+      "sm": "48px",
+      "md": "64px",
+      "lg": "80px"
+    }
+  }
+}

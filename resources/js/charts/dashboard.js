@@ -108,6 +108,22 @@ function initSessionStatus() {
     }).render().then(() => clearSkeleton(el));
 }
 
+function initLeadSources() {
+    const data = dataset('lead-sources');
+    const el   = document.getElementById('chart-lead-sources');
+    if (!data || !el) return;
+
+    new ApexCharts(el, {
+        ...base('bar'),
+        plotOptions: { bar: { horizontal: true, borderRadius: 4, barHeight: '60%' } },
+        series: [{ name: 'سرنخ‌ها', data: data.map(d => d.total), color: C.excused }],
+        xaxis: { categories: data.map(d => d.source), labels: { style: { colors: '#6b7280' } } },
+        yaxis: { labels: { style: { colors: '#d1d5db' }, maxWidth: 120 } },
+        legend: { show: false },
+        dataLabels: { enabled: false },
+    }).render().then(() => clearSkeleton(el));
+}
+
 function initMonthlyRevenue() {
     const data = dataset('monthly-revenue');
     const el   = document.getElementById('chart-monthly-revenue');
@@ -135,4 +151,5 @@ document.addEventListener('DOMContentLoaded', () => {
     initTeacherWorkload();
     initSessionStatus();
     initMonthlyRevenue();
+    initLeadSources();
 });

@@ -1,0 +1,114 @@
+{
+  "version": "1.0.0",
+  "description": "UI Component Registry for Parsian Music Academy Design System",
+  "components": {
+    "GlassCard": {
+      "path": "components/ui/glass/card.blade.php",
+      "category": "glass",
+      "variants": ["default", "compact", "modal", "hero"],
+      "props": ["width", "maxWidth", "height", "maxHeight", "padding", "radius"],
+      "responsive": true,
+      "darkMode": true,
+      "accessibility": "WCAG AA"
+    },
+    "GlassPanel": {
+      "path": "components/ui/glass/panel.blade.php",
+      "category": "glass",
+      "variants": ["default", "light"],
+      "props": ["padding", "radius"],
+      "responsive": true,
+      "darkMode": true,
+      "accessibility": "WCAG AA"
+    },
+    "Button": {
+      "path": "components/ui/button.blade.php",
+      "category": "form",
+      "variants": ["primary", "secondary", "ghost", "danger", "success"],
+      "props": ["variant", "type", "size", "disabled", "fullWidth", "loading"],
+      "sizes": ["sm", "md", "lg"],
+      "responsive": true,
+      "darkMode": true,
+      "accessibility": "WCAG AA"
+    },
+    "Input": {
+      "path": "components/ui/input.blade.php",
+      "category": "form",
+      "variants": ["default", "error"],
+      "props": ["type", "name", "value", "placeholder", "required", "disabled", "readonly", "hasIcon", "hasError"],
+      "responsive": true,
+      "darkMode": true,
+      "accessibility": "WCAG AA"
+    },
+    "FormField": {
+      "path": "components/ui/form-field.blade.php",
+      "category": "form",
+      "variants": ["default"],
+      "props": ["name", "label", "hint", "error", "required"],
+      "slots": ["default", "icon"],
+      "responsive": true,
+      "darkMode": true,
+      "accessibility": "WCAG AA"
+    },
+    "Checkbox": {
+      "path": "components/ui/checkbox.blade.php",
+      "category": "form",
+      "variants": ["default"],
+      "props": ["name", "value", "checked", "disabled", "label"],
+      "responsive": true,
+      "darkMode": true,
+      "accessibility": "WCAG AA"
+    },
+    "BrandLogo": {
+      "path": "components/ui/brand-logo.blade.php",
+      "category": "brand",
+      "variants": ["default"],
+      "props": ["size"],
+      "sizes": ["sm", "md", "lg"],
+      "responsive": true,
+      "darkMode": true,
+      "accessibility": "WCAG AA"
+    },
+    "BrandTitle": {
+      "path": "components/ui/brand-title.blade.php",
+      "category": "brand",
+      "variants": ["default"],
+      "props": ["size", "weight", "color", "tag"],
+      "responsive": true,
+      "darkMode": true,
+      "accessibility": "WCAG AA"
+    },
+    "BrandSubtitle": {
+      "path": "components/ui/brand-subtitle.blade.php",
+      "category": "brand",
+      "variants": ["default"],
+      "props": ["size", "weight", "color"],
+      "responsive": true,
+      "darkMode": true,
+      "accessibility": "WCAG AA"
+    },
+    "BrandEnglish": {
+      "path": "components/ui/brand-english.blade.php",
+      "category": "brand",
+      "variants": ["default"],
+      "props": ["size", "weight", "color", "spacing"],
+      "responsive": true,
+      "darkMode": true,
+      "accessibility": "WCAG AA"
+    },
+    "Divider": {
+      "path": "components/ui/divider.blade.php",
+      "category": "utility",
+      "variants": ["default", "thick", "dashed"],
+      "props": ["height", "width", "opacity", "color", "margin"],
+      "responsive": true,
+      "darkMode": true,
+      "accessibility": "WCAG AA"
+    }
+  },
+  "categories": {
+    "glass": "Glassmorphism components",
+    "form": "Form input components",
+    "brand": "Brand identity components",
+    "utility": "Utility components"
+  }
+}

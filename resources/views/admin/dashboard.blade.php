@@ -188,6 +188,76 @@
 </div>
 
 {{-- ═══════════════════════════════════════════════════════
+     Row 3.5 — Lead CRM widgets
+════════════════════════════════════════════════════════ --}}
+<div class="mt-5 grid grid-cols-1 gap-5 xl:grid-cols-3">
+    <x-dashboard.chart-container
+        class="xl:col-span-2"
+        title="{{ __('admin.leads') }} — سرنخ‌های اخیر"
+        :badge="__('admin.leads')"
+    >
+        <x-slot:actions>
+            <a href="{{ route('admin.leads.index') }}" class="text-xs font-medium text-amber-400 transition hover:text-amber-300">{{ __('admin.leads') }} ←</a>
+        </x-slot:actions>
+
+        @if ($recentLeads->isEmpty())
+            <x-dashboard.empty-state :message="__('admin.no_leads_found')" compact>
+                <x-slot:icon><svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 6.75h12M8.25 12h12m-12 5.25h12M3.75 6.75h.007v.008H3.75V6.75z"/></svg></x-slot:icon>
+            </x-dashboard.empty-state>
+        @else
+            @php
+                $leadStatusBadge = ['new' => 'bg-sky-500/10 text-sky-400', 'contacted' => 'bg-blue-500/10 text-blue-400', 'interested' => 'bg-violet-500/10 text-violet-400', 'trial_scheduled' => 'bg-amber-500/10 text-amber-400', 'registered' => 'bg-emerald-500/10 text-emerald-400', 'lost' => 'bg-gray-700/50 text-gray-400'];
+            @endphp
+            <div class="-mx-4 -my-4 overflow-x-auto sm:-mx-6 sm:-my-6">
+                <table class="w-full min-w-[420px] text-start text-sm">
+                    <thead>
+                        <tr class="border-b border-gray-800/60 bg-gray-800/30">
+                            <th class="px-4 py-3 text-xs font-medium uppercase tracking-wider text-gray-500 sm:px-6">{{ __('admin.full_name') }}</th>
+                            <th class="px-4 py-3 text-xs font-medium uppercase tracking-wider text-gray-500 sm:px-6">{{ __('admin.status') }}</th>
+                            <th class="px-4 py-3 text-xs font-medium uppercase tracking-wider text-gray-500 sm:px-6">{{ __('admin.assigned_admin') }}</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-800/60">
+                        @foreach ($recentLeads as $lead)
+                            <tr class="transition duration-150 hover:bg-gray-800/25">
+                                <td class="px-4 py-3 font-medium text-gray-100 sm:px-6">
+                                    <a href="{{ route('admin.leads.show', $lead) }}" class="hover:text-amber-300">{{ $lead->full_name }}</a>
+                                </td>
+                                <td class="px-4 py-3 sm:px-6">
+                                    <span class="rounded-full {{ $leadStatusBadge[$lead->status->value] ?? 'bg-gray-700/50 text-gray-400' }} px-2.5 py-0.5 text-xs font-medium">{{ $lead->status->label() }}</span>
+                                </td>
+                                <td class="px-4 py-3 text-gray-400 sm:px-6">{{ $lead->assignedUser?->full_name ?? __('admin.unassigned') }}</td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        @endif
+    </x-dashboard.chart-container>
+
+    <div class="space-y-4">
+        <x-dashboard.section-header title="پیگیری‌های سرنخ" subtitle="امروز و معوق" class="mb-0" />
+        <x-dashboard.stat-card label="پیگیری‌های امروز" :value="$todayFollowUps" description="سرنخ‌هایی که امروز باید پیگیری شوند" tone="sky" />
+        <x-dashboard.stat-card label="نرخ تبدیل" :value="$leadConversionRate.'%'" description="سرنخ‌های ثبت‌نام‌شده از کل" tone="emerald" />
+        <x-dashboard.alert-card
+            title="پیگیری‌های معوق"
+            :message="$overdueFollowUps > 0 ? $overdueFollowUps.' سرنخ پیگیری معوق دارد' : 'پیگیری معوقی وجود ندارد'"
+            :priority="$overdueFollowUps > 0 ? 'high' : 'success'"
+            :meta="$overdueFollowUps.' مورد'"
+        />
+    </div>
+</div>
+
+<div class="mt-5">
+    <x-dashboard.chart-container title="منابع سرنخ‌ها" subtitle="توزیع سرنخ بر اساس منبع" badge="نمودار" data-chart="lead-sources" :data-chart-data="json_encode($leadSources)">
+        <div class="relative min-h-[220px]">
+            <div class="chart-skeleton absolute inset-0 animate-pulse rounded-xl bg-gray-800/40" aria-hidden="true"></div>
+            <div id="chart-lead-sources" class="relative w-full" role="img" aria-label="نمودار منابع سرنخ‌ها"></div>
+        </div>
+    </x-dashboard.chart-container>
+</div>
+
+{{-- ═══════════════════════════════════════════════════════
      Row 4 — Mini Calendar + Notifications
 ════════════════════════════════════════════════════════ --}}
 <div class="mt-5 grid grid-cols-1 gap-5 xl:grid-cols-3">

@@ -1,0 +1,93 @@
+/**
+ * Semantic Color Tokens - Parsian Music Academy
+ * 
+ * Semantic layer on top of design tokens for easy theme switching.
+ * These tokens map to actual color values and can be overridden per theme.
+ * 
+ * Benefits:
+ * - Change theme by overriding semantic tokens
+ * - Components use semantic names, not raw colors
+ * - Easy to maintain consistency
+ */
+
+:root {
+  /* ═══════════════════════════════════════════════════════════
+     PRIMARY COLORS (Brand)
+  ═══════════════════════════════════════════════════════════ */
+  --color-primary: var(--gold-300);
+  --color-primary-hover: var(--gold-200);
+  --color-primary-active: var(--gold-400);
+  
+  /* ═══════════════════════════════════════════════════════════
+     SECONDARY COLORS
+  ═══════════════════════════════════════════════════════════ */
+  --color-secondary: var(--neutral-850);
+  --color-secondary-hover: var(--neutral-900);
+  
+  /* ═══════════════════════════════════════════════════════════
+     SURFACE COLORS (Backgrounds)
+  ═══════════════════════════════════════════════════════════ */
+  --color-surface: var(--neutral-950);
+  --color-surface-elevated: var(--neutral-900);
+  --color-surface-glass: var(--glass-bg);
+  
+  /* ═══════════════════════════════════════════════════════════
+     BORDER COLORS
+  ═══════════════════════════════════════════════════════════ */
+  --color-border: var(--glass-border);
+  --color-border-light: var(--glass-border-light);
+  --color-border-focus: var(--gold-300);
+  
+  /* ═══════════════════════════════════════════════════════════
+     TEXT COLORS
+  ═══════════════════════════════════════════════════════════ */
+  --color-text: var(--text-primary);
+  --color-text-muted: var(--text-secondary);
+  --color-text-disabled: var(--text-tertiary);
+  
+  /* ═══════════════════════════════════════════════════════════
+     ACCENT COLORS (Interactive)
+  ═══════════════════════════════════════════════════════════ */
+  --color-accent: var(--gold-300);
+  --color-accent-hover: var(--gold-200);
+  
+  /* ═══════════════════════════════════════════════════════════
+     STATUS COLORS
+  ═══════════════════════════════════════════════════════════ */
+  --color-success: var(--success-500);
+  --color-success-bg: var(--success-bg);
+  
+  --color-error: var(--error-500);
+  --color-error-bg: var(--error-bg);
+  
+  --color-warning: var(--warning-500);
+  --color-warning-bg: var(--warning-bg);
+  
+  --color-info: var(--info-500);
+  --color-info-bg: var(--info-bg);
+  
+  /* ═══════════════════════════════════════════════════════════
+     COMPONENT-SPECIFIC
+  ═══════════════════════════════════════════════════════════ */
+  --color-button-primary-bg: linear-gradient(to bottom, var(--gold-200), var(--gold-300));
+  --color-button-primary-text: #14100a;
+  
+  --color-input-bg: rgba(255, 255, 255, 0.06);
+  --color-input-border: var(--glass-border-light);
+  --color-input-border-focus: var(--gold-300);
+  
+  --color-glass-bg: var(--glass-bg);
+  --color-glass-border: var(--glass-border);
+}
+
+/**
+ * Usage Example:
+ * 
+ * Instead of:
+ * <div class="bg-[var(--gold-300)] border-[var(--glass-border)]">
+ * 
+ * Use:
+ * <div class="bg-[var(--color-primary)] border-[var(--color-border)]">
+ * 
+ * This allows theme switching by only overriding semantic tokens.
+ */

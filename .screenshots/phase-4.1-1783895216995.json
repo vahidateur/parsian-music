@@ -1,0 +1,82 @@
+{
+  "tokens": {
+    "cardWidth": "470px",
+    "cardHeight": "760px",
+    "radiusLg": "28px",
+    "spaceSix": "48px",
+    "glassBg": "#0a0c126b",
+    "goldThree": "#d5af58"
+  },
+  "viewport": {
+    "width": 1920,
+    "height": 1080
+  },
+  "hero": {
+    "x": 0,
+    "y": 0,
+    "width": 1280,
+    "height": 1080,
+    "visible": true,
+    "borderRadius": "0px",
+    "background": "rgb(17, 19, 27) none repeat scroll 0% 0% / auto padding-box ",
+    "backdropFilter": "none",
+    "border": "0px solid rgb(229, 231, 235)",
+    "boxShadow": "none"
+  },
+  "loginSection": {
+    "x": 1280,
+    "y": 0,
+    "width": 640,
+    "height": 1080,
+    "visible": true,
+    "borderRadius": "0px",
+    "background": "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box",
+    "backdropFilter": "none",
+    "border": "0px solid rgb(229, 231, 235)",
+    "boxShadow": "none"
+  },
+  "loginCard": {
+    "x": 1365,
+    "y": 160,
+    "width": 470,
+    "height": 760,
+    "visible": true,
+    "borderRadius": "28px",
+    "background": "rgba(10, 12, 18, 0.42) none repeat scroll 0% 0% / auto paddi",
+    "backdropFilter": "blur(32px)",
+    "border": "1px solid rgba(213, 175, 88, 0.18)",
+    "boxShadow": "rgba(0, 0, 0, 0.45) 0px 40px 120px 0px, rgba(255, 255, 255, 0.06) 0px 1px 0px 0p"
+  },
+  "loginCardContent": {
+    "x": 1414,
+    "y": 209,
+    "width": 372,
+    "height": 662,
+    "visible": true,
+    "borderRadius": "0px",
+    "background": "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box",
+    "backdropFilter": "none",
+    "border": "0px solid rgb(229, 231, 235)",
+    "boxShadow": "none"
+  },
+  "loginHeader": {
+    "x": 1414,
+    "y": 209,
+    "width": 372,
+    "height": 64,
+    "visible": true,
+    "borderRadius": "0px",
+    "background": "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box",
+    "backdropFilter": "none",
+    "border": "0px solid rgb(229, 231, 235)",
+    "boxShadow": "none"
+  },
+  "logo": {
+    "width": 64,
+    "height": 64,
+    "role": "img",
+    "ariaLabel": "لوگوی آموزشگاه موسیقی پارسیان",
+    "visible": true
+  },
+  "errors": []
+}

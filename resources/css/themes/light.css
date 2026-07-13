@@ -1,0 +1,38 @@
+/**
+ * Light Theme - Parsian Music Academy
+ * 
+ * Alternative light theme (future implementation).
+ * Currently not used, but prepared for future theme switching.
+ */
+
+[data-theme="light"] {
+  /* Surfaces */
+  --color-surface: #FFFFFF;
+  --color-surface-elevated: #F5F5F5;
+  --color-surface-glass: rgba(255, 255, 255, 0.7);
+  
+  /* Text */
+  --color-text: #1A1A1A;
+  --color-text-muted: #666666;
+  --color-text-disabled: #999999;
+  
+  /* Primary (Gold - adjusted for light bg) */
+  --color-primary: var(--gold-400);
+  --color-primary-hover: var(--gold-300);
+  --color-primary-active: var(--gold-400);
+  
+  /* Borders */
+  --color-border: rgba(213, 175, 88, 0.25);
+  --color-border-light: rgba(213, 175, 88, 0.15);
+  
+  /* Status */
+  --color-success: var(--success-500);
+  --color-error: var(--error-500);
+  --color-warning: var(--warning-500);
+  --color-info: var(--info-500);
+  
+  /* Glass effect needs adjustment for light theme */
+  --glass-bg: rgba(255, 255, 255, 0.7);
+  --glass-border: rgba(213, 175, 88, 0.25);
+  --glass-shadow: 0 40px 120px rgba(0, 0, 0, 0.15);
+}

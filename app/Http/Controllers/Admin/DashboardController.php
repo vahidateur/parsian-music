@@ -2,11 +2,14 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Enums\LeadStatusEnum;
+use App\Enums\PaymentStatusEnum;
 use App\Enums\SessionStatusEnum;
 use App\Http\Controllers\Controller;
 use App\Helpers\Jalalian;
 use App\Models\ClassAttendance;
 use App\Models\ClassSession;
+use App\Models\Lead;
 use App\Models\Student;
 use App\Models\StudentEnrollment;
 use App\Models\Subscription;
@@ -44,6 +47,15 @@ class DashboardController extends Controller
             'chartTeacherWorkload'   => $this->teacherWorkload(),
             'chartSessionStatus'     => $this->sessionStatusSummary(),
             'chartMonthlyRevenue'    => $this->monthlyRevenuePlaceholder(),
+            // Lead CRM widgets
+            'recentLeads'            => Lead::with('assignedUser')->latest()->take(5)->get(),
+            'todayFollowUps'         => Lead::whereDate('next_follow_up_at', $today->toDateString())->count(),
+            'overdueFollowUps'       => Lead::whereNotNull('next_follow_up_at')
+                                            ->where('next_follow_up_at', '<', $today)
+                                            ->whereNotIn('status', [LeadStatusEnum::Registered->value, LeadStatusEnum::Lost->value])
+                                            ->count(),
+            'leadConversionRate'     => $this->leadConversionRate(),
+            'leadSources'            => $this->leadSourceBreakdown(),
         ]);
     }
 
@@ -108,23 +120,67 @@ class DashboardController extends Controller
     }
 
     /**
-     * Placeholder revenue dataset — returns zeroed months for the current Jalali half-year.
-     *
-     * Replace with real invoice_payments aggregation once Sprint 27 (Billing UI) is complete:
-     *   InvoicePayment::selectRaw('MONTH(paid_at) as month, SUM(amount) as revenue')
-     *       ->where('status', PaymentStatusEnum::Completed)
-     *       ->groupBy('month')->get()
+     * Monthly revenue for the last 6 months from completed invoice payments.
      */
     private function monthlyRevenuePlaceholder(): array
     {
-        return [
-            ['month' => 'فروردین',   'revenue' => 0],
-            ['month' => 'اردیبهشت', 'revenue' => 0],
-            ['month' => 'خرداد',     'revenue' => 0],
-            ['month' => 'تیر',       'revenue' => 0],
-            ['month' => 'مرداد',     'revenue' => 0],
-            ['month' => 'شهریور',    'revenue' => 0],
+        $today = CarbonImmutable::today();
+
+        $rows = \App\Models\InvoicePayment::selectRaw(
+                "DATE_FORMAT(paid_at, '%Y-%m-01') as month_start, SUM(amount) as revenue"
+            )
+            ->where('status', \App\Enums\PaymentStatusEnum::Completed->value)
+            ->where('paid_at', '>=', $today->subMonths(5)->startOfMonth()->toDateString())
+            ->groupBy(DB::raw("DATE_FORMAT(paid_at, '%Y-%m-01')"))
+            ->pluck('revenue', 'month_start')
+            ->toArray();
+
+        $persian = [
+            1=>'فروردین',2=>'اردیبهشت',3=>'خرداد',4=>'تیر',
+            5=>'مرداد',6=>'شهریور',7=>'مهر',8=>'آبان',
+            9=>'آذر',10=>'دی',11=>'بهمن',12=>'اسفند',
         ];
+
+        $result = [];
+        for ($i = 5; $i >= 0; $i--) {
+            $m   = $today->subMonths($i)->startOfMonth();
+            $key = $m->toDateString();
+            $result[] = [
+                'month'   => $persian[$m->month] ?? $m->format('m'),
+                'revenue' => (float) ($rows[$key] ?? 0),
+            ];
+        }
+
+        return $result;
+    }
+
+    /** Percentage of all-time leads that reached Registered status. */
+    private function leadConversionRate(): float
+    {
+        $total = Lead::count();
+        if ($total === 0) {
+            return 0.0;
+        }
+
+        $registered = Lead::where('status', LeadStatusEnum::Registered->value)->count();
+
+        return round(($registered / $total) * 100, 1);
+    }
+
+    /** Lead counts grouped by source (all-time). */
+    private function leadSourceBreakdown(): array
+    {
+        $counts = Lead::selectRaw('source, COUNT(*) as cnt')
+            ->groupBy('source')
+            ->pluck('cnt', 'source')
+            ->toArray();
+
+        return collect(\App\Enums\LeadSourceEnum::cases())
+            ->map(fn ($s) => [
+                'source' => $s->label(),
+                'total'  => (int) ($counts[$s->value] ?? 0),
+            ])
+            ->toArray();
     }
 
     /** Date strings in the current month that have at least one session. */

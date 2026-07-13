@@ -1,3 +1,21 @@
+/* ═══════════════════════════════════════════════════════════
+   Design System Imports — must precede @tailwind directives
+═══════════════════════════════════════════════════════════ */
+
+/* Core Design Tokens */
+@import './design-tokens.css';
+
+/* Semantic Tokens (theme-aware) */
+@import './semantic-tokens.css';
+
+/* Animation Library */
+@import './animations.css';
+
+/* Theme Variants */
+@import './themes/dark.css';
+@import './themes/light.css';
+@import './themes/academy-gold.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

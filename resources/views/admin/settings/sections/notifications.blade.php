@@ -52,14 +52,15 @@
                        :id="'ev_{{ $ev['key'] }}'">
                 {{-- Visual toggle --}}
                 <button type="button"
+                        dir="ltr"
                         role="switch"
                         :aria-checked="on.toString()"
                         aria-label="{{ $ev['label'] }} را فعال یا غیرفعال کن"
                         @click="on = !on; $el.previousElementSibling.checked = on"
                         :class="on ? 'bg-amber-500' : 'bg-gray-700'"
-                        class="relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full transition duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500/40">
-                    <span :class="on ? 'translate-x-5' : 'translate-x-0.5'"
-                          class="inline-block h-5 w-5 rounded-full bg-white shadow transition duration-200"></span>
+                        class="relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full p-0.5 transition duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500/40">
+                    <span :class="on ? 'translate-x-5' : 'translate-x-0'"
+                          class="pointer-events-none block h-5 w-5 rounded-full bg-white shadow-sm transition-transform duration-200 ease-in-out"></span>
                 </button>
             </div>
         </div>

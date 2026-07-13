@@ -8,27 +8,14 @@
     $hintClass  = "mt-1 text-xs text-gray-500";
     $divider    = "border-t border-gray-800/60 pt-5 mt-5";
 
-    $groupLabels = ['core' => 'هسته سیستم', 'infra' => 'زیرساخت', 'comms' => 'ارتباطات', 'finance' => 'مالی', 'system' => 'سیستم'];
-
     $sectionView  = 'admin.settings.sections.' . $section;
     $hasPartial   = view()->exists($sectionView);
 
-    // Sections that manage their own <form> tag
     $selfContainedSections = ['institute', 'rooms'];
     $isSelfContained       = in_array($section, $selfContainedSections);
     $isActionable          = ! $meta['coming_soon'] && ! $isSelfContained;
 @endphp
 
-{{-- Back link --}}
-<a href="{{ route('admin.settings.index') }}"
-   class="mb-5 inline-flex items-center gap-1.5 text-sm text-gray-400 transition duration-150 hover:text-gray-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-500/40">
-    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5"/>
-    </svg>
-    بازگشت به تنظیمات
-</a>
-
-{{-- Page Header --}}
 <x-dashboard.section-header :title="$meta['title']" :subtitle="$meta['desc']">
     <x-slot:actions>
         @if ($meta['coming_soon'])
@@ -37,95 +24,55 @@
     </x-slot:actions>
 </x-dashboard.section-header>
 
-{{-- Flash messages --}}
 @if (session('success'))
-    <x-dashboard.alert-card priority="success" :message="session('success')" class="mt-4" />
+    <x-dashboard.alert-card priority="success" :message="session('success')" class="mb-4" />
 @endif
 @if ($errors->any())
-    <x-dashboard.alert-card priority="high" message="{{ $errors->first() }}" class="mt-4" />
+    <x-dashboard.alert-card priority="high" :message="$errors->first()" class="mb-4" />
 @endif
 
-<div class="mt-5 grid grid-cols-1 gap-5 lg:grid-cols-4">
+<x-settings.shell :catalogue="$catalogue" :section="$section">
+    @if ($meta['coming_soon'])
+        <x-dashboard.alert-card
+            title="این بخش هنوز پیاده‌سازی نشده"
+            message="قابلیت‌های این بخش در نسخه‌های بعدی ارائه می‌شود. دکمه ذخیره‌ای برای این بخش وجود ندارد."
+            priority="mid" />
+    @endif
 
-    {{-- ── Sidebar Nav ──────────────────────────────────────────────────── --}}
-    <aside class="lg:col-span-1">
-        <x-dashboard.chart-container title="بخش‌های تنظیمات">
-            @foreach (collect($catalogue)->groupBy('group') as $groupKey => $items)
-                <p class="mb-1 mt-3 px-1 text-[10px] font-semibold uppercase tracking-widest text-gray-600 first:mt-0">
-                    {{ $groupLabels[$groupKey] ?? $groupKey }}
-                </p>
-                <nav class="space-y-0.5" role="navigation">
-                    @foreach ($items as $key => $item)
-                        <a href="{{ route('admin.settings.show', $key) }}"
-                           class="flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm transition duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500/40
-                               {{ $key === $section
-                                    ? 'bg-amber-500/10 font-medium text-amber-300'
-                                    : 'text-gray-400 hover:bg-gray-800/50 hover:text-gray-200' }}"
-                           aria-current="{{ $key === $section ? 'page' : 'false' }}">
-                            <svg class="h-4 w-4 shrink-0 {{ $key === $section ? 'text-amber-400' : 'text-gray-600' }}"
-                                 fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
-                                <path stroke-linecap="round" stroke-linejoin="round" d="{{ $item['icon'] }}"/>
-                            </svg>
-                            <span class="truncate">{{ $item['title'] }}</span>
-                            @if ($item['coming_soon'])
-                                <span class="ms-auto rounded-full bg-gray-800 px-1.5 py-0.5 text-[9px] font-medium text-gray-500">soon</span>
-                            @endif
-                        </a>
-                    @endforeach
-                </nav>
-            @endforeach
-        </x-dashboard.chart-container>
-    </aside>
+    @if ($isActionable)
+    <form method="POST"
+          action="{{ route('admin.settings.update', $section) }}"
+          enctype="multipart/form-data"
+          novalidate>
+        @csrf
+        @method('PUT')
+    @endif
 
-    {{-- ── Main Content ─────────────────────────────────────────────────── --}}
-    <div class="space-y-5 lg:col-span-3">
-
-        @if ($meta['coming_soon'])
-            <x-dashboard.alert-card
-                title="این بخش هنوز پیاده‌سازی نشده"
-                message="قابلیت‌های این بخش در نسخه‌های بعدی ارائه می‌شود. دکمه ذخیره‌ای برای این بخش وجود ندارد."
-                priority="mid" />
+        @if ($hasPartial)
+            @include($sectionView, compact('inputClass', 'labelClass', 'hintClass', 'divider', 'meta', 'section', 'settings'))
+        @else
+            @include('admin.settings.sections._coming_soon', compact('meta', 'divider'))
         @endif
-
-        {{-- Wrap actionable sections in a real form --}}
-        @if ($isActionable)
-        <form method="POST"
-              action="{{ route('admin.settings.update', $section) }}"
-              enctype="multipart/form-data"
-              novalidate>
-            @csrf
-            @method('PUT')
-        @endif
-
-            {{-- Render the section partial, or fall back to the generic coming-soon view --}}
-            @if ($hasPartial)
-                @include($sectionView, compact('inputClass', 'labelClass', 'hintClass', 'divider', 'meta', 'section', 'settings'))
-            @else
-                @include('admin.settings.sections._coming_soon', compact('meta', 'divider'))
-            @endif
-
-            {{-- Save / Reset — only for actionable, non-self-contained sections --}}
-            @if ($isActionable)
-            <div class="flex items-center justify-end gap-3 pt-2">
-                <a href="{{ route('admin.settings.show', $section) }}"
-                   class="rounded-lg px-4 py-2.5 text-sm text-gray-500 transition duration-150 hover:text-gray-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-500/30">
-                    بازنشانی
-                </a>
-                <button type="submit"
-                        class="inline-flex items-center gap-2 rounded-lg bg-gradient-to-r from-amber-600 to-amber-500 px-5 py-2.5 text-sm font-semibold text-gray-950 shadow-lg shadow-amber-500/10 transition duration-200 hover:from-amber-500 hover:to-amber-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500/40 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-950">
-                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/>
-                    </svg>
-                    ذخیره تغییرات
-                </button>
-            </div>
-            @endif
 
         @if ($isActionable)
-        </form>
+        <div class="flex items-center justify-end gap-3 pt-2">
+            <a href="{{ route('admin.settings.show', $section) }}"
+               class="rounded-lg px-4 py-2.5 text-sm text-gray-500 transition duration-150 hover:text-gray-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-500/30">
+                بازنشانی
+            </a>
+            <button type="submit"
+                    class="inline-flex items-center gap-2 rounded-lg bg-gradient-to-r from-amber-600 to-amber-500 px-5 py-2.5 text-sm font-semibold text-gray-950 shadow-lg shadow-amber-500/10 transition duration-200 hover:from-amber-500 hover:to-amber-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500/40 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-950">
+                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5"/>
+                </svg>
+                ذخیره تغییرات
+            </button>
+        </div>
         @endif
 
-    </div>
-</div>
+    @if ($isActionable)
+    </form>
+    @endif
+</x-settings.shell>
 
 @endsection

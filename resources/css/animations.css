@@ -1,0 +1,276 @@
+/**
+ * Animation Library - Parsian Music Academy
+ * 
+ * Centralized animation definitions.
+ * Components use these classes instead of inline animations.
+ * 
+ * All animations respect prefers-reduced-motion.
+ */
+
+/* ═══════════════════════════════════════════════════════════
+   FADE ANIMATIONS
+═══════════════════════════════════════════════════════════ */
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fadeOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in {
+  animation: fadeIn var(--duration-normal) var(--ease-enter);
+}
+
+.fade-out {
+  animation: fadeOut var(--duration-normal) var(--ease-exit);
+}
+
+.fade-in-up {
+  animation: fadeInUp var(--duration-slow) var(--ease-standard);
+}
+
+.fade-in-down {
+  animation: fadeInDown var(--duration-slow) var(--ease-standard);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   GLASS ANIMATIONS
+═══════════════════════════════════════════════════════════ */
+
+@keyframes glassFloat {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.glass-float {
+  animation: glassFloat 3s var(--ease-standard) infinite;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   BUTTON ANIMATIONS
+═══════════════════════════════════════════════════════════ */
+
+@keyframes buttonGlow {
+  0%, 100% {
+    box-shadow: var(--shadow-button);
+  }
+  50% {
+    box-shadow: var(--shadow-button-hover);
+  }
+}
+
+.button-glow {
+  animation: buttonGlow 2s var(--ease-standard) infinite;
+}
+
+.button-lift {
+  transition: 
+    transform var(--duration-fast) var(--ease-standard),
+    box-shadow var(--duration-fast) var(--ease-standard);
+}
+
+.button-lift:hover {
+  transform: translateY(-2px);
+}
+
+.button-lift:active {
+  transform: translateY(1px);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   INPUT ANIMATIONS
+═══════════════════════════════════════════════════════════ */
+
+@keyframes inputFocus {
+  from {
+    box-shadow: 0 0 0 0 rgba(213, 175, 88, 0);
+  }
+  to {
+    box-shadow: var(--shadow-input-focus);
+  }
+}
+
+.input-focus {
+  animation: inputFocus var(--duration-fast) var(--ease-standard);
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+  20%, 40%, 60%, 80% { transform: translateX(5px); }
+}
+
+.input-error-shake {
+  animation: shake 400ms var(--ease-standard);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   LOADING ANIMATIONS
+═══════════════════════════════════════════════════════════ */
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+.spinner {
+  animation: spin 1s linear infinite;
+}
+
+.pulse {
+  animation: pulse 2s var(--ease-standard) infinite;
+}
+
+.shimmer {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.05) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  background-size: 1000px 100%;
+  animation: shimmer 2s infinite;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   LOGO ANIMATIONS
+═══════════════════════════════════════════════════════════ */
+
+@keyframes logoSpin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes logoGlow {
+  0%, 100% {
+    filter: drop-shadow(0 0 5px rgba(213, 175, 88, 0.3));
+  }
+  50% {
+    filter: drop-shadow(0 0 15px rgba(213, 175, 88, 0.6));
+  }
+}
+
+.logo-spin {
+  animation: logoSpin 2s linear infinite;
+}
+
+.logo-glow {
+  animation: logoGlow 2s var(--ease-standard) infinite;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   PARTICLE EFFECTS
+═══════════════════════════════════════════════════════════ */
+
+@keyframes particleFloat {
+  0% {
+    transform: translateY(0) translateX(0);
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-100px) translateX(20px);
+    opacity: 0;
+  }
+}
+
+.particle {
+  animation: particleFloat 4s var(--ease-standard) infinite;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   STAGGER ANIMATIONS (for lists)
+═══════════════════════════════════════════════════════════ */
+
+.stagger-item {
+  opacity: 0;
+  animation: fadeInUp var(--duration-normal) var(--ease-enter) forwards;
+}
+
+.stagger-item:nth-child(1) { animation-delay: 0ms; }
+.stagger-item:nth-child(2) { animation-delay: 100ms; }
+.stagger-item:nth-child(3) { animation-delay: 200ms; }
+.stagger-item:nth-child(4) { animation-delay: 300ms; }
+.stagger-item:nth-child(5) { animation-delay: 400ms; }
+.stagger-item:nth-child(6) { animation-delay: 500ms; }
+
+/* ═══════════════════════════════════════════════════════════
+   ACCESSIBILITY: REDUCED MOTION
+═══════════════════════════════════════════════════════════ */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  
+  /* Disable decorative animations */
+  .glass-float,
+  .button-glow,
+  .logo-glow,
+  .particle,
+  .shimmer {
+    animation: none !important;
+  }
+}
+
+/**
+ * Usage Example:
+ * 
+ * <div class="fade-in-up">Content</div>
+ * <button class="button-lift">Button</button>
+ * <input class="input-focus" />
+ * <div class="logo-glow">Logo</div>
+ */

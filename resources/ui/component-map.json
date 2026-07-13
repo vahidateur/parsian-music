@@ -1,0 +1,68 @@
+{
+  "version": "1.0.0",
+  "description": "Component usage map for Parsian Music Academy",
+  "mapping": {
+    "pages": {
+      "auth/login": [
+        "ui.glass.card",
+        "ui.brand-logo",
+        "ui.brand-title",
+        "ui.brand-subtitle",
+        "ui.brand-english",
+        "ui.divider",
+        "ui.form-field",
+        "ui.input",
+        "ui.checkbox",
+        "ui.button",
+        "auth.login-card",
+        "auth.login-header",
+        "auth.login-form",
+        "auth.login-social",
+        "auth.login-footer"
+      ],
+      "auth/register": [
+        "ui.glass.card",
+        "ui.brand-logo",
+        "ui.form-field",
+        "ui.input",
+        "ui.checkbox",
+        "ui.button"
+      ],
+      "auth/forgot-password": [
+        "ui.glass.card",
+        "ui.brand-logo",
+        "ui.form-field",
+        "ui.input",
+        "ui.button"
+      ],
+      "dashboard/index": [
+        "ui.glass.card",
+        "ui.button",
+        "dashboard.kpi-card",
+        "dashboard.stat-card"
+      ]
+    },
+    "dependencies": {
+      "auth.login-card": [
+        "ui.glass.card",
+        "auth.login-header",
+        "auth.login-form",
+        "auth.login-social",
+        "auth.login-footer"
+      ],
+      "auth.login-header": [
+        "ui.brand-logo",
+        "ui.brand-title",
+        "ui.brand-subtitle",
+        "ui.brand-english",
+        "ui.divider"
+      ],
+      "auth.login-form": [
+        "ui.form-field",
+        "ui.input",
+        "ui.checkbox",
+        "ui.button"
+      ]
+    }
+  }
+}
