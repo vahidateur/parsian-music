@@ -181,7 +181,7 @@ class DemoSeeder extends Seeder
     private function seedAdminUsers(): void
     {
         $admins = [
-            ['phone' => '09120000000', 'full_name' => 'سوپر ادمین', 'role' => RoleEnum::SUPER_ADMIN],
+            ['phone' => 'YOUR_PHONE_HERE', 'full_name' => 'YOUR_NAME_HERE', 'role' => RoleEnum::SUPER_ADMIN],
             ['phone' => '09120000001', 'full_name' => 'علی رضایی',   'role' => RoleEnum::ADMIN],
             ['phone' => '09120000002', 'full_name' => 'مریم صادقی',  'role' => RoleEnum::ADMIN],
             ['phone' => '09120000003', 'full_name' => 'حسین موسوی',  'role' => RoleEnum::ADMIN],
@@ -192,7 +192,7 @@ class DemoSeeder extends Seeder
                 ['phone' => $a['phone']],
                 [
                     'full_name'             => $a['full_name'],
-                    'password'              => Hash::make('12345678'),
+                    'password'              => Hash::make('YOUR_PASSWORD_HERE'),
                     'role'                  => $a['role'],
                     'is_active'             => true,
                     'force_password_change' => false,

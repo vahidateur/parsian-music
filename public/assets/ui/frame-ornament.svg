@@ -1,0 +1,34 @@
+<svg viewBox="0 0 60 60" width="60" height="60" xmlns="http://www.w3.org/2000/svg" fill="none">
+  <!-- Luxurious frame corner ornament -->
+  <defs>
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="1.5" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- Outer decorative border frame -->
+  <path d="M 8 18 L 8 8 Q 8 6 10 6 L 24 6" 
+        stroke="currentColor" stroke-width="2.5" fill="none" opacity="0.9" filter="url(#glow)"/>
+  
+  <!-- Inner accent line -->
+  <path d="M 12 16 L 12 10 Q 12 8 14 8 L 22 8" 
+        stroke="currentColor" stroke-width="1" fill="none" opacity="0.6"/>
+  
+  <!-- Ornamental flourish - Art Deco curves -->
+  <path d="M 10 12 Q 16 10 18 16 Q 16 14 14 15" 
+        stroke="currentColor" stroke-width="1.2" fill="none" opacity="0.7"/>
+  
+  <!-- Decorative corner bracket -->
+  <circle cx="12" cy="12" r="2.5" fill="currentColor" opacity="0.75"/>
+  
+  <!-- Small accent elements -->
+  <circle cx="16" cy="8" r="1" fill="currentColor" opacity="0.5"/>
+  <circle cx="8" cy="14" r="1" fill="currentColor" opacity="0.5"/>
+  
+  <!-- Subtle inner glow accent -->
+  <ellipse cx="10" cy="10" rx="12" ry="12" fill="none" stroke="currentColor" stroke-width="0.5" opacity="0.3"/>
+</svg>

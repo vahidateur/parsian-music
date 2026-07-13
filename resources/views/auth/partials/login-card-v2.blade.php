@@ -2,6 +2,10 @@
     Glassmorphism Login Card - Pixel Perfect Implementation
     Card: 470×760px, radius 28px, padding 48px
 --}}
+@php
+    $loginSettings = \App\Models\AppSetting::getGroup('login');
+@endphp
+
 <div x-data="{ showPassword: false }"
      class="relative w-[min(95vw,420px)] lg:w-[470px] 
             h-auto max-h-[92vh] overflow-y-auto
@@ -20,21 +24,29 @@
                     bg-p-gold/5
                     flex items-center justify-center
                     shadow-[0_0_24px_rgba(213,175,88,0.15)]">
-            {{-- Star Icon --}}
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" class="text-p-gold">
-                <path d="M12 2l2.4 6.6L21 11l-6.6 2.4L12 20l-2.4-6.6L3 11l6.6-2.4L12 2z" 
-                      fill="currentColor" opacity="0.85"/>
-            </svg>
+            @if($loginSettings->get('login_logo'))
+                <img 
+                    src="{{ Storage::url($loginSettings->get('login_logo')) }}" 
+                    alt="Logo"
+                    class="w-14 h-14 object-contain"
+                >
+            @else
+                {{-- Star Icon --}}
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" class="text-p-gold">
+                    <path d="M12 2l2.4 6.6L21 11l-6.6 2.4L12 20l-2.4-6.6L3 11l6.6-2.4L12 2z" 
+                          fill="currentColor" opacity="0.85"/>
+                </svg>
+            @endif
         </div>
 
         {{-- Title (24px spacing from logo) --}}
         <h1 class="mt-6 text-[26px] font-bold text-p-gold-light leading-tight">
-            آموزشگاه موسیقی پارسیان
+            {{ $loginSettings->get('login_title', 'آموزشگاه موسیقی پارسیان') }}
         </h1>
 
         {{-- Subtitle (8px spacing from title) --}}
         <p class="mt-2 text-[15px] font-normal text-p-text-muted">
-            تالار هنر، جادو و موسیقی
+            {{ $loginSettings->get('login_subtitle', 'تالار هنر، جادو و موسیقی') }}
         </p>
 
         {{-- English Subtitle (10px spacing from Persian subtitle) --}}
@@ -144,10 +156,11 @@
                 <input 
                     type="checkbox" 
                     name="remember" 
+                    value="1"
                     {{ old('remember') ? 'checked' : '' }}
-                    class="w-[14px] h-[14px] rounded border-p-gold/50 bg-transparent 
-                           text-p-gold accent-p-gold cursor-pointer
-                           focus:ring-2 focus:ring-p-gold/30 focus:ring-offset-0">
+                    class="w-4 h-4"
+                    id="remember-checkbox"
+                >
                 <span>مرا به خاطر بسپار</span>
             </label>
 
@@ -211,3 +224,22 @@
     </p>
 
 </div>
+
+@push('scripts')
+<script>
+    // Ensure checkbox works
+    document.addEventListener('DOMContentLoaded', function() {
+        const checkbox = document.getElementById('remember-checkbox');
+        if (checkbox) {
+            // Add click listener for debugging
+            checkbox.addEventListener('click', function(e) {
+                console.log('Checkbox clicked!', e.target.checked);
+            });
+            
+            // Ensure it's clickable
+            checkbox.style.cursor = 'pointer';
+            checkbox.style.appearance = 'auto';
+        }
+    });
+</script>
+@endpush

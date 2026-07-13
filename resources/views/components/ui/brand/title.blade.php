@@ -36,6 +36,10 @@
     'fontSize' => 'var(--text-2xl)',
 ])
 
+@php
+    $title = settings()->login()['title'] ?? \App\Models\AppSetting::getValue('login', 'login_title', 'آموزشگاه موسیقی پارسیان');
+@endphp
+
 <{{ $tag }}
     {{ $attributes->merge([
         'class' => 'font-vazirmatn text-center w-full max-w-full',
@@ -49,4 +53,4 @@
     ]) }}
     dir="rtl"
     lang="fa"
->آموزشگاه موسیقی پارسیان</{{ $tag }}>
+>{{ $title }}</{{ $tag }}>

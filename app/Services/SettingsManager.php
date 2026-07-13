@@ -157,4 +157,37 @@ class SettingsManager
             'attendance_recorded',
         ];
     }
+
+    // ── Login Page ────────────────────────────────────────────────────────────
+
+    /**
+     * Login page settings — customizable from admin panel.
+     *
+     * @return array
+     */
+    public function login(): array
+    {
+        $db = AppSetting::getGroup('login');
+
+        return array_merge([
+            'logo'                       => null,
+            'title'                      => 'آموزشگاه موسیقی پارسیان',
+            'subtitle'                   => 'تالار هنر، جادو و موسیقی',
+            'title_en'                   => 'PARSIAN MUSIC',
+            'academy_name'               => null,
+            'divider_text'               => 'فرم ورود',
+            'phone_placeholder'          => 'شماره موبایل',
+            'password_placeholder'       => 'رمز عبور',
+            'button_text'                => 'ورود به تالار',
+            'forgot_password_text'       => 'فراموشی رمز عبور؟',
+            'show_password_label'        => 'نمایش رمز عبور',
+            'hide_password_label'        => 'مخفی کردن رمز عبور',
+            'quote'                      => '«موسیقی جادوی بی‌کلام است»',
+            'copyright'                  => 'Parsian Music Academy. All rights reserved.',
+            'english_text'               => 'PARSIAN MUSIC',
+        ], array_combine(
+            array_map(fn ($k) => str_replace('login_', '', $k), array_keys($db)),
+            array_values($db)
+        ) ?: []);
+    }
 }

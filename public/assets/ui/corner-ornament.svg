@@ -1,0 +1,21 @@
+<svg viewBox="0 0 34 34" width="34" height="34" xmlns="http://www.w3.org/2000/svg" fill="none">
+  <!-- Art-Deco corner flourish -->
+  <!-- Top corner ornament -->
+  <g opacity="0.85">
+    <!-- Outer decorative frame -->
+    <rect x="2" y="2" width="30" height="30" rx="3" ry="3" stroke="currentColor" stroke-width="0.8" fill="none" opacity="0.6"/>
+    
+    <!-- Inner accent lines -->
+    <line x1="6" y1="6" x2="6" y2="14" stroke="currentColor" stroke-width="0.6" opacity="0.5"/>
+    <line x1="6" y1="6" x2="14" y2="6" stroke="currentColor" stroke-width="0.6" opacity="0.5"/>
+    
+    <!-- Decorative flourish - Art Deco style -->
+    <circle cx="8" cy="8" r="2.5" fill="currentColor" opacity="0.7"/>
+    <path d="M 8 4 Q 12 6 14 10" stroke="currentColor" stroke-width="0.7" fill="none" opacity="0.6"/>
+    <path d="M 4 8 Q 6 12 10 14" stroke="currentColor" stroke-width="0.7" fill="none" opacity="0.6"/>
+    
+    <!-- Small accent dots -->
+    <circle cx="12" cy="6" r="1" fill="currentColor" opacity="0.5"/>
+    <circle cx="6" cy="12" r="1" fill="currentColor" opacity="0.5"/>
+  </g>
+</svg>

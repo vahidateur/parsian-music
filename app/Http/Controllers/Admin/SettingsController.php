@@ -65,6 +65,17 @@ class SettingsController extends Controller
             $validated['telegram_enabled'] = $request->boolean('telegram_enabled');
         }
 
+        if ($section === 'login') {
+            // Handle logo upload
+            if ($request->hasFile('login_logo')) {
+                $logo = $request->file('login_logo');
+                $path = $logo->store('settings/login', 'public');
+                $validated['login_logo'] = $path;
+            }
+            // If no logo file submitted, don't remove existing one
+            // (nullable fields not in validated are simply not updated)
+        }
+
         if ($section === 'notifications') {
             $validated['events']   = $request->input('events', []);
             $validated['channels'] = $request->input('channels', []);
@@ -101,6 +112,23 @@ class SettingsController extends Controller
                 'week_start'               => ['required', 'in:saturday,monday'],
                 'per_page'                 => ['required', 'integer', 'min:5', 'max:100'],
                 'session_default_duration' => ['required', 'integer', 'min:15', 'max:180'],
+            ],
+            'login' => [
+                'login_logo'                    => ['nullable', 'image', 'mimes:png,jpg,jpeg,svg', 'max:2048'],
+                'login_title'                   => ['nullable', 'string', 'max:100'],
+                'login_subtitle'                => ['nullable', 'string', 'max:255'],
+                'login_title_en'                => ['nullable', 'string', 'max:100'],
+                'login_academy_name'            => ['nullable', 'string', 'max:100'],
+                'login_divider_text'            => ['nullable', 'string', 'max:50'],
+                'login_phone_placeholder'       => ['nullable', 'string', 'max:50'],
+                'login_password_placeholder'    => ['nullable', 'string', 'max:50'],
+                'login_button_text'             => ['nullable', 'string', 'max:50'],
+                'login_forgot_password_text'    => ['nullable', 'string', 'max:100'],
+                'login_show_password_label'     => ['nullable', 'string', 'max:50'],
+                'login_hide_password_label'     => ['nullable', 'string', 'max:50'],
+                'login_quote'                   => ['nullable', 'string', 'max:255'],
+                'login_copyright'               => ['nullable', 'string', 'max:255'],
+                'login_english_text'            => ['nullable', 'string', 'max:100'],
             ],
             'email' => [
                 'mail_host'         => ['nullable', 'string', 'max:255'],

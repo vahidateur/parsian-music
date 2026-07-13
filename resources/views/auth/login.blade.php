@@ -1,8 +1,11 @@
 @extends('layouts.auth')
 
-@section('title', 'ورود به سامانه')
+@section('title', settings()->login()['title'] ?? 'ورود به سامانه')
 
 @section('content')
+@php
+    $loginSettings = settings()->login();
+@endphp
 {{--
   Login Page — Mobile-First Responsive
   Breakpoints:
@@ -19,6 +22,38 @@
 <style>
 html, body { overflow-x: hidden; }
 
+/* ── Login Input Placeholder ──────────────────────────── */
+.login-input::placeholder {
+    color: rgba(255,255,255,0.42) !important;
+    opacity: 1 !important;
+}
+
+/* ── Force Glass Design - Override any browser defaults ──── */
+.login-input {
+    background: rgba(255,255,255,0.045) !important;
+    border: 1px solid rgba(213,175,88,0.20) !important;
+    color: #ffffff !important;
+    backdrop-filter: blur(18px) !important;
+    -webkit-backdrop-filter: blur(18px) !important;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.05), 0 8px 30px rgba(0,0,0,0.20) !important;
+    transition: all 0.25s ease !important;
+}
+
+.login-input:focus {
+    background: rgba(255,255,255,0.06) !important;
+    border-color: rgba(213,175,88,0.55) !important;
+    box-shadow: 0 0 0 2px rgba(213,175,88,0.08), 0 0 18px rgba(213,175,88,0.18) !important;
+}
+
+/* ── Chrome autofill override ────────────────────────── */
+.login-input:-webkit-autofill,
+.login-input:-webkit-autofill:hover,
+.login-input:-webkit-autofill:focus {
+    -webkit-text-fill-color: #fff !important;
+    transition: background-color 99999s !important;
+    -webkit-box-shadow: 0 0 0 1000px rgba(255,255,255,0.045) inset !important;
+}
+
 /* ── Safe area (iOS) ─────────────────────────────────── */
 .login-safe-wrap {
     padding-top:    env(safe-area-inset-top,    0px);
@@ -28,12 +63,12 @@ html, body { overflow-x: hidden; }
 }
 
 /* ── Input placeholder colour ────────────────────────── */
-.login-input::placeholder { color: rgba(255,255,255,0.38); }
 
 /* ── Card responsive padding ─────────────────────────── */
 @media (max-width: 429px) {
     #login-card {
-        padding: 22px 18px !important;
+        max-width: 260px !important;
+        padding: 28px 24px !important;
     }
     .login-header-logo { width:48px !important; height:48px !important; }
     .login-title    { font-size:20px !important; }
@@ -59,7 +94,7 @@ html, body { overflow-x: hidden; }
 
 /* ── 430px mobile compact ────────────────────────────── */
 @media (min-width: 430px) and (max-width: 767px) {
-    #login-card { padding: 24px 20px !important; }
+    #login-card { max-width: 270px !important; padding: 30px 26px !important; }
     .login-header-logo { width:52px !important; height:52px !important; }
     .login-title    { font-size:22px !important; }
     .login-input    { height:48px !important; }
@@ -171,37 +206,53 @@ html, body { overflow-x: hidden; }
         {{-- ── Glass Card ──────────────────────────────── --}}
         <div
             id="login-card"
-            class="overflow-hidden border relative"
+            class="border relative"
             style="
                 width: 100%;
-                max-width: 304px;
-                border-radius: var(--radius-lg);
-                padding: 36px 32px;
+                max-width: 270px;
+                border-radius: 28px;
+                padding: 32px 28px;
                 background:
                     linear-gradient(
                         160deg,
                         rgba(255,255,255,0.055) 0%,
                         rgba(255,255,255,0.00) 45%
                     ),
-                    var(--glass-bg);
-                backdrop-filter: blur(var(--glass-blur));
-                -webkit-backdrop-filter: blur(var(--glass-blur));
-                border-color: var(--glass-border);
+                    rgba(10,12,18,0.55);
+                backdrop-filter: blur(24px);
+                -webkit-backdrop-filter: blur(24px);
+                border: 2.5px solid rgba(213,175,88,0.38);
                 box-shadow:
-                    0 40px 120px rgba(0,0,0,0.50),
-                    inset 0 1.5px 0 rgba(255,255,255,0.13),
-                    inset 0 0 0 1px rgba(213,175,88,0.06);
+                    0 0 48px rgba(213,175,88,0.22),
+                    inset 0 0 1px rgba(255,255,255,0.15),
+                    inset 0 1.5px 0 rgba(255,255,255,0.08),
+                    0 2px 8px rgba(0,0,0,0.30);
+                overflow: visible;
             "
         >
+            {{-- Inner reflection glow (top) --}}
+            <div style="
+                position:absolute;
+                top:0;
+                left:28px;
+                right:28px;
+                height:1px;
+                background:linear-gradient(to right,transparent,rgba(255,255,255,0.25),transparent);
+                border-radius:50%;
+                pointer-events:none;
+            " aria-hidden="true"></div>
+
             {{-- Radial glow — top-right corner --}}
             <div style="
-                position:absolute; top:-20px; right:-20px;
-                width:260px; height:240px;
+                position:absolute; top:-30px; right:-40px;
+                width:300px; height:280px;
                 background: radial-gradient(ellipse at top right,
-                    rgba(213,175,88,0.10) 0%,
-                    transparent 65%
+                    rgba(213,175,88,0.18) 0%,
+                    rgba(213,175,88,0.08) 35%,
+                    transparent 70%
                 );
                 pointer-events:none;
+                filter:blur(12px);
             " aria-hidden="true"></div>
 
             <div id="login-card-content" style="position:relative; display:flex; flex-direction:column;">
@@ -209,7 +260,20 @@ html, body { overflow-x: hidden; }
                 {{-- ── HEADER ──────────────────────── --}}
                 <header class="login-header" style="display:flex;flex-direction:column;align-items:center;text-align:center;">
 
-                    <x-ui.brand.logo custom-size="70px" class="login-header-logo" />
+                    @php
+                        $logoPath = \App\Models\AppSetting::getValue('login', 'login_logo');
+                    @endphp
+
+                    @if($logoPath)
+                        <img 
+                            src="{{ \Illuminate\Support\Facades\Storage::url($logoPath) }}" 
+                            alt="Logo"
+                            class="login-header-logo"
+                            style="width:70px;height:70px;object-fit:contain;"
+                        />
+                    @else
+                        <x-ui.brand.logo custom-size="70px" class="login-header-logo" />
+                    @endif
 
                     <div class="login-spacer-header-form" style="height:16px;flex-shrink:0;" aria-hidden="true"></div>
                     <x-ui.brand.title tag="h1" font-size="30px" class="login-title" />
@@ -218,15 +282,21 @@ html, body { overflow-x: hidden; }
                     <x-ui.brand.subtitle />
 
                     <div style="height:9px;flex-shrink:0;" aria-hidden="true"></div>
-                    <x-ui.brand.english-title />
+                    <x-ui.brand.english-title :academyName="$loginSettings['academy_name']" />
 
                     <div style="height:20px;flex-shrink:0;" aria-hidden="true"></div>
-                    <x-ui.brand.divider width="160px" opacity="0.35" />
 
                 </header>
 
                 {{-- 22px gap header → form --}}
                 <div class="login-spacer-header-form" style="height:22px;flex-shrink:0;" aria-hidden="true"></div>
+
+                {{-- Divider with label --}}
+                <div style="display:flex;align-items:center;gap:10px;direction:rtl;margin-bottom:4px;">
+                    <span style="flex:1;height:1px;background:linear-gradient(to left,rgba(213,175,88,0.4),transparent);"></span>
+                    <span style="font-size:11px;color:rgba(213,175,88,0.7);letter-spacing:1.5px;white-space:nowrap;font-family:'Cinzel',serif;">{{ $loginSettings['divider_text'] }}</span>
+                    <span style="flex:1;height:1px;background:linear-gradient(to right,rgba(213,175,88,0.4),transparent);"></span>
+                </div>
 
                 {{-- ── FORM ────────────────────────── --}}
                 <section class="login-form" aria-label="فرم ورود">
@@ -247,7 +317,7 @@ html, body { overflow-x: hidden; }
                                 name="phone"
                                 dir="rtl"
                                 value="{{ old('phone') }}"
-                                placeholder="شماره موبایل"
+                                placeholder="{{ $loginSettings['phone_placeholder'] }}"
                                 autocomplete="tel"
                                 required
                                 class="login-input"
@@ -261,20 +331,21 @@ html, body { overflow-x: hidden; }
                                     padding:0 42px 0 16px;
                                     font-size:14px;
                                     font-family:inherit;
-                                    background:rgba(255,255,255,0.07);
-                                    border:1px solid rgba(213,175,88,0.22);
-                                    color:var(--text-primary);
+                                    background:rgba(255,255,255,0.045);
+                                    border:1px solid rgba(213,175,88,0.20);
+                                    color:#ffffff;
                                     outline:none;
-                                    transition:border-color 200ms ease,box-shadow 200ms ease,background 200ms ease;
+                                    transition:all 0.25s ease;
                                     direction:rtl;
-                                    backdrop-filter:blur(16px);
-                                    -webkit-backdrop-filter:blur(16px);
+                                    backdrop-filter:blur(18px);
+                                    -webkit-backdrop-filter:blur(18px);
+                                    box-shadow:inset 0 1px 0 rgba(255,255,255,0.05), 0 8px 30px rgba(0,0,0,0.20);
                                 "
-                                onfocus="this.style.borderColor='var(--gold-300)';this.style.background='rgba(255,255,255,0.10)';this.style.boxShadow='var(--shadow-input-focus)'"
-                                onblur="this.style.borderColor='rgba(213,175,88,0.22)';this.style.background='rgba(255,255,255,0.07)';this.style.boxShadow='none'"
-                            >
-                            <span style="position:absolute;top:50%;right:14px;transform:translateY(-50%);color:rgba(213,175,88,0.65);pointer-events:none;display:flex;align-items:center;" aria-hidden="true">
-                                <i data-lucide="phone" style="width:15px;height:15px;"></i>
+                                onfocus="this.style.borderColor='rgba(213,175,88,0.55)';this.style.background='rgba(255,255,255,0.06)';this.style.boxShadow='0 0 0 2px rgba(213,175,88,0.08), 0 0 18px rgba(213,175,88,0.18)'"
+                                onblur="this.style.borderColor='rgba(213,175,88,0.20)';this.style.background='rgba(255,255,255,0.045)';this.style.boxShadow='inset 0 1px 0 rgba(255,255,255,0.05), 0 8px 30px rgba(0,0,0,0.20)'"
+                            />
+                            <span style="position:absolute;top:50%;right:14px;transform:translateY(-50%);color:rgba(213,175,88,0.72);pointer-events:none;display:flex;align-items:center;justify-content:center;width:20px;height:20px;" aria-hidden="true">
+                                <i data-lucide="phone" style="width:20px;height:20px;stroke-width:1.8;"></i>
                             </span>
                             @error('phone')
                                 <p role="alert" style="margin-top:5px;font-size:var(--text-sm);color:var(--error-500);">{{ $message }}</p>
@@ -287,7 +358,7 @@ html, body { overflow-x: hidden; }
                                 id="password"
                                 :type="show ? 'text' : 'password'"
                                 name="password"
-                                placeholder="رمز عبور"
+                                placeholder="{{ $loginSettings['password_placeholder'] }}"
                                 autocomplete="current-password"
                                 required
                                 class="login-input"
@@ -301,51 +372,44 @@ html, body { overflow-x: hidden; }
                                     padding:0 42px 0 42px;
                                     font-size:14px;
                                     font-family:inherit;
-                                    background:rgba(255,255,255,0.07);
-                                    border:1px solid rgba(213,175,88,0.22);
-                                    color:var(--text-primary);
+                                    background:rgba(255,255,255,0.045);
+                                    border:1px solid rgba(213,175,88,0.20);
+                                    color:#ffffff;
                                     outline:none;
-                                    transition:border-color 200ms ease,box-shadow 200ms ease,background 200ms ease;
+                                    transition:all 0.25s ease;
                                     direction:rtl;
-                                    backdrop-filter:blur(16px);
-                                    -webkit-backdrop-filter:blur(16px);
+                                    backdrop-filter:blur(18px);
+                                    -webkit-backdrop-filter:blur(18px);
+                                    box-shadow:inset 0 1px 0 rgba(255,255,255,0.05), 0 8px 30px rgba(0,0,0,0.20);
                                 "
-                                onfocus="this.style.borderColor='var(--gold-300)';this.style.background='rgba(255,255,255,0.10)';this.style.boxShadow='var(--shadow-input-focus)'"
-                                onblur="this.style.borderColor='rgba(213,175,88,0.22)';this.style.background='rgba(255,255,255,0.07)';this.style.boxShadow='none'"
+                                onfocus="this.style.borderColor='rgba(213,175,88,0.55)';this.style.background='rgba(255,255,255,0.06)';this.style.boxShadow='0 0 0 2px rgba(213,175,88,0.08), 0 0 18px rgba(213,175,88,0.18)'"
+                                onblur="this.style.borderColor='rgba(213,175,88,0.20)';this.style.background='rgba(255,255,255,0.045)';this.style.boxShadow='inset 0 1px 0 rgba(255,255,255,0.05), 0 8px 30px rgba(0,0,0,0.20)'"
                             >
-                            <span style="position:absolute;top:50%;right:14px;transform:translateY(-50%);color:rgba(213,175,88,0.65);pointer-events:none;display:flex;align-items:center;" aria-hidden="true">
-                                <i data-lucide="lock" style="width:15px;height:15px;"></i>
+                            <span style="position:absolute;top:50%;right:14px;transform:translateY(-50%);color:rgba(213,175,88,0.72);pointer-events:none;display:flex;align-items:center;justify-content:center;width:20px;height:20px;" aria-hidden="true">
+                                <i data-lucide="lock" style="width:20px;height:20px;stroke-width:1.8;"></i>
                             </span>
                             <button
                                 type="button"
                                 @click="show=!show"
-                                :aria-label="show?'مخفی کردن رمز عبور':'نمایش رمز عبور'"
-                                style="position:absolute;top:50%;left:12px;transform:translateY(-50%);background:none;border:none;padding:4px;cursor:pointer;color:rgba(213,175,88,0.50);display:flex;align-items:center;transition:color 200ms;min-width:36px;min-height:36px;justify-content:center;"
-                                onmouseover="this.style.color='var(--gold-300)'"
-                                onmouseout="this.style.color='rgba(213,175,88,0.50)'"
+                                :aria-label="show?'{{ $loginSettings['hide_password_label'] }}':'{{ $loginSettings['show_password_label'] }}'"
+                                style="position:absolute;top:50%;left:12px;transform:translateY(-50%);background:none;border:none;padding:4px;cursor:pointer;color:rgba(213,175,88,0.72);display:flex;align-items:center;justify-content:center;transition:color 200ms;width:36px;height:36px;"
+                                onmouseover="this.style.color='rgba(213,175,88,1)'"
+                                onmouseout="this.style.color='rgba(213,175,88,0.72)'"
                             >
-                                <i :data-lucide="show?'eye-off':'eye'" style="width:15px;height:15px;"></i>
+                                <i :data-lucide="show?'eye-off':'eye'" style="width:20px;height:20px;stroke-width:1.8;"></i>
                             </button>
                             @error('password')
                                 <p role="alert" style="margin-top:5px;font-size:var(--text-sm);color:var(--error-500);">{{ $message }}</p>
                             @enderror
                         </div>
 
-                        {{-- Remember + Forgot --}}
-                        <div style="display:flex;align-items:center;justify-content:space-between;direction:rtl;padding:6px 2px 0 2px;">
-                            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:var(--text-sm);color:var(--text-secondary);min-height:44px;">
-                                <input
-                                    type="checkbox" name="remember" id="remember"
-                                    {{ old('remember') ? 'checked' : '' }}
-                                    style="width:17px;height:17px;border-radius:var(--radius-xs);border:1px solid rgba(213,175,88,0.25);background:rgba(255,255,255,0.06);cursor:pointer;accent-color:var(--gold-300);flex-shrink:0;"
-                                >
-                                <span>مرا به خاطر بسپار</span>
-                            </label>
+                        {{-- Forgot Password --}}
+                        <div style="display:flex;align-items:center;justify-content:flex-end;direction:rtl;padding:6px 2px 0 2px;">
                             <a href="{{ route('password.phone.request') }}"
                                style="font-size:var(--text-sm);color:var(--gold-300);text-decoration:none;opacity:0.85;white-space:nowrap;padding:10px 0;transition:color 200ms,opacity 200ms;"
                                onmouseover="this.style.color='var(--gold-200)';this.style.opacity='1'"
                                onmouseout="this.style.color='var(--gold-300)';this.style.opacity='0.85'"
-                            >فراموشی رمز عبور؟</a>
+                            >{{ $loginSettings['forgot_password_text'] }}</a>
                         </div>
 
                     </form>
@@ -361,24 +425,30 @@ html, body { overflow-x: hidden; }
                         form="login-form"
                         class="login-btn"
                         style="
+                            position: relative;
                             display:flex;align-items:center;justify-content:center;gap:8px;
                             width:100%;height:50px;min-height:44px;
-                            border-radius:12px;border:1px solid rgba(248,231,181,0.35);
-                            background:linear-gradient(180deg,#F4D28B 0%,#D5AF58 100%);
+                            border-radius:12px;border:1px solid rgba(255,255,255,.18);
+                            background:linear-gradient(180deg,#F6D687 0%,#D5AF58 100%);
                             color:#14100a;font-size:14px;font-weight:600;
                             font-family:inherit;cursor:pointer;letter-spacing:0.2px;
-                            box-shadow:0 6px 18px rgba(213,175,88,0.28),0 1px 4px rgba(213,175,88,0.12);
+                            box-shadow:0 14px 36px rgba(213,175,88,.18);
                             transition:transform 200ms ease,box-shadow 200ms ease;
                             direction:rtl;
                             touch-action:manipulation;
                         "
-                        onmouseover="this.style.transform='translateY(-1px)';this.style.boxShadow='0 9px 24px rgba(213,175,88,0.40),0 2px 6px rgba(213,175,88,0.18)'"
-                        onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 6px 18px rgba(213,175,88,0.28),0 1px 4px rgba(213,175,88,0.12)'"
+                        onmouseover="this.style.transform='translateY(-1px)';this.style.boxShadow='0 14px 36px rgba(213,175,88,.25)'"
+                        onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 14px 36px rgba(213,175,88,.18)'"
                         onmousedown="this.style.transform='translateY(1px)'"
                         onmouseup="this.style.transform='translateY(-1px)'"
                     >
+                        {{-- Glow corner top-left --}}
+                        <span style="position:absolute;top:8px;left:8px;width:6px;height:6px;border-radius:999px;background:#FFE8AA;filter:blur(1px);box-shadow:0 0 12px #FFE8AA, 0 0 24px rgba(255,232,170,.8);opacity:.9;pointer-events:none;" aria-hidden="true"></span>
+                        {{-- Glow corner top-right --}}
+                        <span style="position:absolute;top:8px;right:8px;width:6px;height:6px;border-radius:999px;background:#FFE8AA;filter:blur(1px);box-shadow:0 0 12px #FFE8AA, 0 0 24px rgba(255,232,170,.8);opacity:.9;pointer-events:none;" aria-hidden="true"></span>
+                        
                         <i data-lucide="feather" aria-hidden="true" style="width:14px;height:14px;opacity:0.70;flex-shrink:0;"></i>
-                        <span>ورود به تالار</span>
+                        <span>{{ $loginSettings['button_text'] }}</span>
                     </button>
                 </section>
 
@@ -390,21 +460,25 @@ html, body { overflow-x: hidden; }
                     class="login-footer"
                     style="text-align:center;direction:rtl;"
                 >
-                    <p style="
-                        font-size:var(--text-sm);
-                        font-style:italic;
-                        color:rgba(213,175,88,0.55);
-                        line-height:1.7;
-                        letter-spacing:0.3px;
-                    ">«موسیقی جادوی بی‌کلام است»</p>
-                    <p style="
-                        font-size:10px;
-                        font-family:'Cinzel',serif;
-                        color:rgba(213,175,88,0.35);
-                        margin-top:4px;
-                        letter-spacing:1.5px;
-                        direction:ltr;
-                    ">PARSIAN MUSIC</p>
+                    @if($loginSettings['quote'])
+                        <p style="
+                            font-size:var(--text-sm);
+                            font-style:italic;
+                            color:rgba(213,175,88,0.55);
+                            line-height:1.7;
+                            letter-spacing:0.3px;
+                        ">{{ $loginSettings['quote'] }}</p>
+                    @endif
+                    @if($loginSettings['english_text'])
+                        <p style="
+                            font-size:10px;
+                            font-family:'Cinzel',serif;
+                            color:rgba(213,175,88,0.35);
+                            margin-top:4px;
+                            letter-spacing:1.5px;
+                            direction:ltr;
+                        ">{{ $loginSettings['english_text'] }}</p>
+                    @endif
                 </footer>
 
             </div>{{-- /login-card-content --}}
@@ -428,7 +502,7 @@ html, body { overflow-x: hidden; }
     "
 >
     <span style="font-size:12px;color:rgba(207,199,178,0.40);letter-spacing:0.3px;font-family:inherit;">
-        &copy; {{ date('Y') }} Parsian Music Academy. All rights reserved.
+        &copy; {{ date('Y') }} {{ $loginSettings['copyright'] }}
     </span>
 </div>{{-- /bottom-bar --}}
 </div>{{-- /login-safe-wrap --}}
@@ -441,21 +515,21 @@ html, body { overflow-x: hidden; }
     #login { justify-content: center !important; }
 }
 
-/* ── 430px+: card centred, max 304px ─────────────────── */
+/* ── 430px+: card centred, max 270px ─────────────────── */
 @media (min-width: 430px) {
     #login {
         align-items: center;
         padding-top: 24px;
         padding-bottom: 24px;
     }
-    #login-card { max-width: 304px; }
+    #login-card { max-width: 270px; }
 }
 
-/* ── 768px+: card slightly wider on tablet ───────────── */
+/* ── 768px+: card narrower on tablet ──────────────────── */
 @media (min-width: 768px) {
     #login-card {
-        max-width: 340px;
-        padding: 32px 28px;
+        max-width: 280px;
+        padding: 32px 26px;
     }
 }
 
@@ -467,7 +541,7 @@ html, body { overflow-x: hidden; }
         align-items: center;
     }
     #login-card {
-        max-width: 360px !important;
+        max-width: 280px !important;
         margin-left: 0;
         margin-right: 0;
     }
@@ -477,25 +551,25 @@ html, body { overflow-x: hidden; }
 /* ── 1280px+ ─────────────────────────────────────────── */
 @media (min-width: 1280px) {
     #login { padding: 32px 56px 32px 0 !important; }
-    #login-card { max-width: 370px !important; }
+    #login-card { max-width: 290px !important; }
 }
 
 /* ── 1440px+ ─────────────────────────────────────────── */
 @media (min-width: 1440px) {
     #login { padding: 32px 72px 32px 0 !important; }
-    #login-card { max-width: 376px !important; }
+    #login-card { max-width: 300px !important; }
 }
 
 /* ── 1600px+ ─────────────────────────────────────────── */
 @media (min-width: 1600px) {
     #login { padding: 32px 88px 32px 0 !important; }
-    #login-card { max-width: 376px !important; }
+    #login-card { max-width: 300px !important; }
 }
 
 /* ── 1920px+ ─────────────────────────────────────────── */
 @media (min-width: 1920px) {
     #login { padding: 32px 120px 32px 0 !important; }
-    #login-card { max-width: 380px !important; }
+    #login-card { max-width: 310px !important; }
 }
 
 /* ── Compact: short viewports ────────────────────────── */

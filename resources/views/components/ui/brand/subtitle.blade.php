@@ -1,11 +1,15 @@
 {{--
  Brand Subtitle Component
- Text: "تالار هنر، جادو و موسیقی"
+ Text: Loaded from database (login settings)
  Font: Vazirmatn 15px/400
  Color: --color-text-muted (semantic token)
  Alignment: center
  dir="rtl" / lang="fa"
 --}}
+
+@php
+    $subtitle = settings()->login()['subtitle'] ?? \App\Models\AppSetting::getValue('login', 'login_subtitle', 'تالار هنر، جادو و موسیقی');
+@endphp
 
 <p
     {{ $attributes->merge(['class' => 'font-vazirmatn text-center w-full'])
@@ -17,4 +21,4 @@
                    ']) }}
     dir="rtl"
     lang="fa"
->تالار هنر، جادو و موسیقی</p>
+>{{ $subtitle }}</p>
