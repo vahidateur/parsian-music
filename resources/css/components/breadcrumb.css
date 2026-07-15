@@ -1,0 +1,118 @@
+/**
+ * breadcrumb.css — Global breadcrumb.
+ * Reusable across all pages. Transparent, calm, premium. RTL.
+ */
+
+:root {
+  --bc-max-width:            1500px;
+  --bc-pad-x-desktop:        32px;
+  --bc-pad-x-tablet:         24px;
+  --bc-pad-x-mobile:         18px;
+  --bc-pad-y:                10px;
+  --bc-space-top:            24px;   /* gap from navbar */
+  --bc-space-bottom:         32px;   /* gap to hero */
+  --bc-font-desktop:         15px;
+  --bc-font-tablet:          14px;
+  --bc-font-mobile:          13px;
+  --bc-font-weight:          500;
+  --bc-font-weight-current:  600;
+  --bc-line-height:          1.8;
+  --bc-color-prev:           rgba(230, 230, 230, 0.55);
+  --bc-color-hover:          rgba(235, 199, 108, 0.82);
+  --bc-color-current:        #E4BF6C;
+  --bc-chevron-size:         12px;
+  --bc-chevron-opacity:      0.40;
+  --bc-chevron-color:        rgba(230, 230, 230, 0.45);
+  --bc-chevron-gap:          12px;
+  --bc-hover-glow:           0 0 12px rgba(235, 199, 108, 0.25);
+  --bc-transition:           220ms ease;
+}
+
+.site-breadcrumb {
+  max-width: var(--bc-max-width);
+  margin-inline: auto;
+  margin-top: var(--bc-space-top);
+  margin-bottom: var(--bc-space-bottom);
+  padding-inline: var(--bc-pad-x-desktop);
+  padding-block: var(--bc-pad-y);
+  background: transparent;
+  direction: rtl;
+}
+
+.site-breadcrumb__list {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.site-breadcrumb__item {
+  display: inline-flex;
+  align-items: center;
+  font-size: var(--bc-font-desktop);
+  font-weight: var(--bc-font-weight);
+  line-height: var(--bc-line-height);
+  letter-spacing: 0;
+}
+
+.site-breadcrumb__link {
+  color: var(--bc-color-prev);
+  text-decoration: none;
+  transition: color var(--bc-transition), text-shadow var(--bc-transition);
+}
+
+.site-breadcrumb__link:hover {
+  color: var(--bc-color-hover);
+  text-shadow: var(--bc-hover-glow);
+}
+
+.site-breadcrumb__link:focus-visible {
+  outline: 2px solid var(--gold-300);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+.site-breadcrumb__current {
+  color: var(--bc-color-current);
+  font-weight: var(--bc-font-weight-current);
+  cursor: default;
+}
+
+.site-breadcrumb__sep {
+  display: inline-flex;
+  align-items: center;
+  margin-inline: var(--bc-chevron-gap);
+  width: var(--bc-chevron-size);
+  height: var(--bc-chevron-size);
+  color: var(--bc-chevron-color);
+  opacity: var(--bc-chevron-opacity);
+}
+
+/* ── Breadcrumb responsive ──────────────────────────────── */
+
+/* Tablet */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .site-breadcrumb {
+    padding-inline: var(--bc-pad-x-tablet);
+  }
+  .site-breadcrumb__item {
+    font-size: var(--bc-font-tablet);
+  }
+}
+
+/* Mobile — allow wrapping, no overflow */
+@media (max-width: 767px) {
+  .site-breadcrumb {
+    padding-inline: var(--bc-pad-x-mobile);
+  }
+  .site-breadcrumb__list {
+    flex-wrap: wrap;
+    row-gap: 4px;
+  }
+  .site-breadcrumb__item {
+    font-size: var(--bc-font-mobile);
+  }
+}

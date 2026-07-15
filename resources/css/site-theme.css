@@ -1,0 +1,18 @@
+/**
+ * site-theme.css — Global site-wide tokens & primitives.
+ * Shared by navbar, breadcrumb, and all pages.
+ */
+
+:root {
+  /* ===== Z-INDEX (global stack) ===== */
+  --z-hero-background:  0;
+  --z-hero-decoration:  10;
+  --z-hero-portrait:    20;
+  --z-hero-info:        30;
+  --z-navigation:       40;
+}
+
+/* Alpine cloak — hide elements until Alpine initializes */
+[x-cloak] {
+  display: none !important;
+}

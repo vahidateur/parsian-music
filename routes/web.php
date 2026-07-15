@@ -21,6 +21,11 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+// Public teacher profile — Phase 1: mock data only. {teacher} ready for Route Model Binding in Phase 2.
+Route::get('/teachers/{teacher}', function () {
+    return view('teachers.show');
+})->name('teachers.show');
+
 Route::get('/dashboard', function (\Illuminate\Http\Request $request) {
     return match ($request->user()->role) {
         \App\Enums\RoleEnum::SUPER_ADMIN => redirect()->intended('/admin/dashboard'),

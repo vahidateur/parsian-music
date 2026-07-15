@@ -15,19 +15,9 @@
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
-    <body class="font-sans antialiased bg-[var(--neutral-950)] text-[var(--text-primary)] overflow-x-hidden">
+    <body class="font-sans antialiased overflow-x-hidden"
+          style="background-color: var(--neutral-950); color: var(--text-primary)">
 
-        {{-- Navbar slot --}}
-        @isset($navbar)
-            {{ $navbar }}
-        @endisset
-
-        {{-- Breadcrumb slot --}}
-        @isset($breadcrumb)
-            {{ $breadcrumb }}
-        @endisset
-
-        {{-- Page Content --}}
         {{ $slot }}
 
     </body>

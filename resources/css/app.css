@@ -8,6 +8,17 @@
 /* Semantic Tokens (theme-aware) */
 @import './semantic-tokens.css';
 
+/* Site-wide tokens & primitives (z-index, x-cloak) */
+@import './site-theme.css';
+
+/* Global Components */
+@import './components/navbar.css';
+@import './components/breadcrumb.css';
+
+/* Teacher Page */
+@import './teacher/hero.css';
+@import './teacher/biography.css';
+
 /* Animation Library */
 @import './animations.css';
 

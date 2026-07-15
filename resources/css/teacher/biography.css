@@ -1,0 +1,269 @@
+/**
+ * teacher/biography.css — Glass Biography Section + Professional Card.
+ * Phase 2.5. Depends on: design-tokens, site-theme.
+ */
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   01 TOKENS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+:root {
+  /* Glass Panel */
+  --bio-panel-bg:          rgba(18, 22, 30, 0.42);
+  --bio-panel-blur:        24px;
+  --bio-panel-border:      rgba(228, 191, 108, 0.14);
+  --bio-panel-shadow:      0 30px 80px rgba(0, 0, 0, 0.30);
+  --bio-panel-radius:      28px;
+  --bio-panel-pad:         48px;
+  --bio-panel-pad-tablet:  36px;
+  --bio-panel-pad-mobile:  24px;
+  --bio-panel-margin-y:    80px;
+  --bio-panel-max-w:       1500px;
+  --bio-panel-gap:         32px;
+  --bio-cols-left:         65fr;
+  --bio-cols-right:        35fr;
+
+  /* Biography typography */
+  --bio-heading-size:      32px;
+  --bio-heading-color:     #E4BF6C;
+  --bio-heading-mb:        28px;
+  --bio-section-title-size: 18px;
+  --bio-section-title-color: rgba(228, 191, 108, 0.80);
+  --bio-body-size:         17px;
+  --bio-body-line-height:  2.15;
+  --bio-body-color:        rgba(245, 245, 245, 0.86);
+  --bio-section-gap:       40px;
+
+  /* Gold divider */
+  --bio-divider-margin:    40px;
+
+  /* Professional Card */
+  --pro-card-bg:           rgba(20, 25, 34, 0.58);
+  --pro-card-blur:         20px;
+  --pro-card-border:       rgba(228, 191, 108, 0.18);
+  --pro-card-radius:       22px;
+  --pro-card-pad:          28px;
+  --pro-card-sticky-top:   120px;
+  --pro-card-header-h:     60px;
+  --pro-card-row-h:        58px;
+  --pro-card-row-border:   rgba(255, 255, 255, 0.06);
+  --pro-card-hover-tint:   rgba(228, 191, 108, 0.04);
+  --pro-card-label-color:  rgba(245, 245, 245, 0.50);
+  --pro-card-value-color:  rgba(245, 245, 245, 0.90);
+  --pro-card-active-color: #E4BF6C;
+  --pro-card-transition:   200ms ease;
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   02 SECTION WRAPPER
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+.teacher-biography-section {
+  max-width: var(--bio-panel-max-w);
+  margin-inline: auto;
+  margin-block: var(--bio-panel-margin-y);
+  padding-inline: 32px;
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   03 GLASS PANEL
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+.teacher-biography-panel {
+  display: grid;
+  grid-template-columns: var(--bio-cols-left) var(--bio-cols-right);
+  gap: var(--bio-panel-gap);
+  background: var(--bio-panel-bg);
+  -webkit-backdrop-filter: blur(var(--bio-panel-blur));
+  backdrop-filter: blur(var(--bio-panel-blur));
+  border: 1px solid var(--bio-panel-border);
+  box-shadow: var(--bio-panel-shadow);
+  border-radius: var(--bio-panel-radius);
+  padding: var(--bio-panel-pad);
+  overflow: hidden;
+  position: relative;
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   04 BIOGRAPHY CONTENT (left)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+.biography-content {
+  display: flex;
+  flex-direction: column;
+}
+
+.biography-heading {
+  font-size: var(--bio-heading-size);
+  font-weight: 700;
+  color: var(--bio-heading-color);
+  margin: 0 0 var(--bio-heading-mb);
+  line-height: 1.2;
+}
+
+.biography-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.biography-section-title {
+  font-size: var(--bio-section-title-size);
+  font-weight: 600;
+  color: var(--bio-section-title-color);
+  margin: 0;
+  letter-spacing: 0.01em;
+}
+
+.biography-section-body {
+  font-size: var(--bio-body-size);
+  line-height: var(--bio-body-line-height);
+  color: var(--bio-body-color);
+  margin: 0;
+  max-width: 72ch;
+}
+
+/* Gold divider between sections */
+.biography-divider {
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(228, 191, 108, 0.35) 30%,
+    rgba(228, 191, 108, 0.35) 70%,
+    transparent 100%
+  );
+  margin-block: var(--bio-divider-margin);
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   05 PROFESSIONAL CARD (right — sticky desktop)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+.teacher-biography-right {
+  /* Sticky container */
+}
+
+.professional-card {
+  position: sticky;
+  top: var(--pro-card-sticky-top);
+  background: var(--pro-card-bg);
+  -webkit-backdrop-filter: blur(var(--pro-card-blur));
+  backdrop-filter: blur(var(--pro-card-blur));
+  border: 1px solid var(--pro-card-border);
+  border-radius: var(--pro-card-radius);
+  padding: var(--pro-card-pad);
+  overflow: hidden;
+}
+
+/* Card header */
+.professional-card__header {
+  display: flex;
+  align-items: center;
+  height: var(--pro-card-header-h);
+  margin-bottom: 8px;
+  border-bottom: 1px solid var(--pro-card-row-border);
+}
+
+.professional-card__title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--bio-heading-color);
+  margin: 0;
+  letter-spacing: 0.02em;
+}
+
+/* Rows */
+.professional-card__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.professional-card__row {
+  border-bottom: 1px solid var(--pro-card-row-border);
+}
+
+.professional-card__row:last-child {
+  border-bottom: none;
+}
+
+.professional-card__link,
+.professional-card__static {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: var(--pro-card-row-h);
+  text-decoration: none;
+  gap: 12px;
+  transition: background var(--pro-card-transition);
+  border-radius: 8px;
+  padding-inline: 4px;
+}
+
+.professional-card__link:hover {
+  background: var(--pro-card-hover-tint);
+}
+
+.professional-card__link:focus-visible {
+  outline: 2px solid var(--gold-300);
+  outline-offset: 2px;
+}
+
+.professional-card__label {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--pro-card-label-color);
+  flex-shrink: 0;
+}
+
+.professional-card__value {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--pro-card-value-color);
+  text-align: start;
+}
+
+.professional-card__value--active {
+  color: var(--pro-card-active-color);
+}
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   06 RESPONSIVE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+
+/* Tablet: 60/40 */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .teacher-biography-section {
+    padding-inline: 24px;
+    margin-block: 60px;
+  }
+  .teacher-biography-panel {
+    grid-template-columns: 60fr 40fr;
+    gap: 24px;
+    padding: var(--bio-panel-pad-tablet);
+  }
+  .biography-heading {
+    font-size: 26px;
+  }
+}
+
+/* Mobile: stack */
+@media (max-width: 767px) {
+  .teacher-biography-section {
+    padding-inline: 16px;
+    margin-block: 40px;
+  }
+  .teacher-biography-panel {
+    grid-template-columns: 1fr;
+    padding: var(--bio-panel-pad-mobile);
+    gap: 40px;
+  }
+  .biography-heading {
+    font-size: 24px;
+  }
+  /* No sticky on mobile */
+  .professional-card {
+    position: static;
+  }
+}
