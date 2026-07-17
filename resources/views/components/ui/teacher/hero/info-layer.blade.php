@@ -1,14 +1,19 @@
 @props(['teacher'])
 
-<article class="teacher-info" dir="rtl" aria-label="اطلاعات مدرس">
-    <h1>{{ $teacher['name'] }}</h1>
-    <p>{{ $teacher['role'] }}</p>
+<article class="teacher-info" aria-label="اطلاعات مدرس">
+    <h1 id="teacher-name">استاد {{ $teacher['name'] }}</h1>
+    <p class="teacher-role">{{ $teacher['role'] }}</p>
     <x-ui.teacher.badges.experience-badge :experience="$teacher['experience']" />
-    <div class="teacher-chips-row" aria-label="سازها">
-        @foreach($teacher['instruments'] as $instrument)
-            <x-ui.teacher.chips.instrument-chip :instrument="$instrument" />
+
+    <ul class="teacher-features" aria-label="ویژگی‌های تدریس">
+        @foreach($teacher['instruments'] as $index => $instrument)
+            <li>
+                <span class="teacher-feature__icon" aria-hidden="true">{{ ['♩', '▤', '♬'][$index] ?? '♪' }}</span>
+                <span>{{ $instrument }}</span>
+            </li>
         @endforeach
-    </div>
+    </ul>
+
     <div class="teacher-cta-wrap">
         <x-ui.teacher.buttons.cta-button />
     </div>

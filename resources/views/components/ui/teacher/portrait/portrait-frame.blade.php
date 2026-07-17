@@ -1,35 +1,14 @@
-{{--
-    Portrait Frame — Phase 2.4F: Frame artwork loaded.
-    Frame sits OUTSIDE the oval clip (position absolute, not clipped by figure overflow).
+@props(['teacher'])
 
-    Slots:
-    - #teacher-frame-slot  → golden frame artwork (frame-main.png)
-    - #teacher-photo-slot  → teacher portrait photo (portrait.webp)
---}}
-
-<figure aria-label="پرتره مدرس">
-    <figcaption class="sr-only">تصویر مدرس</figcaption>
-
-    {{-- Photo slot (inside oval) --}}
+<figure class="teacher-portrait" aria-labelledby="teacher-portrait-caption">
+    <div class="teacher-portrait__crown" aria-hidden="true">◇</div>
+    <div class="teacher-portrait__ring teacher-portrait__ring--outer" aria-hidden="true"></div>
+    <div class="teacher-portrait__ring teacher-portrait__ring--inner" aria-hidden="true"></div>
     <div
-        id="teacher-photo-slot"
+        class="teacher-portrait__photo"
         role="img"
-        aria-label="تصویر پروفایل مدرس"
+        aria-label="پرتره {{ $teacher['name'] }}"
+        style="--portrait-image: url('{{ $teacher['reference_image'] }}')"
     ></div>
-
-    {{-- Frame slot — sits outside oval, overlays the border area --}}
-    <div
-        id="teacher-frame-slot"
-        role="img"
-        aria-label="قاب پرتره مدرس"
-    >
-        <img
-            src="/storage/ui/teacher/frames/frame-main.png"
-            alt=""
-            fetchpriority="high"
-            loading="eager"
-            decoding="async"
-        >
-    </div>
-
+    <figcaption id="teacher-portrait-caption" class="sr-only">{{ $teacher['name'] }}، {{ $teacher['role'] }}</figcaption>
 </figure>
