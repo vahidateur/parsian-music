@@ -1,0 +1,89 @@
+.atmosphere {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  overflow: hidden;
+}
+
+/* Deep vignette framing the whole page like a stage */
+.vignette {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(120% 90% at 50% 8%, transparent 40%, rgba(4, 3, 2, 0.55) 78%, rgba(3, 2, 1, 0.95) 100%),
+    radial-gradient(90% 70% at 50% 30%, rgba(120, 78, 24, 0.10), transparent 60%);
+}
+
+/* Warm candle glow pools */
+.glow {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(60px);
+  mix-blend-mode: screen;
+  opacity: 0.5;
+}
+.glowTop {
+  top: -8%;
+  right: 8%;
+  width: 42vw;
+  height: 42vw;
+  background: radial-gradient(circle, rgba(232, 150, 63, 0.42), transparent 68%);
+  animation: breathe 9s ease-in-out infinite;
+}
+.glowLeft {
+  bottom: 6%;
+  left: -6%;
+  width: 36vw;
+  height: 36vw;
+  background: radial-gradient(circle, rgba(201, 162, 75, 0.30), transparent 68%);
+  animation: breathe 11s ease-in-out infinite 1s;
+}
+
+/* Drifting atmospheric fog */
+.fog {
+  position: absolute;
+  inset: -20% -10%;
+  background:
+    radial-gradient(50% 40% at 20% 80%, rgba(40, 30, 16, 0.5), transparent 60%),
+    radial-gradient(60% 50% at 85% 20%, rgba(30, 22, 12, 0.45), transparent 60%),
+    radial-gradient(40% 30% at 60% 60%, rgba(50, 36, 18, 0.35), transparent 60%);
+  filter: blur(30px);
+  opacity: 0.6;
+  animation: drift 26s ease-in-out infinite alternate;
+}
+
+/* Floating dust motes */
+.dust {
+  position: absolute;
+  inset: 0;
+}
+.mote {
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: rgba(255, 214, 140, 0.9);
+  box-shadow: 0 0 6px 1px rgba(255, 200, 120, 0.7);
+  animation: float linear infinite;
+  opacity: 0;
+}
+
+@keyframes breathe {
+  0%, 100% { opacity: 0.42; transform: scale(1); }
+  50% { opacity: 0.62; transform: scale(1.08); }
+}
+@keyframes drift {
+  0% { transform: translate3d(0, 0, 0) scale(1); }
+  100% { transform: translate3d(-3%, 2%, 0) scale(1.06); }
+}
+@keyframes float {
+  0% { transform: translateY(0) translateX(0); opacity: 0; }
+  10% { opacity: var(--o, 0.7); }
+  90% { opacity: var(--o, 0.7); }
+  100% { transform: translateY(-110vh) translateX(30px); opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mote, .fog, .glowTop, .glowLeft { animation: none; }
+}

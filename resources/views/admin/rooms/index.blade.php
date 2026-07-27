@@ -1,9 +1,9 @@
-@extends('layouts.admin')
+@extends('layouts.dashboard')
 
 @section('title', 'اتاق‌های کلاس')
 
 @section('content')
-<div class="min-h-screen bg-gradient-to-b from-slate-900 to-slate-950 p-8">
+<div class="bg-gradient-to-b from-slate-900 to-slate-950 p-8">
     <div class="mx-auto max-w-6xl">
         <!-- Header -->
         <div class="mb-8 flex items-center justify-between">

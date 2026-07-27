@@ -55,23 +55,13 @@
     'radius' => 'var(--radius-lg)',
 ])
 
-<div {{ $attributes->merge([
-    'class' => 'overflow-hidden
-                border
-                [background:var(--glass-bg)]
-                [backdrop-filter:blur(var(--glass-blur))]
-                [-webkit-backdrop-filter:blur(var(--glass-blur))]
-                [border-color:var(--glass-border)]
-                [box-shadow:var(--glass-shadow)]'
-    ])->merge([
-        'style' => "
-            width: {$width}; 
-            max-width: " . ($maxWidth ?? $width) . "; 
-            height: {$height}; 
-            max-height: {$maxHeight}; 
-            padding: {$padding};
-            border-radius: {$radius};
-        "
-    ]) }}>
+@php
+    $isCompact = $width === '100%' || $maxWidth === '400px' || $padding === 'var(--space-4)' || $radius === 'var(--radius-md)';
+    $isFluid = $width === '100%';
+    $cardVariant = $isCompact ? 'ui-card--compact' : 'ui-card--default';
+    $cardVariant .= $isFluid ? ' ui-card--fluid' : '';
+@endphp
+
+<div {{ $attributes->merge(['class' => 'ui-card ui-card--glass ' . $cardVariant]) }}>
     {{ $slot }}
 </div>

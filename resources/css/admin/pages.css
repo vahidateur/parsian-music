@@ -1,0 +1,296 @@
+/**
+ * Admin Pages Polish
+ * Responsibility: unified visual refinements for list/CRUD pages.
+ * Scope: .admin-page context. Enhances existing Tailwind-styled elements
+ * to match the dashboard's macOS-inspired glass aesthetic.
+ * Phase: 1 — Dashboard Polish (page consistency pass).
+ */
+
+/* ─────────────────────────────────────────────
+   01  PAGE HEADER (ui-page-header from section-header component)
+───────────────────────────────────────────── */
+
+.admin-page .ui-page-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-2);
+  padding-block-end: var(--space-2);
+  border-block-end: 1px solid var(--admin-color-border);
+  margin-block-end: var(--space-2);
+}
+
+.admin-page .ui-page-header__title-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.admin-page .ui-page-header__title {
+  margin: 0;
+  color: var(--admin-color-text);
+  font-size: var(--text-2xl);
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.admin-page .ui-page-header__subtitle {
+  margin-block-start: 2px;
+  color: var(--admin-color-text-subtle);
+  font-size: var(--text-xs);
+}
+
+.admin-page .ui-page-header__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+/* ─────────────────────────────────────────────
+   02  TABLE ENHANCEMENTS
+───────────────────────────────────────────── */
+
+.admin-page table[role="table"] {
+  border-collapse: collapse;
+}
+
+.admin-page table[role="table"] thead tr {
+  border-block-end: 1px solid var(--admin-color-border);
+}
+
+.admin-page table[role="table"] tbody tr {
+  border-block-end: 1px solid var(--admin-color-border);
+  transition: background-color var(--admin-duration-fast) var(--admin-ease-standard);
+}
+
+.admin-page table[role="table"] tbody tr:last-child {
+  border-block-end: none;
+}
+
+.admin-page table[role="table"] tbody tr:hover {
+  background: var(--admin-color-surface-glass-soft);
+}
+
+/* ─────────────────────────────────────────────
+   03  PROGRESS AND MODULE-LOCAL POSITIONING
+───────────────────────────────────────────── */
+
+.admin-progress-track {
+  height: var(--space-1);
+  overflow: hidden;
+  border-radius: var(--radius-full);
+  background: var(--admin-color-surface-elevated);
+}
+
+.admin-progress-track--compact {
+  width: var(--space-12);
+}
+
+.admin-progress {
+  display: block;
+  width: 100%;
+  height: 100%;
+  appearance: none;
+  border: 0;
+  background: transparent;
+}
+
+.admin-progress::-webkit-progress-bar {
+  background: transparent;
+}
+
+.admin-progress--accent::-webkit-progress-value,
+.admin-progress--accent::-moz-progress-bar {
+  background: var(--admin-color-accent);
+}
+
+.admin-progress--success::-webkit-progress-value,
+.admin-progress--success::-moz-progress-bar {
+  background: var(--success-500);
+}
+
+.admin-progress--warning::-webkit-progress-value,
+.admin-progress--warning::-moz-progress-bar {
+  background: var(--warning-500);
+}
+
+.admin-progress--danger::-webkit-progress-value,
+.admin-progress--danger::-moz-progress-bar {
+  background: var(--error-500);
+}
+
+.admin-attendance__summary {
+  position: sticky;
+  inset-block-start: var(--space-12);
+}
+
+.admin-attendance__chart {
+  position: relative;
+  width: calc(var(--space-10) * 2);
+  height: calc(var(--space-10) * 2);
+  margin-inline: auto;
+}
+
+.admin-attendance__chart-svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.admin-attendance__chart-track,
+.admin-attendance__chart-segment {
+  fill: none;
+  stroke-width: 4;
+}
+
+.admin-attendance__chart-track {
+  stroke: var(--admin-color-surface-elevated);
+}
+
+.admin-attendance__chart-segment {
+  stroke-linecap: butt;
+  transition: stroke-dasharray var(--admin-duration-standard) var(--admin-ease-standard), stroke-dashoffset var(--admin-duration-standard) var(--admin-ease-standard);
+}
+
+.admin-attendance__chart-segment--present,
+.admin-attendance__legend-dot--present { stroke: var(--success-500); background: var(--success-500); }
+.admin-attendance__chart-segment--absent,
+.admin-attendance__legend-dot--absent { stroke: var(--error-500); background: var(--error-500); }
+.admin-attendance__chart-segment--late,
+.admin-attendance__legend-dot--late { stroke: var(--warning-500); background: var(--warning-500); }
+.admin-attendance__chart-segment--excused,
+.admin-attendance__legend-dot--excused { stroke: var(--info-500); background: var(--info-500); }
+.admin-attendance__chart-segment--empty { stroke: var(--admin-color-border); }
+
+.admin-attendance__chart-center {
+  position: absolute;
+  inset: var(--space-2);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-full);
+  background: var(--neutral-950);
+}
+
+.admin-attendance__legend-dot {
+  display: block;
+  width: var(--space-1);
+  height: var(--space-1);
+  flex: 0 0 auto;
+  border-radius: var(--radius-full);
+}
+
+/* ─────────────────────────────────────────────
+   04  FORM INPUTS (scoped refinement)
+───────────────────────────────────────────── */
+
+.admin-page input[type="text"]:focus,
+.admin-page input[type="tel"]:focus,
+.admin-page input[type="email"]:focus,
+.admin-page input[type="search"]:focus,
+.admin-page input[type="date"]:focus,
+.admin-page input[type="number"]:focus,
+.admin-page textarea:focus,
+.admin-page select:focus {
+  border-color: var(--admin-color-accent);
+  box-shadow: 0 0 0 2px rgba(213, 175, 88, .12);
+}
+
+/* ─────────────────────────────────────────────
+   04  PAGINATION
+───────────────────────────────────────────── */
+
+.admin-page nav[role="navigation"] {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+}
+
+.admin-page nav[role="navigation"] a,
+.admin-page nav[role="navigation"] span {
+  min-width: var(--admin-touch-target);
+  min-height: var(--admin-touch-target);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--admin-radius-control);
+  font-size: var(--text-sm);
+  transition: background-color var(--admin-duration-fast) var(--admin-ease-standard), color var(--admin-duration-fast) var(--admin-ease-standard);
+}
+
+.admin-page nav[role="navigation"] a:hover {
+  background: var(--admin-color-surface-elevated);
+  color: var(--admin-color-accent-hover);
+}
+
+.admin-page nav[role="navigation"] span[aria-current="page"] {
+  background: var(--admin-color-accent);
+  color: var(--neutral-950);
+  font-weight: 600;
+}
+
+/* ─────────────────────────────────────────────
+   05  CHART-CONTAINER CONSISTENCY
+   Ensure the glass panel from chart-container matches dashboard.
+───────────────────────────────────────────── */
+
+.admin-page [role="region"].rounded-2xl {
+  border-color: var(--admin-color-border);
+  background: var(--admin-color-surface-glass);
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, .18),
+    0 4px 16px rgba(0, 0, 0, .14),
+    inset 0 1px 0 rgba(255, 255, 255, .04);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.admin-page [role="region"].rounded-2xl:hover {
+  border-color: var(--admin-color-border-strong);
+  box-shadow:
+    0 2px 6px rgba(0, 0, 0, .22),
+    0 8px 28px rgba(0, 0, 0, .20),
+    inset 0 1px 0 rgba(255, 255, 255, .05);
+}
+
+/* Panel header title color consistency */
+.admin-page [role="region"] h2 {
+  color: var(--admin-color-text);
+}
+
+/* ─────────────────────────────────────────────
+   06  FLASH ALERTS SPACING
+───────────────────────────────────────────── */
+
+.admin-page .mb-5 {
+  margin-block-end: var(--space-2);
+}
+
+/* ─────────────────────────────────────────────
+   07  ACTION LINKS IN TABLES
+───────────────────────────────────────────── */
+
+.admin-page table[role="table"] a {
+  transition: color var(--admin-duration-fast) var(--admin-ease-standard);
+}
+
+/* ─────────────────────────────────────────────
+   08  RESPONSIVE
+───────────────────────────────────────────── */
+
+@media (max-width: 767px) {
+  .admin-page .ui-page-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--space-1);
+  }
+
+  .admin-page .ui-page-header__actions {
+    justify-content: flex-end;
+  }
+}

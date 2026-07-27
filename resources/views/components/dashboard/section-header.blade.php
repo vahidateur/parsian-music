@@ -1,30 +1,31 @@
+{{--
+    Reusable page header.
+    Props: title, subtitle, badge; slots: actions, default.
+    Phase: 0.5 — Admin Foundation.
+--}}
 @props([
     'title' => '',
     'subtitle' => null,
     'badge' => null,
 ])
 
-<div {{ $attributes->merge([
-    'class' => 'mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between',
-]) }}>
-    <div class="min-w-0">
-        <div class="flex flex-wrap items-center gap-3">
+<div {{ $attributes->merge(['class' => 'ui-page-header']) }}>
+    <div class="ui-page-header__main">
+        <div class="ui-page-header__title-row">
             @if ($title)
-                <h2 class="text-lg font-semibold text-amber-100">{{ $title }}</h2>
+                <h2 class="ui-page-header__title">{{ $title }}</h2>
             @endif
             @if ($badge)
-                <span class="rounded-full bg-amber-500/10 px-3 py-1 text-xs font-medium text-amber-300">
-                    {{ $badge }}
-                </span>
+                <x-ui.badge variant="accent">{{ $badge }}</x-ui.badge>
             @endif
         </div>
         @if ($subtitle)
-            <p class="mt-1 text-sm text-gray-500">{{ $subtitle }}</p>
+            <p class="ui-page-header__subtitle">{{ $subtitle }}</p>
         @endif
     </div>
 
     @isset($actions)
-        <div class="flex flex-wrap items-center gap-3">
+        <div class="ui-page-header__actions">
             {{ $actions }}
         </div>
     @endisset

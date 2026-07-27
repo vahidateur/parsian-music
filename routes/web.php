@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\AttendanceReportController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\SettingsController;
+use App\Http\Controllers\Admin\CalendarController;
 use App\Http\Controllers\Admin\ClassAttendanceController;
 use App\Http\Controllers\Admin\ClassSessionController;
 use App\Http\Controllers\Admin\InstrumentController;
@@ -28,8 +29,8 @@ Route::get('/teachers/{teacher}', function () {
 
 Route::get('/dashboard', function (\Illuminate\Http\Request $request) {
     return match ($request->user()->role) {
-        \App\Enums\RoleEnum::SUPER_ADMIN => redirect()->intended('/admin/dashboard'),
-        \App\Enums\RoleEnum::ADMIN       => redirect()->intended('/admin/dashboard'),
+        \App\Enums\RoleEnum::SUPER_ADMIN => redirect()->intended(route('admin.dashboard')),
+        \App\Enums\RoleEnum::ADMIN       => redirect()->intended(route('admin.dashboard')),
         \App\Enums\RoleEnum::TEACHER     => redirect()->intended('/teacher/dashboard'),
         \App\Enums\RoleEnum::STUDENT     => redirect()->intended('/student/dashboard'),
     };
@@ -107,7 +108,8 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin/sessions')->name('admin
 });
 
 Route::middleware(['auth', 'role:admin'])->prefix('admin/calendar')->name('admin.calendar.')->group(function () {
-    Route::get('/', [ClassSessionController::class, 'calendar'])->name('index');
+    Route::get('/', [CalendarController::class, 'index'])->name('index');
+    Route::get('/events', [CalendarController::class, 'events'])->name('events');
 });
 
 Route::middleware(['auth', 'role:admin'])->prefix('admin/enrollments')->name('admin.enrollments.')->group(function () {

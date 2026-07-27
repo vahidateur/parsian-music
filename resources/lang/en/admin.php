@@ -183,6 +183,38 @@ return [
     'today'           => 'Today',
     'next'            => 'Next →',
 
+    // ── Calendar module localization ──────────────────────────────────────
+    'calendar_labels' => [
+        'title' => 'Session Calendar', 'date_loading' => 'Loading date', 'week_days' => 'Days of the week',
+        'daily_schedule' => 'Daily session schedule', 'timeline' => 'Session timeline', 'session_details' => 'Session details',
+        'session_notes' => 'Session notes', 'student' => 'Student', 'teacher' => 'Teacher', 'instrument' => 'Instrument',
+        'session_date' => 'Session date', 'start_time' => 'Start time', 'duration' => 'Duration', 'room' => 'Room', 'status' => 'Status',
+    ],
+    'calendar_navigation' => [
+        'day' => 'Day navigation', 'week_days' => 'Select a day of the week', 'previous_day' => 'Previous day',
+        'next_day' => 'Next day', 'go_to_today' => 'Go to today',
+    ],
+    'calendar_weekdays' => [
+        'saturday' => 'Saturday', 'sunday' => 'Sunday', 'monday' => 'Monday', 'tuesday' => 'Tuesday',
+        'wednesday' => 'Wednesday', 'thursday' => 'Thursday', 'friday' => 'Friday',
+    ],
+    'calendar_states' => [
+        'loading' => 'Loading sessions…', 'empty' => 'No sessions to display',
+        'error' => 'The calendar could not be loaded.', 'retry' => 'Try again', 'no_notes' => 'No notes', 'missing_value' => '—',
+    ],
+    'calendar_filters' => [
+        'title' => 'Session filters', 'toggle' => 'Filters', 'clear_all' => 'Clear all', 'active_count' => 'Number of active filters',
+        'teacher' => 'Teacher', 'student' => 'Student', 'room' => 'Room', 'instrument' => 'Instrument',
+        'all_teachers' => 'All teachers', 'all_students' => 'All students', 'all_rooms' => 'All rooms', 'all_instruments' => 'All instruments',
+        'by_teacher' => 'Select by teacher', 'by_student' => 'Select by student', 'by_room' => 'Select by room', 'by_instrument' => 'Select by instrument',
+    ],
+    'calendar_errors' => [
+        'loading_calendar' => 'The calendar could not be loaded.', 'loading_sessions' => 'Error loading sessions', 'invalid_events' => 'The session data cannot be displayed.',
+    ],
+    'calendar_aria' => [
+        'close_details' => 'Close session details', 'timeline' => 'Session timeline', 'active_filters' => 'Number of active filters',
+    ],
+
     // ── Common labels ──────────────────────────────────────────────────────
     'full_name'      => 'Full Name',
     'name'           => 'Name',

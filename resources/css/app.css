@@ -11,7 +11,13 @@
 /* Site-wide tokens & primitives (z-index, x-cloak) */
 @import './site-theme.css';
 
+/* Admin Foundation tokens */
+@import './admin-foundation.css';
+@import './admin/dashboard.css';
+@import './admin/calendar.css';
+
 /* Global Components */
+@import './components/core-ui.css';
 @import './components/navbar.css';
 @import './components/breadcrumb.css';
 
@@ -26,6 +32,9 @@
 @import './themes/dark.css';
 @import './themes/light.css';
 @import './themes/academy-gold.css';
+
+/* Admin Glass theme — must load last so it can re-skin admin surfaces */
+@import './admin/glass.css';
 
 @tailwind base;
 @tailwind components;

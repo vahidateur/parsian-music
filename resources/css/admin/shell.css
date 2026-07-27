@@ -1,0 +1,678 @@
+/**
+ * Admin Shell styles.
+ * Responsibility: shell layout, navigation, drawer, and placeholders.
+ * Source: project tokens only; no dashboard widget styles.
+ */
+
+/* 01 Root */
+.admin-page {
+  height: 100vh;
+  min-width: 0;
+  overflow: hidden;
+  background: var(--admin-color-page);
+  color: var(--admin-color-text);
+  font-family: inherit;
+}
+
+.admin-shell {
+  --admin-sidebar-current-width: var(--admin-sidebar-width-expanded);
+  min-height: 100vh;
+  max-width: 100vw;
+  overflow-x: hidden;
+  background: var(--admin-color-page);
+  color: var(--admin-color-text);
+}
+
+.admin-shell--collapsed {
+  --admin-sidebar-current-width: var(--admin-sidebar-width-collapsed);
+}
+
+/* 02 Desktop sidebar */
+.admin-shell__sidebar {
+  position: fixed;
+  inset-block: 0;
+  inset-inline-start: 0;
+  z-index: var(--admin-z-navigation);
+  display: none;
+  width: var(--admin-sidebar-width-expanded);
+  flex-direction: column;
+  overflow: hidden;
+  border-inline-end: var(--ui-border-width) solid var(--admin-color-border);
+  background: var(--admin-color-surface-glass);
+  box-shadow: var(--shadow-sm);
+  backdrop-filter: blur(var(--admin-surface-blur));
+  -webkit-backdrop-filter: blur(var(--admin-surface-blur));
+  transition: width var(--admin-duration-standard) var(--admin-ease-standard), background-color var(--admin-duration-standard) var(--admin-ease-standard);
+}
+
+.admin-shell__sidebar-header {
+  display: flex;
+  min-height: var(--admin-topbar-height);
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-1);
+  padding-inline: var(--space-2);
+  border-block-end: var(--ui-border-width) solid var(--admin-color-border);
+}
+
+.admin-shell__brand {
+  display: inline-flex;
+  min-width: 0;
+  min-height: var(--admin-touch-target);
+  flex: 1;
+  align-items: center;
+  gap: var(--space-1);
+  overflow: hidden;
+  color: var(--admin-color-text);
+  text-decoration: none;
+}
+
+.admin-shell__brand-mark {
+  display: inline-flex;
+  width: var(--icon-lg);
+  height: var(--icon-lg);
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  border: var(--ui-border-width) solid var(--admin-color-border-strong);
+  border-radius: var(--admin-radius-control);
+  color: var(--admin-color-accent);
+  font-size: var(--text-lg);
+}
+
+.admin-shell__brand-label {
+  overflow: hidden;
+  color: var(--admin-color-text);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.admin-shell__version {
+  display: block;
+  color: var(--admin-color-text-subtle);
+  font-size: var(--text-xs);
+  font-weight: 400;
+}
+
+.admin-shell__collapse-button,
+.admin-shell__icon-button,
+.admin-shell__mobile-toggle,
+.admin-shell__placeholder-button,
+.admin-shell__user-placeholder {
+  display: inline-flex;
+  min-width: var(--admin-touch-target);
+  min-height: var(--admin-touch-target);
+  align-items: center;
+  justify-content: center;
+  border: var(--ui-border-width) solid transparent;
+  border-radius: var(--admin-radius-control);
+  background: transparent;
+  color: var(--admin-color-text-muted);
+  cursor: pointer;
+  transition: color var(--admin-duration-fast) var(--admin-ease-standard), background-color var(--admin-duration-fast) var(--admin-ease-standard), border-color var(--admin-duration-fast) var(--admin-ease-standard);
+}
+
+.admin-shell__collapse-button:hover,
+.admin-shell__icon-button:hover,
+.admin-shell__mobile-toggle:hover,
+.admin-shell__placeholder-button:not(:disabled):hover,
+.admin-shell__user-placeholder:not(:disabled):hover {
+  border-color: var(--admin-color-border);
+  background: var(--admin-color-surface-elevated);
+  color: var(--admin-color-accent-hover);
+}
+
+.admin-shell__collapse-icon {
+  display: inline-block;
+  font-size: var(--text-lg);
+  transform: rotate(180deg);
+  transition: transform var(--admin-duration-standard) var(--admin-ease-standard);
+}
+
+.admin-shell--collapsed .admin-shell__collapse-icon { transform: rotate(0deg); }
+.admin-shell--collapsed .admin-shell__sidebar { width: var(--admin-sidebar-width-collapsed); }
+.admin-shell--collapsed .admin-shell__sidebar-header { justify-content: center; padding-inline: var(--space-2); }
+.admin-shell--collapsed .admin-shell__brand { display: none; }
+
+/* 03 Navigation */
+.admin-shell__sidebar-navigation {
+  min-height: 0;
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: var(--space-1);
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.admin-shell__sidebar-navigation::-webkit-scrollbar { display: none; }
+
+.admin-shell__drawer-navigation {
+  min-height: 0;
+  overflow-y: auto;
+  padding: var(--space-1);
+}
+
+.admin-navigation {
+  display: grid;
+  gap: var(--space-1);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.admin-navigation__link {
+  display: flex;
+  min-height: var(--admin-touch-target);
+  align-items: center;
+  justify-content: flex-start;
+  gap: var(--space-1);
+  border: var(--ui-border-width) solid transparent;
+  border-radius: var(--admin-radius-control);
+  padding-inline: var(--space-2);
+  color: var(--admin-color-text-muted);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  text-align: start;
+  text-decoration: none;
+  transition: color var(--admin-duration-fast) var(--admin-ease-standard), background-color var(--admin-duration-fast) var(--admin-ease-standard), border-color var(--admin-duration-fast) var(--admin-ease-standard), box-shadow var(--admin-duration-fast) var(--admin-ease-standard);
+}
+
+.admin-shell--collapsed .admin-navigation__link { justify-content: center; padding-inline: 0; }
+
+.admin-navigation__link:hover,
+.admin-navigation__link--active {
+  border-color: var(--admin-color-border);
+  background: var(--admin-color-surface-elevated);
+  color: var(--admin-color-text);
+}
+
+.admin-navigation__link--active {
+  border-color: var(--admin-color-border-strong);
+  box-shadow: inset 0 0 0 var(--ui-border-width) var(--admin-color-border);
+  color: var(--admin-color-accent);
+}
+
+.admin-navigation__icon {
+  display: inline-flex;
+  width: var(--icon-md);
+  min-width: var(--icon-md);
+  height: var(--icon-md);
+  align-items: center;
+  justify-content: center;
+  color: var(--admin-color-text-subtle);
+  font-size: var(--text-lg);
+}
+
+.admin-navigation__link:hover .admin-navigation__icon,
+.admin-navigation__link--active .admin-navigation__icon { color: var(--admin-color-accent); }
+
+.admin-navigation__label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* 03b Submenu / Accordion */
+.admin-navigation__chevron {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-inline-start: auto;
+  color: var(--admin-color-text-subtle);
+  transition: transform var(--admin-duration-fast) var(--admin-ease-standard);
+}
+
+.admin-navigation__chevron--open { transform: rotate(180deg); }
+
+.admin-navigation__link:hover .admin-navigation__chevron,
+.admin-navigation__link--active .admin-navigation__chevron { color: var(--admin-color-accent); }
+
+.admin-navigation__submenu {
+  display: grid;
+  gap: 2px;
+  margin: 0;
+  padding: 0;
+  padding-inline-start: calc(var(--icon-md) + var(--space-2) + var(--space-1));
+  list-style: none;
+  overflow: hidden;
+}
+
+.admin-navigation__submenu-enter,
+.admin-navigation__submenu-leave { transition: opacity var(--admin-duration-fast) var(--admin-ease-standard), max-height var(--admin-duration-standard) var(--admin-ease-standard); }
+.admin-navigation__submenu-enter-start,
+.admin-navigation__submenu-leave-end { opacity: 0; }
+.admin-navigation__submenu-enter-end,
+.admin-navigation__submenu-leave-start { opacity: 1; }
+
+.admin-navigation__sublink {
+  display: flex;
+  min-height: calc(var(--admin-touch-target) - 6px);
+  align-items: center;
+  gap: var(--space-1);
+  border-radius: var(--admin-radius-control);
+  padding-inline: var(--space-2);
+  color: var(--admin-color-text-muted);
+  font-size: var(--text-xs);
+  font-weight: 400;
+  text-decoration: none;
+  transition: color var(--admin-duration-fast) var(--admin-ease-standard), background-color var(--admin-duration-fast) var(--admin-ease-standard);
+}
+
+.admin-navigation__subicon {
+  display: inline-flex;
+  width: var(--icon-sm, 14px);
+  min-width: var(--icon-sm, 14px);
+  height: var(--icon-sm, 14px);
+  align-items: center;
+  justify-content: center;
+  color: var(--admin-color-text-subtle);
+  font-size: var(--text-sm);
+}
+
+.admin-navigation__sublink:hover .admin-navigation__subicon,
+.admin-navigation__sublink--active .admin-navigation__subicon { color: var(--admin-color-accent); }
+
+.admin-navigation__sublink:hover {
+  background: var(--admin-color-surface-elevated);
+  color: var(--admin-color-text);
+}
+
+.admin-navigation__sublink--active {
+  color: var(--admin-color-accent);
+}
+
+.admin-navigation__sublink:focus-visible {
+  outline: var(--ui-focus-width) solid var(--admin-color-focus);
+  outline-offset: var(--ui-focus-offset);
+}
+
+button.admin-navigation__link {
+  width: 100%;
+  border: var(--ui-border-width) solid transparent;
+  background: transparent;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+/* 04 Main and topbar */
+.admin-shell__main {
+  display: flex;
+  min-width: 0;
+  height: 100vh;
+  flex-direction: column;
+  margin-inline-start: 0;
+  transition: margin-inline-start var(--admin-duration-standard) var(--admin-ease-standard);
+}
+
+.admin-shell__topbar {
+  position: sticky;
+  top: 0;
+  z-index: var(--admin-z-navigation);
+  display: flex;
+  height: var(--admin-topbar-height);
+  flex-shrink: 0;
+  align-items: center;
+  gap: var(--space-2);
+  border-block-end: var(--ui-border-width) solid var(--admin-color-border);
+  background: var(--admin-color-surface-glass);
+  box-shadow: var(--shadow-sm);
+  padding-inline: var(--admin-page-inline);
+  backdrop-filter: blur(var(--admin-surface-blur));
+  -webkit-backdrop-filter: blur(var(--admin-surface-blur));
+}
+
+.admin-shell__mobile-toggle { flex: 0 0 auto; }
+
+.admin-shell__page-title {
+  min-width: 0;
+  margin: 0;
+  overflow: hidden;
+  color: var(--admin-color-text);
+  font-size: var(--text-xl);
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.admin-shell__topbar-actions { display: flex; margin-inline-start: auto; align-items: center; gap: var(--space-1); }
+
+.admin-shell__placeholder-button:disabled,
+.admin-shell__user-placeholder:disabled,
+.admin-shell__mobile-toggle:disabled { cursor: not-allowed; opacity: 0.55; }
+
+.admin-shell__placeholder-button,
+.admin-shell__user-placeholder { font-size: var(--text-md); }
+
+.admin-shell__user-placeholder { gap: var(--space-1); padding-inline: var(--space-1); }
+.admin-shell__user-label { display: none; color: var(--admin-color-text-muted); font-size: var(--text-sm); }
+.admin-shell__user-avatar { color: var(--admin-color-accent); }
+
+.admin-shell__content {
+  min-width: 0;
+  min-height: 0;
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-block: var(--space-3);
+  padding-inline: var(--admin-page-inline);
+}
+.admin-shell__content:focus { outline: var(--ui-focus-width) solid var(--admin-color-focus); outline-offset: var(--ui-focus-offset); }
+.admin-shell__content-inner { width: min(100%, var(--admin-content-max-width)); margin-inline: auto; }
+
+/* 05 Breadcrumb */
+.admin-shell__breadcrumb {
+  display: flex;
+  min-height: var(--admin-touch-target);
+  align-items: center;
+  gap: var(--space-1);
+  margin-block-end: var(--space-2);
+  color: var(--admin-color-text-subtle);
+  font-size: var(--text-sm);
+}
+
+.admin-shell__breadcrumb-link { color: var(--admin-color-text-muted); text-decoration: none; }
+.admin-shell__breadcrumb-link:hover,
+.admin-shell__breadcrumb-link:focus-visible { color: var(--admin-color-accent-hover); }
+.admin-shell__breadcrumb-separator { color: var(--admin-color-text-subtle); }
+.admin-shell__breadcrumb-current { overflow: hidden; color: var(--admin-color-accent); text-overflow: ellipsis; white-space: nowrap; }
+
+/* 06 Mobile drawer */
+.admin-shell__drawer-backdrop { position: fixed; inset: 0; z-index: var(--admin-z-overlay); background: var(--glass-overlay); }
+
+.admin-shell__drawer {
+  position: fixed;
+  inset-block: 0;
+  inset-inline-end: 0;
+  z-index: var(--admin-z-dialog);
+  display: flex;
+  width: min(var(--admin-drawer-width), calc(100vw - var(--space-4)));
+  flex-direction: column;
+  border-inline-start: var(--ui-border-width) solid var(--admin-color-border);
+  background: var(--admin-color-surface-glass);
+  box-shadow: var(--admin-shadow-panel);
+  backdrop-filter: blur(var(--admin-surface-blur));
+  -webkit-backdrop-filter: blur(var(--admin-surface-blur));
+}
+
+.admin-shell__drawer-header {
+  display: flex;
+  min-height: var(--admin-topbar-height);
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  padding-inline: var(--space-2);
+  border-block-end: var(--ui-border-width) solid var(--admin-color-border);
+}
+
+.admin-shell__drawer-navigation { flex: 1; }
+
+/* 07 Keyboard and responsive behavior */
+.admin-shell__collapse-button:focus-visible,
+.admin-shell__icon-button:focus-visible,
+.admin-shell__mobile-toggle:focus-visible,
+.admin-shell__placeholder-button:focus-visible,
+.admin-shell__user-placeholder:focus-visible,
+.admin-navigation__link:focus-visible,
+.admin-navigation__sublink:focus-visible,
+.admin-shell__brand:focus-visible,
+.admin-shell__breadcrumb-link:focus-visible,
+.admin-shell__notif-panel-clear:focus-visible,
+.admin-shell__notif-panel-link:focus-visible,
+.admin-shell__user-panel-item:focus-visible {
+  outline: var(--ui-focus-width) solid var(--admin-color-focus);
+  outline-offset: var(--ui-focus-offset);
+}
+
+/* 08 Topbar search */
+.admin-shell__search {
+  position: relative;
+  display: flex;
+  flex: 1;
+  max-width: 280px;
+  align-items: center;
+}
+
+.admin-shell__search-icon {
+  position: absolute;
+  inset-inline-start: var(--space-1);
+  color: var(--admin-color-text-subtle);
+  pointer-events: none;
+}
+
+.admin-shell__search-input {
+  width: 100%;
+  min-height: var(--admin-touch-target);
+  padding-inline-start: calc(var(--space-1) + 14px + var(--space-1));
+  padding-inline-end: var(--space-1);
+  border: var(--ui-border-width) solid var(--admin-color-border);
+  border-radius: var(--admin-radius-control);
+  background: var(--admin-color-surface-elevated);
+  color: var(--admin-color-text);
+  font-size: var(--text-sm);
+  transition: border-color var(--admin-duration-fast) var(--admin-ease-standard), box-shadow var(--admin-duration-fast) var(--admin-ease-standard);
+}
+
+.admin-shell__search-input::placeholder { color: var(--admin-color-text-subtle); }
+.admin-shell__search-input:focus {
+  outline: none;
+  border-color: var(--admin-color-accent);
+  box-shadow: 0 0 0 2px rgba(213, 175, 88, .12);
+}
+.admin-shell__search-input:focus-visible {
+  outline: var(--ui-focus-width) solid var(--admin-color-focus);
+  outline-offset: var(--ui-focus-offset);
+}
+
+.admin-shell__brand-mobile {
+  display: none;
+  color: var(--admin-color-text);
+  font-size: var(--text-sm);
+  font-weight: 600;
+}
+
+/* 09 Notification badge */
+.admin-shell__notif-wrapper { position: relative; }
+.admin-shell__notif-badge {
+  position: absolute;
+  top: 2px;
+  inset-inline-end: 2px;
+  min-width: 14px;
+  height: 14px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  background: #ef4444;
+  color: #fff;
+  font-size: 9px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.admin-shell__icon-button { position: relative; }
+
+/* 10 Notification panel */
+.admin-shell__notif-panel {
+  position: absolute;
+  top: 100%;
+  inset-inline-end: 0;
+  z-index: var(--admin-z-dropdown);
+  width: min(320px, calc(100vw - var(--space-2)));
+  margin-top: var(--space-1);
+  border: var(--ui-border-width) solid var(--admin-color-border-strong);
+  border-radius: var(--admin-radius-panel);
+  background: var(--admin-color-surface-elevated);
+  box-shadow: var(--admin-shadow-panel), 0 20px 60px rgba(0, 0, 0, .5);
+}
+
+.admin-shell__notif-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-2);
+  border-block-end: var(--ui-border-width) solid var(--admin-color-border);
+}
+
+.admin-shell__notif-panel-title { font-size: var(--text-sm); font-weight: 600; color: var(--admin-color-text); }
+.admin-shell__notif-panel-clear {
+  border: none;
+  background: transparent;
+  color: var(--admin-color-accent);
+  font-size: var(--text-xs);
+  cursor: pointer;
+}
+.admin-shell__notif-panel-clear:hover { color: var(--admin-color-accent-hover); }
+
+.admin-shell__notif-panel-list { max-height: 280px; overflow-y: auto; }
+
+.admin-shell__notif-item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-1);
+  padding: var(--space-2);
+  border-block-end: var(--ui-border-width) solid var(--admin-color-border);
+  transition: background var(--admin-duration-fast) var(--admin-ease-standard);
+}
+.admin-shell__notif-item:last-child { border-block-end: none; }
+.admin-shell__notif-item:hover { background: var(--admin-color-surface-elevated); }
+
+.admin-shell__notif-item-dot {
+  flex: 0 0 auto;
+  width: 8px;
+  height: 8px;
+  margin-top: 5px;
+  border-radius: 50%;
+  background: var(--admin-color-accent);
+}
+.admin-shell__notif-item-dot--read { background: var(--admin-color-text-subtle); }
+.admin-shell__notif-item-title { margin: 0; font-size: var(--text-sm); color: var(--admin-color-text); }
+.admin-shell__notif-item-meta { margin: 2px 0 0; font-size: var(--text-xs); color: var(--admin-color-text-muted); }
+
+.admin-shell__notif-panel-footer {
+  padding: var(--space-1) var(--space-2);
+  text-align: center;
+  border-block-start: var(--ui-border-width) solid var(--admin-color-border);
+}
+.admin-shell__notif-panel-link { color: var(--admin-color-accent); font-size: var(--text-xs); text-decoration: none; }
+.admin-shell__notif-panel-link:hover { color: var(--admin-color-accent-hover); }
+
+/* 11 User menu */
+.admin-shell__user-menu { position: relative; display: inline-flex; }
+
+.admin-shell__user-chevron {
+  transition: transform var(--admin-duration-fast) var(--admin-ease-standard);
+}
+.admin-shell__user-chevron--open { transform: rotate(180deg); }
+
+.admin-shell__user-panel {
+  position: absolute;
+  top: 100%;
+  inset-inline-end: 0;
+  z-index: var(--admin-z-dropdown);
+  width: min(220px, calc(100vw - var(--space-2)));
+  margin-top: var(--space-1);
+  border: var(--ui-border-width) solid var(--admin-color-border-strong);
+  border-radius: var(--admin-radius-panel);
+  background: var(--admin-color-surface-elevated);
+  box-shadow: var(--admin-shadow-panel), 0 20px 60px rgba(0, 0, 0, .5);
+  overflow: hidden;
+}
+
+.admin-shell__user-panel-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-2);
+}
+.admin-shell__user-panel-avatar {
+  width: var(--space-5);
+  height: var(--space-5);
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--admin-color-surface-elevated);
+  border: var(--ui-border-width) solid var(--admin-color-border-strong);
+  color: var(--admin-color-accent);
+  font-size: var(--text-sm);
+  font-weight: 700;
+}
+.admin-shell__user-panel-name { margin: 0; font-size: var(--text-sm); font-weight: 600; color: var(--admin-color-text); }
+.admin-shell__user-panel-role { margin: 0; font-size: var(--text-xs); color: var(--admin-color-text-muted); }
+
+.admin-shell__user-panel-divider {
+  height: var(--ui-border-width);
+  background: var(--admin-color-border);
+}
+
+.admin-shell__user-panel-item {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-2);
+  border: none;
+  background: transparent;
+  color: var(--admin-color-text-muted);
+  font-size: var(--text-sm);
+  text-decoration: none;
+  cursor: pointer;
+  transition: background var(--admin-duration-fast) var(--admin-ease-standard), color var(--admin-duration-fast) var(--admin-ease-standard);
+}
+.admin-shell__user-panel-item:hover {
+  background: var(--admin-color-surface-elevated);
+  color: var(--admin-color-text);
+}
+.admin-shell__user-panel-item--danger { color: #f87171; }
+.admin-shell__user-panel-item--danger:hover { background: rgba(239, 68, 68, .08); color: #fca5a5; }
+
+/* 12 Sidebar footer */
+.admin-shell__sidebar-footer {
+  margin-top: auto;
+  padding: var(--space-2);
+  border-block-start: var(--ui-border-width) solid var(--admin-color-border);
+}
+
+/* Account area: only rendered visually by the Glass theme (see admin/glass.css) */
+.admin-shell__account { display: none; }
+
+/* 13 Panel transitions */
+.admin-shell__panel-enter { transition: opacity 180ms var(--admin-ease-standard), transform 180ms var(--admin-ease-standard); }
+.admin-shell__panel-enter-start { opacity: 0; transform: translateY(6px) scale(.98); }
+.admin-shell__panel-enter-end { opacity: 1; transform: translateY(0) scale(1); }
+.admin-shell__panel-leave { transition: opacity 120ms var(--admin-ease-standard), transform 120ms var(--admin-ease-standard); }
+.admin-shell__panel-leave-start { opacity: 1; transform: translateY(0) scale(1); }
+.admin-shell__panel-leave-end { opacity: 0; transform: translateY(4px) scale(.98); }
+
+@media (min-width: 1024px) {
+  .admin-shell__sidebar { display: flex; }
+  .admin-shell__main { margin-inline-start: var(--admin-sidebar-current-width); }
+  .admin-shell__mobile-toggle,
+  .admin-shell__drawer,
+  .admin-shell__drawer-backdrop { display: none; }
+  .admin-shell__user-label { display: inline; }
+}
+
+@media (max-width: 767px) {
+  .admin-shell__search { display: none; }
+  .admin-shell__brand-mobile { display: inline; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .admin-shell__sidebar,
+  .admin-shell__main,
+  .admin-shell__collapse-icon,
+  .admin-shell__collapse-button,
+  .admin-shell__icon-button,
+  .admin-shell__mobile-toggle,
+  .admin-shell__placeholder-button,
+  .admin-shell__user-placeholder,
+  .admin-navigation__link,
+  .admin-navigation__chevron,
+  .admin-navigation__submenu-enter,
+  .admin-navigation__submenu-leave,
+  .admin-navigation__sublink,
+  .admin-shell__search-input,
+  .admin-shell__notif-item,
+  .admin-shell__user-chevron,
+  .admin-shell__user-panel-item,
+  .admin-shell__panel-enter,
+  .admin-shell__panel-leave { transition: none; }
+}

@@ -11,8 +11,10 @@ return [
     'name'        => 'نازنین حسینی',
     'role'        => 'مدرس ویولن',
     'experience'  => '۱۰ سال تجربه',
-    'instruments' => ['ویولن', 'سلفژ', 'موسیقی کلاسیک'],
+    'instruments'      => ['ویولن', 'سلفژ', 'موسیقی کلاسیک'],
     'background_image' => '/storage/ui/teacher/hero/background/violin/gothic-library.webp',
+    'frame_image'      => '/storage/ui/teacher/frames/frame-main.png',
+    'photo_image'      => null,
 
     /* ── Professional Card ──────────────────────── */
     'experience_years' => '۱۰ سال',

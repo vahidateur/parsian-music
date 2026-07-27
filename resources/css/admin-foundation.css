@@ -1,0 +1,9 @@
+/**
+ * Admin Foundation CSS entry.
+ * Responsibility: load admin-only semantic token modules before Tailwind.
+ * Phase: 0.5 — Admin Foundation.
+ */
+
+@import './admin/tokens.css';
+@import './admin/shell.css';
+@import './admin/pages.css';

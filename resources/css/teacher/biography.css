@@ -61,8 +61,8 @@
 .teacher-biography-section {
   max-width: var(--bio-panel-max-w);
   margin-inline: auto;
-  margin-block: var(--bio-panel-margin-y);
-  padding-inline: 32px;
+  margin-block: 0 var(--bio-panel-margin-y);
+  padding-inline: var(--space-page-desktop);
 }
 
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -235,8 +235,8 @@
 /* Tablet: 60/40 */
 @media (min-width: 768px) and (max-width: 1023px) {
   .teacher-biography-section {
-    padding-inline: 24px;
-    margin-block: 60px;
+    padding-inline: var(--space-page-tablet);
+    margin-block: 0 var(--space-8);
   }
   .teacher-biography-panel {
     grid-template-columns: 60fr 40fr;
@@ -251,8 +251,8 @@
 /* Mobile: stack */
 @media (max-width: 767px) {
   .teacher-biography-section {
-    padding-inline: 16px;
-    margin-block: 40px;
+    padding-inline: var(--space-page-mobile);
+    margin-block: 0 var(--space-5);
   }
   .teacher-biography-panel {
     grid-template-columns: 1fr;

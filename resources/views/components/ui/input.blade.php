@@ -75,25 +75,9 @@
     @if($autocomplete) autocomplete="{{ $autocomplete }}" @endif
     dir="{{ $dir }}"
     {{ $attributes->merge([
-        'class' => 'w-full
-                    [height:var(--input-height)]
-                    [border-radius:var(--radius-md)]
-                    [font-size:var(--text-base)]
-                    px-6 ' . ($hasIcon ? 'pr-14' : '') . '
-                    bg-white/[0.06]
-                    border
-                    [border-color:' . ($hasError ? 'var(--error-500)' : 'var(--glass-border-light)') . ']
-                    text-[var(--text-primary)]
-                    placeholder:text-[var(--text-tertiary)]
-                    transition-all
-                    [transition-duration:var(--duration-fast)]
-                    [transition-timing-function:var(--ease-standard)]
-                    focus:outline-none
-                    focus:[border-color:var(--gold-300)]
-                    focus:[box-shadow:var(--shadow-input-focus)]
-                    disabled:opacity-50
-                    disabled:cursor-not-allowed
-                    readonly:bg-transparent
-                    readonly:cursor-default'
+        'class' => 'ui-input'
+            . ($hasIcon ? ' ui-input--with-icon' : '')
+            . ($hasError ? ' ui-input--error' : '')
+            . ($readonly ? ' ui-input--readonly' : '')
     ]) }}
 >

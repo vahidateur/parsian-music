@@ -17,7 +17,7 @@
 
     <aside class="lg:col-span-1">
         <x-dashboard.chart-container title="بخش‌های تنظیمات">
-            <nav class="mb-2 space-y-0.5" role="navigation" aria-label="نمای کلی تنظیمات">
+            <nav class="mb-2 space-y-0.5" aria-label="نمای کلی تنظیمات">
                 <a href="{{ route('admin.settings.index') }}"
                    class="flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm transition duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500/40
                        {{ $section === null ? 'bg-amber-500/10 font-medium text-amber-300' : 'text-gray-400 hover:bg-gray-800/50 hover:text-gray-200' }}"
@@ -34,7 +34,7 @@
                 <p class="mb-1 mt-3 px-1 text-[10px] font-semibold uppercase tracking-widest text-gray-600 first:mt-0">
                     {{ $groupLabels[$groupKey] ?? $groupKey }}
                 </p>
-                <nav class="space-y-0.5" role="navigation" aria-label="{{ $groupLabels[$groupKey] ?? $groupKey }}">
+                <nav class="space-y-0.5" aria-label="{{ $groupLabels[$groupKey] ?? $groupKey }}">
                     @foreach ($items as $key => $item)
                         <a href="{{ route('admin.settings.show', $key) }}"
                            class="flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm transition duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500/40

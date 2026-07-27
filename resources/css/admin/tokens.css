@@ -1,0 +1,59 @@
+/**
+ * Admin Foundation Tokens
+ * Responsibility: semantic aliases for the authenticated admin surface.
+ * Scope: token definitions only; all values resolve to project primitives.
+ */
+
+:root {
+  /* 01 Surface and text */
+  --admin-color-page: var(--neutral-950);
+  --admin-color-surface-elevated: var(--neutral-850);
+  --admin-color-surface-glass: var(--glass-bg);
+  --admin-color-surface-glass-soft: var(--glass-bg-panel);
+  --admin-color-text: var(--text-primary);
+  --admin-color-text-muted: var(--text-secondary);
+  --admin-color-text-subtle: var(--text-tertiary);
+
+  /* 02 Accent and feedback */
+  --admin-color-accent: var(--gold-300);
+  --admin-color-accent-hover: var(--gold-200);
+  --admin-color-border: var(--glass-border-light);
+  --admin-color-border-strong: var(--glass-border);
+  --admin-color-focus: var(--gold-300);
+
+  /* 03 Component geometry and depth */
+  --admin-radius-control: var(--radius-sm);
+  --admin-radius-card: var(--radius-md);
+  --admin-radius-panel: var(--radius-md);
+  --admin-shadow-card: var(--shadow-sm), var(--glass-shadow-panel);
+  --admin-shadow-panel: var(--shadow-md), var(--glass-shadow-panel);
+  --admin-surface-blur: var(--glass-blur-light);
+  --admin-sidebar-width-expanded: calc(var(--space-8) * 3 + var(--space-6));
+  --admin-sidebar-width-collapsed: var(--space-10);
+  --admin-topbar-height: var(--space-8);
+  --admin-content-max-width: var(--container-xl);
+  --admin-calendar-cell-min-width: 110px;
+  --admin-drawer-width: calc(var(--space-8) * 5);
+  --admin-touch-target: var(--space-6);
+
+  /* 04 Motion and layering */
+  --admin-duration-fast: var(--duration-fast);
+  --admin-duration-standard: var(--duration-fast);
+  --admin-ease-standard: var(--ease-standard);
+  --admin-z-navigation: var(--z-sticky);
+  --admin-z-dropdown: var(--z-dropdown);
+  --admin-z-overlay: var(--z-modal-backdrop);
+  --admin-z-dialog: var(--z-modal);
+  --admin-z-toast: var(--z-toast);
+
+  /* 05 Responsive page spacing */
+  --admin-page-inline: var(--space-page-mobile);
+}
+
+@media (min-width: 768px) {
+  :root { --admin-page-inline: var(--space-page-tablet); }
+}
+
+@media (min-width: 1280px) {
+  :root { --admin-page-inline: var(--space-3); }
+}

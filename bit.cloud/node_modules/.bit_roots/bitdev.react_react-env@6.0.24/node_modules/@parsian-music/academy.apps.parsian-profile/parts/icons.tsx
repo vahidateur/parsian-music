@@ -1,0 +1,128 @@
+import React from 'react';
+
+type IconProps = { size?: number; className?: string };
+
+const base = (size: number) => ({
+  width: size,
+  height: size,
+  viewBox: '0 0 24 24',
+  fill: 'none',
+  stroke: 'currentColor',
+  strokeWidth: 1.4,
+  strokeLinecap: 'round' as const,
+  strokeLinejoin: 'round' as const,
+  'aria-hidden': true,
+});
+
+/** Traditional string instrument (setar/tar) icon. */
+export function InstrumentIcon({ size = 24, className }: IconProps) {
+  return (
+    <svg {...base(size)} className={className}>
+      <path d="M14 3l1 1M15 4l-6 6" />
+      <circle cx="7" cy="16" r="4.5" />
+      <path d="M9.8 12.2 15 7M6 15.4a2.4 2.4 0 1 0 2 2" />
+      <path d="M15 4l2-1 1 2-1 1" />
+    </svg>
+  );
+}
+
+/** Feather quill — for composition / scholarship. */
+export function QuillIcon({ size = 24, className }: IconProps) {
+  return (
+    <svg {...base(size)} className={className}>
+      <path d="M20 4c-6 1-10 5-12 9l-3 6 6-3c4-2 8-6 9-12z" />
+      <path d="M11 13c2-2 4-3 6-4M5 19l4-4" />
+    </svg>
+  );
+}
+
+/** Laurel wreath — mastery / awards. */
+export function LaurelIcon({ size = 24, className }: IconProps) {
+  return (
+    <svg {...base(size)} className={className}>
+      <path d="M12 21c-4-1-7-5-7-10 0-2 .5-4 1.5-5.5M12 21c4-1 7-5 7-10 0-2-.5-4-1.5-5.5" />
+      <path d="M6 9c1.5.5 2.5 0 3-1M6 13c1.5.5 2.5 0 3-1M18 9c-1.5.5-2.5 0-3-1M18 13c-1.5.5-2.5 0-3-1" />
+      <path d="M12 21v-6" />
+    </svg>
+  );
+}
+
+/** Candle flame — heritage / atmosphere. */
+export function FlameIcon({ size = 24, className }: IconProps) {
+  return (
+    <svg {...base(size)} className={className}>
+      <path d="M12 3c2.5 3 4 5 4 8a4 4 0 1 1-8 0c0-2 1-4 4-8z" />
+      <path d="M12 9c.6 1 1.2 1.5 2 2" />
+    </svg>
+  );
+}
+
+/** Open book of music — pedagogy. */
+export function BookIcon({ size = 24, className }: IconProps) {
+  return (
+    <svg {...base(size)} className={className}>
+      <path d="M3 5c3-1 6-1 9 1 3-2 6-2 9-1v13c-3-1-6-1-9 1-3-2-6-2-9-1z" />
+      <path d="M12 7v13M8 10l1-1v4" />
+    </svg>
+  );
+}
+
+/** Crown — distinction. */
+export function CrownIcon({ size = 24, className }: IconProps) {
+  return (
+    <svg {...base(size)} className={className}>
+      <path d="M4 18h16M4 18l-1-9 5 4 4-7 4 7 5-4-1 9" />
+      <circle cx="12" cy="6" r="0.6" fill="currentColor" />
+    </svg>
+  );
+}
+
+/** Clock — schedule. */
+export function ClockIcon({ size = 24, className }: IconProps) {
+  return (
+    <svg {...base(size)} className={className}>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M12 7v5l3 2" />
+    </svg>
+  );
+}
+
+/** Location pin. */
+export function PinIcon({ size = 24, className }: IconProps) {
+  return (
+    <svg {...base(size)} className={className}>
+      <path d="M12 21c4-4.5 7-8 7-11a7 7 0 1 0-14 0c0 3 3 6.5 7 11z" />
+      <circle cx="12" cy="10" r="2.5" />
+    </svg>
+  );
+}
+
+/** Musical note. */
+export function NoteIcon({ size = 24, className }: IconProps) {
+  return (
+    <svg {...base(size)} className={className}>
+      <path d="M9 18V5l10-2v13" />
+      <circle cx="6" cy="18" r="3" />
+      <circle cx="16" cy="16" r="3" />
+    </svg>
+  );
+}
+
+/** Envelope. */
+export function MailIcon({ size = 24, className }: IconProps) {
+  return (
+    <svg {...base(size)} className={className}>
+      <rect x="3" y="5" width="18" height="14" rx="1.5" />
+      <path d="M3 7l9 6 9-6" />
+    </svg>
+  );
+}
+
+/** Phone. */
+export function PhoneIcon({ size = 24, className }: IconProps) {
+  return (
+    <svg {...base(size)} className={className}>
+      <path d="M5 3h4l2 5-3 2c1 2 3 4 5 5l2-3 5 2v4c0 1-1 2-2 2C10 20 4 14 3 5c0-1 1-2 2-2z" />
+    </svg>
+  );
+}

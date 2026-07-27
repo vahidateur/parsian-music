@@ -108,7 +108,7 @@
             {{-- Day Headers --}}
             <thead>
                 <tr role="row">
-                    <th scope="col" class="sticky right-0 z-10 w-16 border-b border-s border-gray-800/60 bg-gray-800/80 px-2 py-3 text-xs font-medium text-gray-500">
+                    <th scope="col" class="calendar__time-column w-16 border-b border-s border-gray-800/60 bg-gray-800/80 px-2 py-3 text-xs font-medium text-gray-500">
                         {{ __('admin.time') }}
                     </th>
                     @foreach ($days as $day)
@@ -141,7 +141,7 @@
                         $isBookable = $hour >= 15 && $hour <= 21;
                     @endphp
                     <tr role="row" class="group">
-                        <td class="sticky right-0 z-10 border-s border-gray-800/60 bg-gray-800/80 px-2 py-2 align-top text-xs tabular-nums {{ $isBookable ? 'text-amber-400/80' : 'text-gray-600' }}">
+                        <td class="calendar__time-column border-s border-gray-800/60 bg-gray-800/80 px-2 py-2 align-top text-xs tabular-nums {{ $isBookable ? 'text-amber-400/80' : 'text-gray-600' }}">
                             {{ $label }}
                         </td>
                         @foreach ($days as $day)
@@ -151,8 +151,7 @@
                                 $isToday     = $day->isToday();
                             @endphp
                             <td role="gridcell"
-                                class="border-s border-gray-800/40 p-1 align-top transition duration-150 {{ $isToday ? 'bg-amber-500/[0.02]' : '' }} group-hover:bg-gray-800/10"
-                                style="min-width: 110px;">
+                                class="calendar__grid-cell border-s border-gray-800/40 p-1 align-top transition duration-150 {{ $isToday ? 'bg-amber-500/[0.02]' : '' }} group-hover:bg-gray-800/10">
                                 @foreach ($daySessions as $session)
                                     @php
                                         $sv = $session->status instanceof \BackedEnum ? $session->status->value : (string) $session->status;

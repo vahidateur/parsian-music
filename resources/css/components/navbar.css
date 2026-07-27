@@ -8,6 +8,7 @@
   --nav-height-desktop:      80px;
   --nav-height-tablet:       72px;
   --nav-height-mobile:       64px;
+  --nav-floating-offset:     calc(var(--space-1) + (var(--space-1) / 2));
   --nav-max-width:           1500px;
   --nav-pad-x-desktop:       32px;
   --nav-pad-x-tablet:        24px;
@@ -65,13 +66,13 @@
 }
 
 .site-navbar-root {
-  /* breadcrumb owns its own top spacing (--bc-space-top) */
+  padding-block-start: var(--nav-floating-offset);
 }
 
 /* ── Navbar bar ─────────────────────────────────────────── */
 .site-navbar {
   position: sticky;
-  top: 12px;
+  top: var(--nav-floating-offset);
   z-index: var(--z-navigation);
   width: calc(100% - 40px);
   margin-inline: 20px;

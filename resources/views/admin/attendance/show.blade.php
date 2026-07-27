@@ -55,8 +55,8 @@
         <span class="text-xs font-medium text-gray-400">{{ __('admin.attendance_completion') }}</span>
         <span class="text-xs font-semibold text-amber-300 tabular-nums">{{ $completion }}%</span>
     </div>
-    <div class="h-2 w-full overflow-hidden rounded-full bg-gray-800" role="progressbar" aria-valuenow="{{ $completion }}" aria-valuemin="0" aria-valuemax="100">
-        <div class="h-full rounded-full bg-gradient-to-r from-amber-500 to-amber-400 transition-all duration-700 ease-out" style="width: {{ $completion }}%"></div>
+    <div class="admin-progress-track" role="progressbar" aria-valuenow="{{ $completion }}" aria-valuemin="0" aria-valuemax="100">
+        <progress class="admin-progress admin-progress--accent" max="100" value="{{ $completion }}">{{ $completion }}%</progress>
     </div>
 </div>
 
@@ -142,28 +142,45 @@
 
     {{-- Summary Sidebar --}}
     <div class="xl:col-span-1">
-        <div class="sticky top-24">
+        <div class="admin-attendance__summary">
             <x-dashboard.chart-container :title="__('admin.summary')" :badge="$totalMarked . '/' . $students->count()">
 
                 {{-- CSS Conic-Gradient Pie Chart --}}
                 <div class="flex justify-center">
                     @php
-                        $segments = [];
-                        $offset   = 0;
+                        $chartSegments = [];
+                        $offset = 0;
                         foreach ($chartData as $status => $count) {
-                            if ($totalMarked > 0) {
-                                $pct        = ($count / $totalMarked) * 100;
-                                $segments[] = $statusConfig[$status]['chart'] . ' ' . $offset . '% ' . ($offset + $pct) . '%';
-                                $offset    += $pct;
+                            $percentage = $totalMarked > 0 ? ($count / $totalMarked) * 100 : 0;
+                            if ($percentage > 0) {
+                                $chartSegments[] = [
+                                    'status' => $status,
+                                    'percentage' => $percentage,
+                                    'offset' => $offset,
+                                ];
+                                $offset += $percentage;
                             }
                         }
-                        $conicGradient = $totalMarked > 0
-                            ? 'conic-gradient(' . implode(', ', $segments) . ')'
-                            : 'conic-gradient(#374151 0% 100%)';
+                        if ($chartSegments === []) {
+                            $chartSegments[] = ['status' => 'empty', 'percentage' => 100, 'offset' => 0];
+                        }
                     @endphp
-                    <div class="relative h-40 w-40" role="img" aria-label="نمودار دایره‌ای حضور و غیاب">
-                        <div class="h-40 w-40 rounded-full shadow-inner transition-all duration-700" style="background: {{ $conicGradient }}"></div>
-                        <div class="absolute inset-4 flex flex-col items-center justify-center rounded-full bg-gray-950">
+                    <div class="admin-attendance__chart" role="img" aria-label="نمودار دایره‌ای حضور و غیاب">
+                        <svg class="admin-attendance__chart-svg" viewBox="0 0 42 42" aria-hidden="true">
+                            <circle class="admin-attendance__chart-track" cx="21" cy="21" r="15.9155" pathLength="100" />
+                            @foreach ($chartSegments as $segment)
+                                <circle
+                                    class="admin-attendance__chart-segment admin-attendance__chart-segment--{{ $segment['status'] }}"
+                                    cx="21"
+                                    cy="21"
+                                    r="15.9155"
+                                    pathLength="100"
+                                    stroke-dasharray="{{ $segment['percentage'] }} {{ 100 - $segment['percentage'] }}"
+                                    stroke-dashoffset="{{ 100 - $segment['offset'] }}"
+                                />
+                            @endforeach
+                        </svg>
+                        <div class="admin-attendance__chart-center">
                             <span class="text-2xl font-bold tabular-nums text-amber-100">{{ $totalMarked }}</span>
                             <span class="text-xs text-gray-500">{{ __('admin.marked') }}</span>
                         </div>
@@ -175,7 +192,7 @@
                     @foreach ($chartData as $status => $count)
                         <div class="flex items-center justify-between">
                             <div class="flex items-center gap-2.5">
-                                <span class="h-3 w-3 shrink-0 rounded-full" style="background: {{ $statusConfig[$status]['chart'] }}" aria-hidden="true"></span>
+                                <span class="admin-attendance__legend-dot admin-attendance__legend-dot--{{ $status }}" aria-hidden="true"></span>
                                 <dt class="text-sm text-gray-300">{{ $statusConfig[$status]['label'] }}</dt>
                             </div>
                             <dd class="text-sm font-semibold tabular-nums text-gray-100">{{ $count }}</dd>
@@ -202,13 +219,5 @@
 
 </div>
 
-<style>
-    @keyframes pulse-once {
-        0%   { transform: scale(0.9); opacity: 0; }
-        50%  { transform: scale(1.05); }
-        100% { transform: scale(1);   opacity: 1; }
-    }
-    .animate-pulse-once { animation: pulse-once 0.4s ease-out; }
-</style>
 
 @endsection

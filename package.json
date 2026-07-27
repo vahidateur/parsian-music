@@ -4,7 +4,11 @@
     "type": "module",
     "scripts": {
         "build": "vite build",
-        "dev": "vite"
+        "dev": "vite",
+        "test:js": "node --test \"tests/js/unit/*.test.js\" \"tests/js/properties/!(api-)*.property.test.js\"",
+        "test:js:api": "node --test \"tests/js/properties/api-*.property.test.js\"",
+        "test:calendar": "node --test \"tests/js/unit/calendar-*.test.js\" \"tests/js/properties/*.property.test.js\"",
+        "test:calendar:browser": "playwright test tests/browser/admin-calendar.spec.js"
     },
     "devDependencies": {
         "@tailwindcss/forms": "^0.5.2",
@@ -13,6 +17,7 @@
         "apexcharts": "^5.16.0",
         "autoprefixer": "^10.4.2",
         "concurrently": "^9.0.1",
+        "fast-check": "4.3.0",
         "laravel-vite-plugin": "^3.1",
         "playwright": "^1.61.1",
         "postcss": "^8.4.31",
@@ -21,6 +26,11 @@
         "vite": "^8.0.0"
     },
     "dependencies": {
-        "@alpinejs/focus": "^3.15.12"
+        "@alpinejs/focus": "^3.15.12",
+        "@fullcalendar/core": "^6.1.21",
+        "@fullcalendar/daygrid": "^6.1.21",
+        "@fullcalendar/interaction": "^6.1.21",
+        "@fullcalendar/list": "^6.1.21",
+        "@fullcalendar/timegrid": "^6.1.21"
     }
 }

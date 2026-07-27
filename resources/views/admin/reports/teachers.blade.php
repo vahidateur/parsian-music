@@ -4,7 +4,7 @@
 @section('content')
 @php
     $rateColor = fn ($r) => $r >= 80 ? 'text-emerald-400' : ($r >= 50 ? 'text-amber-300' : 'text-red-400');
-    $rateBar   = fn ($r) => $r >= 80 ? 'from-emerald-500 to-emerald-400' : ($r >= 50 ? 'from-amber-500 to-amber-400' : 'from-red-500 to-red-400');
+    $rateTone  = fn ($r) => $r >= 80 ? 'admin-progress--success' : ($r >= 50 ? 'admin-progress--warning' : 'admin-progress--danger');
 @endphp
 
 {{-- Header --}}
@@ -84,8 +84,8 @@
                             <td class="px-5 py-3.5 tabular-nums text-red-400">{{ $row['missed'] }}</td>
                             <td class="px-5 py-3.5">
                                 <div class="flex items-center gap-3">
-                                    <div class="hidden h-2 w-24 overflow-hidden rounded-full bg-gray-800 sm:block" role="progressbar" aria-valuenow="{{ $row['rate'] }}" aria-valuemin="0" aria-valuemax="100">
-                                        <div class="h-full rounded-full bg-gradient-to-r {{ $rateBar($row['rate']) }} transition-all duration-500" style="width: {{ $row['rate'] }}%"></div>
+                                    <div class="admin-progress-track admin-progress-track--compact hidden sm:block" role="progressbar" aria-valuenow="{{ $row['rate'] }}" aria-valuemin="0" aria-valuemax="100">
+                                        <progress class="admin-progress {{ $rateTone($row['rate']) }}" max="100" value="{{ $row['rate'] }}">{{ $row['rate'] }}%</progress>
                                     </div>
                                     <span class="w-12 text-sm font-bold tabular-nums {{ $rateColor($row['rate']) }}">
                                         {{ $row['rate'] }}%

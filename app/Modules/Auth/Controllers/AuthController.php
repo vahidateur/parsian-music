@@ -86,8 +86,8 @@ class AuthController
         ]);
 
         return match ($user->role) {
-            RoleEnum::SUPER_ADMIN => redirect()->intended('/admin/dashboard'),
-            RoleEnum::ADMIN       => redirect()->intended('/admin/dashboard'),
+            RoleEnum::SUPER_ADMIN => redirect()->intended(route('admin.dashboard')),
+            RoleEnum::ADMIN       => redirect()->intended(route('admin.dashboard')),
             RoleEnum::TEACHER     => redirect()->intended('/teacher/dashboard'),
             RoleEnum::STUDENT     => redirect()->intended('/student/dashboard'),
         };

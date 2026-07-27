@@ -1,0 +1,645 @@
+/**
+ * Admin Dashboard — complete macOS-inspired composition.
+ * Responsibility: all visual rules for the new db.* composition.
+ * Phase: visual redesign — architecture preserved.
+ * Source: project tokens only. No hardcoded values.
+ */
+
+/* ─────────────────────────────────────────────
+   01  SHARED PANEL SURFACE (glass card system)
+───────────────────────────────────────────── */
+
+/* Every panel uses .rounded-2xl from chart-container and kpi/stat-card */
+.db .rounded-2xl,
+.db .rounded-xl {
+  border: 1px solid var(--admin-color-border);
+  border-radius: var(--admin-radius-card);       /* 18px */
+  background: var(--admin-color-surface-glass);
+  box-shadow:
+    0 1px 3px rgba(0,0,0,.18),
+    0 4px 16px rgba(0,0,0,.14),
+    inset 0 1px 0 rgba(255,255,255,.04);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  transition:
+    border-color var(--admin-duration-fast) var(--admin-ease-standard),
+    box-shadow   var(--admin-duration-fast) var(--admin-ease-standard),
+    opacity      var(--admin-duration-fast) var(--admin-ease-standard);
+}
+
+.db .rounded-2xl:hover,
+.db .rounded-xl:hover {
+  border-color: var(--admin-color-border-strong);
+  box-shadow:
+    0 2px 6px rgba(0,0,0,.22),
+    0 8px 28px rgba(0,0,0,.20),
+    inset 0 1px 0 rgba(255,255,255,.05);
+}
+
+/* KPI / stat-card inner padding override */
+.db .rounded-2xl.group { padding: var(--space-2) !important; }
+.db .rounded-2xl > .flex {
+  padding-block: var(--space-1) var(--space-2);
+  padding-inline: var(--space-3);
+  gap: var(--space-2);
+  border-block-end-color: var(--admin-color-border);
+}
+.db .rounded-2xl > .p-4,
+.db .rounded-2xl > .sm\:p-6 { padding: var(--space-2) !important; }
+.db .rounded-2xl > .flex h2 {
+  color: var(--admin-color-text);
+  font-size: var(--text-sm);
+  font-weight: 600;
+}
+.db .rounded-2xl > .flex p {
+  margin-block-start: 0;
+  color: var(--admin-color-text-subtle);
+  font-size: var(--text-xs);
+}
+.db .rounded-2xl > .flex .rounded-full {
+  min-height: auto;
+  padding: 2px var(--space-1);
+  border: 1px solid var(--admin-color-border);
+  font-size: var(--text-xs);
+}
+
+/* ─────────────────────────────────────────────
+   02  PAGE WRAPPER
+───────────────────────────────────────────── */
+
+.db {
+  display: grid;
+  gap: var(--space-2);          /* 16px between rows */
+  min-width: 0;
+}
+
+/* ─────────────────────────────────────────────
+   03  PAGE HEADER
+───────────────────────────────────────────── */
+
+.db__header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-2);
+  padding-block-end: var(--space-2);
+  border-block-end: 1px solid var(--admin-color-border);
+  margin-block-end: var(--space-1);
+  flex-wrap: wrap;
+}
+
+.db__title {
+  margin: 0;
+  color: var(--admin-color-text);
+  font-size: var(--text-2xl);
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.db__subtitle {
+  margin-block-start: 2px;
+  color: var(--admin-color-text-subtle);
+  font-size: var(--text-xs);
+}
+
+.db__header-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: calc(var(--space-1) / 2);
+}
+
+.db__header-controls .ui-button {
+  padding-inline: var(--space-1);
+  font-size: var(--text-xs);
+  color: var(--admin-color-text-muted);
+  border-color: var(--admin-color-border);
+  box-shadow: none;
+  transform: none;
+}
+.db__header-controls .ui-button:hover {
+  background: var(--admin-color-surface-elevated);
+  color: var(--admin-color-text);
+  box-shadow: none;
+  transform: none;
+}
+.db__header-controls .ui-button[aria-pressed="true"] {
+  background: var(--admin-color-surface-elevated);
+  border-color: var(--admin-color-border-strong);
+  color: var(--admin-color-accent);
+}
+
+/* ─────────────────────────────────────────────
+   04  GENERIC ROW
+───────────────────────────────────────────── */
+
+.db__row {
+  display: grid;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+/* ─────────────────────────────────────────────
+   05  ROW 1 — 5 KPI CARDS
+───────────────────────────────────────────── */
+
+.db__kpi-row {
+  grid-template-columns: repeat(2, minmax(0,1fr));
+}
+
+/* KPI number smaller, compact */
+.db__kpi-row .text-3xl {
+  font-size: var(--text-xl);
+  font-weight: 700;
+}
+.db__kpi-row .text-2xl {
+  font-size: var(--text-xl);
+  font-weight: 700;
+}
+.db__kpi-row .mt-4  { margin-block-start: var(--space-1); }
+.db__kpi-row .mt-2  { margin-block-start: calc(var(--space-1) / 2); }
+.db__kpi-row .mt-1  { color: var(--admin-color-text-muted); font-size: var(--text-xs); margin-block-start: calc(var(--space-1) / 2); }
+.db__kpi-row .mt-0\.5 { color: var(--admin-color-text-subtle); font-size: var(--text-xs); }
+
+/* KPI icon badge */
+.db__kpi-row .flex.h-10 {
+  width: var(--icon-lg);
+  height: var(--icon-lg);
+  border-radius: var(--radius-xs);
+}
+
+/* stat-card inside kpi row */
+.db__kpi-row .rounded-2xl.border { padding: var(--space-2); }
+
+/* ─────────────────────────────────────────────
+   06  ROW 2 — TODAY'S CLASSES / CHART / ACTIVITY
+   Layout: narrow | wide | narrow  (3fr 5fr 3fr)
+───────────────────────────────────────────── */
+
+.db__row--second {
+  grid-template-columns: minmax(0,3fr) minmax(0,5fr) minmax(0,3fr);
+  align-items: start;
+}
+
+/* Today's classes list */
+.db-classes {
+  display: grid;
+  gap: calc(var(--space-1) / 2);
+}
+
+.db-class {
+  display: grid;
+  grid-template-columns: 3rem minmax(0,1fr) auto;
+  gap: var(--space-1);
+  align-items: center;
+  padding-block: calc(var(--space-1) * .75);
+  border-block-end: 1px solid var(--admin-color-border);
+}
+.db-class:last-child { border-block-end: 0; }
+
+.db-class__time {
+  color: var(--admin-color-accent);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.db-class__title {
+  display: block;
+  color: var(--admin-color-text);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.db-class__meta {
+  display: block;
+  color: var(--admin-color-text-subtle);
+  font-size: var(--text-xs);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.db-class__dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: var(--radius-full);
+  background: var(--admin-color-accent);
+  opacity: .6;
+}
+
+/* Weekly chart */
+.db-chart {
+  display: flex;
+  min-height: 160px;
+  align-items: flex-end;
+  gap: calc(var(--space-1) * .75);
+  padding-block: var(--space-3) var(--space-4);
+  padding-inline: var(--space-1);
+  border-block-end: 1px solid var(--admin-color-border);
+}
+.db-chart__bar {
+  position: relative;
+  flex: 1 1 0;
+  min-width: 0;
+  height: var(--db-bar-h);
+  border-radius: var(--radius-xs) var(--radius-xs) 0 0;
+  background: var(--admin-color-accent);
+  box-shadow: 0 2px 8px rgba(213,175,88,.15);
+  transition: opacity var(--admin-duration-fast) var(--admin-ease-standard);
+}
+.db-chart__bar:hover { opacity: .8; }
+.db-chart__val {
+  position: absolute;
+  inset-block-start: calc(var(--space-3) * -1);
+  inset-inline: 0;
+  color: var(--admin-color-text-muted);
+  font-size: var(--text-xs);
+  text-align: center;
+  white-space: nowrap;
+}
+.db-chart__lbl {
+  position: absolute;
+  inset-block-end: calc(var(--space-3) * -1);
+  inset-inline: 0;
+  color: var(--admin-color-text-subtle);
+  font-size: var(--text-xs);
+  text-align: center;
+  white-space: nowrap;
+}
+.db-chart__bar--48 { --db-bar-h: 48%; }
+.db-chart__bar--58 { --db-bar-h: 58%; }
+.db-chart__bar--61 { --db-bar-h: 61%; }
+.db-chart__bar--65 { --db-bar-h: 65%; }
+.db-chart__bar--71 { --db-bar-h: 71%; }
+.db-chart__bar--76 { --db-bar-h: 76%; }
+.db-chart__bar--82 { --db-bar-h: 82%; }
+.db-chart__bar--92 { --db-bar-h: 92%; }
+
+/* Activity list */
+.db-activity {
+  display: grid;
+  gap: 0;
+}
+.db-activity__item {
+  display: grid;
+  grid-template-columns: 8px minmax(0,1fr);
+  gap: var(--space-1);
+  align-items: start;
+  padding-block: calc(var(--space-1) * .875);
+  border-block-end: 1px solid var(--admin-color-border);
+}
+.db-activity__item:last-child { border-block-end: 0; }
+.db-activity__dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: var(--radius-full);
+  background: var(--admin-color-accent);
+  margin-block-start: 4px;
+  flex-shrink: 0;
+}
+.db-activity__title {
+  margin: 0;
+  color: var(--admin-color-text);
+  font-size: var(--text-xs);
+  font-weight: 600;
+}
+.db-activity__meta {
+  color: var(--admin-color-text-muted);
+  font-size: var(--text-xs);
+}
+.db-activity__time {
+  color: var(--admin-color-text-subtle);
+  font-size: var(--text-xs);
+}
+
+/* ─────────────────────────────────────────────
+   07  ROW 3 — TEACHERS / COURSES / STUDENTS / CALENDAR
+   Layout: 2fr 2fr 3fr 3fr
+───────────────────────────────────────────── */
+
+.db__row--third {
+  grid-template-columns: minmax(0,1fr) minmax(0,1fr) minmax(0,1fr) minmax(0,1fr);
+  align-items: start;
+}
+
+/* Popular teachers */
+.db-teachers { display: grid; gap: var(--space-1); }
+.db-teacher {
+  display: grid;
+  grid-template-columns: auto minmax(0,1fr) 40px;
+  gap: var(--space-1);
+  align-items: center;
+  padding-block: calc(var(--space-1) * .5);
+}
+.db-teacher__avatar {
+  display: inline-flex;
+  width: var(--icon-md);
+  height: var(--icon-md);
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--admin-color-border);
+  background: var(--admin-color-surface-elevated);
+  color: var(--admin-color-accent);
+  font-size: var(--text-sm);
+  flex-shrink: 0;
+}
+.db-teacher__name {
+  display: block;
+  color: var(--admin-color-text);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.db-teacher__meta {
+  display: block;
+  color: var(--admin-color-text-subtle);
+  font-size: var(--text-xs);
+}
+.db-teacher__bar-wrap {
+  height: 3px;
+  border-radius: var(--radius-full);
+  background: var(--admin-color-surface-elevated);
+  overflow: hidden;
+}
+.db-teacher__bar {
+  height: 100%;
+  width: 75%;
+  border-radius: inherit;
+  background: var(--admin-color-accent);
+}
+
+/* Reuse existing entity/progress rules for courses */
+.dashboard-entity-list { display: grid; gap: var(--space-1); }
+.dashboard-entity {
+  display: grid;
+  grid-template-columns: auto minmax(0,1fr) auto;
+  gap: var(--space-1);
+  align-items: center;
+}
+.dashboard-entity__avatar {
+  display: inline-flex;
+  width: var(--icon-md);
+  height: var(--icon-md);
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--admin-color-border);
+  border-radius: var(--radius-xs);
+  background: var(--admin-color-surface-elevated);
+  color: var(--admin-color-accent);
+  flex-shrink: 0;
+}
+.dashboard-entity__name,
+.dashboard-entity__meta { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.dashboard-entity__name { color: var(--admin-color-text); font-size: var(--text-xs); font-weight: 600; }
+.dashboard-entity__meta { color: var(--admin-color-text-subtle); font-size: var(--text-xs); }
+.dashboard-entity__amount { color: var(--admin-color-accent-hover); font-size: var(--text-xs); font-weight: 600; white-space: nowrap; }
+.dashboard-progress { height: 3px; margin-block-start: calc(var(--space-1) * .5); overflow: hidden; border-radius: var(--radius-full); background: var(--admin-color-surface-elevated); }
+.dashboard-progress__value { display: block; height: 100%; border-radius: inherit; background: var(--admin-color-accent); }
+.dashboard-progress__value--61 { width: 61%; }
+.dashboard-progress__value--78 { width: 78%; }
+.dashboard-progress__value--92 { width: 92%; }
+
+/* Recent students table */
+.db-table.ui-table-wrap {
+  border-color: var(--admin-color-border);
+  border-radius: var(--radius-xs);
+  background: transparent;
+}
+.db-table .ui-table { font-size: var(--text-xs); }
+.db-table .ui-table th {
+  padding-block: calc(var(--space-1) * .75);
+  padding-inline: var(--space-1);
+  color: var(--admin-color-accent-hover);
+  font-size: var(--text-xs);
+  border-color: var(--admin-color-border);
+}
+.db-table .ui-table td {
+  padding-block: calc(var(--space-1) * .625);
+  padding-inline: var(--space-1);
+  border-color: var(--admin-color-border);
+  font-size: var(--text-xs);
+}
+.db-table .ui-table tbody tr:hover { background: var(--admin-color-surface-glass-soft); }
+.db-table .ui-badge { font-size: var(--text-xs); padding-inline: calc(var(--space-1) * .75); }
+
+/* Weekly calendar */
+.db-cal { display: grid; gap: var(--space-1); }
+.db-cal__days {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0,1fr));
+  gap: 4px;
+}
+.db-cal__day {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: var(--space-4);
+  border-radius: var(--radius-xs);
+  background: var(--admin-color-surface-elevated);
+  color: var(--admin-color-text-muted);
+  font-size: var(--text-xs);
+  font-weight: 500;
+}
+.db-cal__day--today {
+  background: var(--admin-color-accent);
+  color: var(--neutral-950);
+  font-weight: 700;
+}
+.db-cal__events { margin-block-start: var(--space-1); display: grid; gap: calc(var(--space-1) * .625); }
+.db-cal__events-title {
+  color: var(--admin-color-text-muted);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  margin-block-end: calc(var(--space-1) * .5);
+}
+.db-cal__event {
+  display: grid;
+  grid-template-columns: 3rem minmax(0,1fr);
+  gap: calc(var(--space-1) * .5);
+  align-items: baseline;
+}
+.db-cal__event-time {
+  color: var(--admin-color-accent);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  white-space: nowrap;
+}
+.db-cal__event-title {
+  color: var(--admin-color-text-muted);
+  font-size: var(--text-xs);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ─────────────────────────────────────────────
+   08  ROW 4 — QUICK ACTIONS / STATUS / SHORTCUTS
+   Layout: 2fr 1.5fr 2.5fr
+───────────────────────────────────────────── */
+
+.db__row--bottom {
+  grid-template-columns: minmax(0,2fr) minmax(0,1.5fr) minmax(0,2.5fr);
+  align-items: start;
+}
+
+/* Quick actions 2×2 grid */
+.db-quick {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0,1fr));
+  gap: var(--space-1);
+}
+.db-quick__item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: calc(var(--space-1) * .5);
+  min-height: var(--space-8);
+  border: 1px solid var(--admin-color-border);
+  border-radius: var(--radius-xs);
+  background: var(--admin-color-surface-glass-soft);
+  color: var(--admin-color-text-muted);
+  font-size: var(--text-xs);
+  text-align: center;
+  text-decoration: none;
+  transition:
+    border-color var(--admin-duration-fast) var(--admin-ease-standard),
+    box-shadow   var(--admin-duration-fast) var(--admin-ease-standard),
+    opacity      var(--admin-duration-fast) var(--admin-ease-standard);
+}
+.db-quick__item:hover {
+  border-color: var(--admin-color-border-strong);
+  box-shadow: 0 2px 8px rgba(0,0,0,.18);
+  color: var(--admin-color-accent-hover);
+  opacity: .9;
+}
+.db-quick__item:focus-visible {
+  outline: 2px solid var(--admin-color-focus);
+  outline-offset: 2px;
+}
+.db-quick__icon { color: var(--admin-color-accent); font-size: var(--text-lg); }
+
+/* System status */
+.db-status { display: grid; gap: calc(var(--space-1) * .75); }
+.db-status__item {
+  display: grid;
+  grid-template-columns: 8px minmax(0,1fr) auto;
+  gap: var(--space-1);
+  align-items: center;
+  padding-block: calc(var(--space-1) * .5);
+  border-block-end: 1px solid var(--admin-color-border);
+}
+.db-status__item:last-child { border-block-end: 0; }
+.db-status__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: var(--radius-full);
+  flex-shrink: 0;
+}
+.db-status__dot--ok   { background: var(--success-500); }
+.db-status__dot--warn { background: var(--warning-500); }
+.db-status__label { color: var(--admin-color-text); font-size: var(--text-xs); font-weight: 500; }
+.db-status__state { color: var(--admin-color-text-subtle); font-size: var(--text-xs); white-space: nowrap; }
+
+/* Shortcuts row */
+.db-shortcuts {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0,1fr));
+  gap: var(--space-1);
+}
+.db-shortcut {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: calc(var(--space-1) * .5);
+  min-height: var(--space-8);
+  border: 1px solid var(--admin-color-border);
+  border-radius: var(--radius-xs);
+  background: var(--admin-color-surface-glass-soft);
+  color: var(--admin-color-text-muted);
+  font-size: var(--text-xs);
+  text-align: center;
+  text-decoration: none;
+  transition:
+    border-color var(--admin-duration-fast) var(--admin-ease-standard),
+    box-shadow   var(--admin-duration-fast) var(--admin-ease-standard),
+    opacity      var(--admin-duration-fast) var(--admin-ease-standard);
+}
+.db-shortcut:hover {
+  border-color: var(--admin-color-border-strong);
+  box-shadow: 0 2px 8px rgba(0,0,0,.18);
+  color: var(--admin-color-accent-hover);
+  opacity: .9;
+}
+.db-shortcut:focus-visible {
+  outline: 2px solid var(--admin-color-focus);
+  outline-offset: 2px;
+}
+.db-shortcut__icon { color: var(--admin-color-accent); font-size: var(--text-base); }
+
+/* Keep legacy selectors working (state preview uses chart-container) */
+.dashboard-state-controls { display: flex; flex-wrap: wrap; align-items: center; gap: calc(var(--space-1)/2); }
+
+/* ─────────────────────────────────────────────
+   09  RESPONSIVE BREAKPOINTS
+───────────────────────────────────────────── */
+
+@media (max-width: 767px) {
+  .db__kpi-row     { grid-template-columns: repeat(2, minmax(0,1fr)); }
+  .db__row--second { grid-template-columns: minmax(0,1fr); }
+  .db__row--third  { grid-template-columns: repeat(2, minmax(0,1fr)); }
+  .db__row--bottom { grid-template-columns: minmax(0,1fr); }
+  .db-shortcuts    { grid-template-columns: repeat(3, minmax(0,1fr)); }
+
+  /* Mobile table */
+  .db-table .ui-table,
+  .db-table .ui-table tbody,
+  .db-table .ui-table tr,
+  .db-table .ui-table td { display: block; width: 100%; }
+  .db-table .ui-table thead { display: none; }
+  .db-table .ui-table tbody tr { margin-block-end: calc(var(--space-1)*.5); border: 1px solid var(--admin-color-border); border-radius: var(--radius-xs); }
+  .db-table .ui-table tbody tr:last-child { margin-block-end: 0; }
+  .db-table .ui-table td { display: flex; align-items: center; justify-content: space-between; gap: var(--space-1); padding: calc(var(--space-1)*.75) var(--space-2); border-block-end: 1px solid var(--admin-color-border); text-align: end; }
+  .db-table .ui-table td::before { content: attr(data-label); color: var(--admin-color-text-muted); font-size: var(--text-xs); text-align: start; }
+  .db-table .ui-table td:last-child { border-block-end: 0; }
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .db__kpi-row     { grid-template-columns: repeat(3, minmax(0,1fr)); }
+  .db__row--second { grid-template-columns: minmax(0,1fr) minmax(0,2fr); }
+  .db__panel--activity { display: none; }   /* hidden on tablet, shown on desktop */
+  .db__row--third  { grid-template-columns: repeat(2, minmax(0,1fr)); }
+  .db__row--bottom { grid-template-columns: repeat(2, minmax(0,1fr)); }
+}
+
+@media (min-width: 1024px) {
+  .db__kpi-row     { grid-template-columns: repeat(5, minmax(0,1fr)); }
+  .db__row--second { grid-template-columns: minmax(0,3fr) minmax(0,5fr) minmax(0,3fr); }
+  .db__row--third  { grid-template-columns: minmax(0,1fr) minmax(0,1fr) minmax(0,1fr) minmax(0,1fr); }
+  .db__row--bottom { grid-template-columns: minmax(0,2fr) minmax(0,1.5fr) minmax(0,2.5fr); }
+  .db__panel--activity { display: block; }
+}
+
+@media (min-width: 1280px) {
+  .db-chart { min-height: 180px; }
+}
+
+/* ─────────────────────────────────────────────
+   10  REDUCED MOTION
+───────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  .db .rounded-2xl,
+  .db .rounded-xl,
+  .db-chart__bar,
+  .db-quick__item,
+  .db-shortcut { transition: none; }
+}

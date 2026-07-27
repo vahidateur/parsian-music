@@ -28,7 +28,7 @@
 
 <div {{ $attributes->merge(['class' => 'login-card-container flex items-center justify-center min-h-screen p-4']) }}>
     
-    <x-ui.glass.card id="login-card">
+    <x-ui.glass.glass-card id="login-card">
         
         <div id="login-card-content" class="flex flex-col h-full">
             
@@ -55,6 +55,6 @@
             
         </div>
         
-    </x-ui.glass.card>
+    </x-ui.glass.glass-card>
     
 </div>

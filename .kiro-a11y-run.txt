@@ -1,0 +1,36 @@
+﻿
+Running 7 tests using 1 worker
+
+  x  1 tests\browser\admin-calendar-accessibility.spec.js:99:5 ΓÇ║ admin calendar accessibility ΓÇ║ moves Tab focus from the sidebar through the filters into the calendar grid (35.3s)
+  -  2 tests\browser\admin-calendar-accessibility.spec.js:126:5 ΓÇ║ admin calendar accessibility ΓÇ║ exposes labelled selects, today semantics, and token focus rings
+  -  3 tests\browser\admin-calendar-accessibility.spec.js:157:5 ΓÇ║ admin calendar accessibility ΓÇ║ activates navigation, day, and filter controls with Enter and Space
+  -  4 tests\browser\admin-calendar-accessibility.spec.js:198:5 ΓÇ║ admin calendar accessibility ΓÇ║ gives event cards button semantics with a student and status accessible name
+  -  5 tests\browser\admin-calendar-accessibility.spec.js:224:5 ΓÇ║ admin calendar accessibility ΓÇ║ uses dialog semantics, cycles trapped focus, and restores the triggering card
+  -  6 tests\browser\admin-calendar-accessibility.spec.js:260:5 ΓÇ║ admin calendar accessibility ΓÇ║ keeps RTL, reduced motion, and token contrast on the dark calendar surfaces
+  -  7 tests\browser\admin-calendar-accessibility.spec.js:340:9 ΓÇ║ admin calendar accessibility ΓÇ║ touch presentation ΓÇ║ keeps coarse-pointer targets and mobile drawer semantics accessible
+
+
+  1) tests\browser\admin-calendar-accessibility.spec.js:99:5 ΓÇ║ admin calendar accessibility ΓÇ║ moves Tab focus from the sidebar through the filters into the calendar grid 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: page.goto: net::ERR_ABORTED; maybe frame was detached?
+    Call log:
+      - navigating to "http://127.0.0.1:8000/admin/calendar", waiting until "domcontentloaded"
+
+
+      28 | async function openCalendar(page) {
+      29 |     await loginAsAdmin(page);
+    > 30 |     await page.goto(calendarUrl(), { waitUntil: 'domcontentloaded' });
+         |                ^
+      31 |     await expect(page.locator(CALENDAR_ROOT)).toBeVisible();
+      32 |     await expect(page.locator('[data-calendar-mount] .fc-timegrid')).toBeVisible();
+      33 |     await expect(page.locator('[data-calendar-loading]')).toBeHidden();
+        at openCalendar (C:\laragon\www\parsian-music\tests\browser\admin-calendar-accessibility.spec.js:30:16)
+        at C:\laragon\www\parsian-music\tests\browser\admin-calendar-accessibility.spec.js:100:9
+
+    Error Context: test-results\tests-browser-admin-calend-ff195-ters-into-the-calendar-grid\error-context.md
+
+  1 failed
+    tests\browser\admin-calendar-accessibility.spec.js:99:5 ΓÇ║ admin calendar accessibility ΓÇ║ moves Tab focus from the sidebar through the filters into the calendar grid 
+  6 did not run

@@ -1,35 +1,39 @@
 {{--
-    Portrait Frame — Phase 2.4F: Frame artwork loaded.
-    Frame sits OUTSIDE the oval clip (position absolute, not clipped by figure overflow).
-
-    Slots:
-    - #teacher-frame-slot  → golden frame artwork (frame-main.png)
-    - #teacher-photo-slot  → teacher portrait photo (portrait.webp)
+    Portrait Frame — composes independent oval photo and decorative frame assets.
+    Props: frame, photo, teacherName. Slots: #teacher-frame-slot, #teacher-photo-slot.
 --}}
+@props([
+    'frame',
+    'photo' => null,
+    'teacherName' => '',
+])
 
-<figure aria-label="پرتره مدرس">
-    <figcaption class="sr-only">تصویر مدرس</figcaption>
+<figure aria-label="پرتره {{ $teacherName }}">
+    <figcaption class="sr-only">تصویر {{ $teacherName }}</figcaption>
 
-    {{-- Photo slot (inside oval) --}}
-    <div
-        id="teacher-photo-slot"
-        role="img"
-        aria-label="تصویر پروفایل مدرس"
-    ></div>
+    <div id="teacher-photo-slot">
+        @if ($photo)
+            <img
+                src="{{ $photo }}"
+                alt="پرتره {{ $teacherName }}"
+                width="460"
+                height="660"
+                loading="eager"
+                fetchpriority="high"
+                decoding="async"
+            >
+        @endif
+    </div>
 
-    {{-- Frame slot — sits outside oval, overlays the border area --}}
-    <div
-        id="teacher-frame-slot"
-        role="img"
-        aria-label="قاب پرتره مدرس"
-    >
+    <div id="teacher-frame-slot" aria-hidden="true">
         <img
-            src="/storage/ui/teacher/frames/frame-main.png"
+            src="{{ $frame }}"
             alt=""
-            fetchpriority="high"
+            width="302"
+            height="377"
             loading="eager"
+            fetchpriority="high"
             decoding="async"
         >
     </div>
-
 </figure>

@@ -43,9 +43,7 @@ class ProfileController extends Controller
         // ── info section ──────────────────────────────────────────────────
         $user->fill($request->only('full_name', 'phone', 'email', 'locale', 'timezone'));
 
-        if ($user->isDirty('email')) {
-            $user->email_verified_at = null;
-        }
+        // Note: email_verified_at intentionally not set — column not in use.
 
         $user->save();
 

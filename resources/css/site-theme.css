@@ -12,6 +12,11 @@
   --z-navigation:       40;
 }
 
+.public-site {
+  background-color: var(--color-surface);
+  color: var(--color-text);
+}
+
 /* Alpine cloak — hide elements until Alpine initializes */
 [x-cloak] {
   display: none !important;

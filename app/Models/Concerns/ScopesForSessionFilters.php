@@ -18,7 +18,10 @@ trait ScopesForSessionFilters
      */
     public function scopeForDateRange(Builder $query, string $start, string $end): Builder
     {
-        return $query->whereBetween('session_date', [$start, $end]);
+        return $query->whereBetween('session_date', [
+            "{$start} 00:00:00",
+            "{$end} 23:59:59",
+        ]);
     }
 
     /**

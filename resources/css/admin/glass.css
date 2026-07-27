@@ -1,0 +1,533 @@
+/**
+ * Admin Glass Theme.
+ * Responsibility: light glassmorphic variant of the admin surface.
+ * Scope: everything below is scoped to [data-admin-theme="glass"] so the
+ *        default dark admin theme can never be affected.
+ * Phase: Glass Theme vertical slice (shell + sidebar + dashboard).
+ */
+
+/* ─────────────────────────────────────────────
+   01  GLASS PRIMITIVES (token definition layer)
+───────────────────────────────────────────── */
+
+[data-admin-theme="glass"] {
+  /* Page canvas */
+  --glass-page-base: #C6D0E6;
+  --glass-page-backdrop:
+    radial-gradient(72rem 34rem at 88% -14%, rgba(205, 163, 70, 0.55), transparent 62%),
+    radial-gradient(56rem 30rem at 4% -8%, rgba(118, 148, 250, 0.45), transparent 62%),
+    radial-gradient(46rem 46rem at 54% 114%, rgba(255, 196, 140, 0.52), transparent 60%);
+
+  /* Glass surfaces */
+  --glass-surface: rgba(255, 255, 255, 0.62);
+  --glass-surface-strong: rgba(255, 255, 255, 0.82);
+  --glass-surface-soft: rgba(255, 255, 255, 0.34);
+  --glass-surface-hover: rgba(255, 255, 255, 0.95);
+
+  /* Glass edges */
+  --glass-edge: rgba(255, 255, 255, 0.85);
+  --glass-edge-strong: rgba(154, 110, 18, 0.34);
+  --glass-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.85);
+
+  /* Ink */
+  --glass-ink: #1A2030;
+  --glass-ink-muted: #465064;
+  --glass-ink-subtle: #6B7488;
+
+  /* Accent (dark gold — readable on light glass) */
+  --glass-accent: #8A5F0B;
+  --glass-accent-hover: #6E4A06;
+  --glass-accent-wash: rgba(213, 175, 88, 0.18);
+
+  /* Depth */
+  --glass-shadow-card:
+    0 1px 2px rgba(22, 30, 52, 0.06),
+    0 10px 28px rgba(22, 30, 52, 0.10);
+  --glass-shadow-card-hover:
+    0 2px 4px rgba(22, 30, 52, 0.08),
+    0 16px 40px rgba(22, 30, 52, 0.16);
+  --glass-shadow-float:
+    0 2px 6px rgba(22, 30, 52, 0.08),
+    0 24px 56px rgba(22, 30, 52, 0.18);
+
+  --glass-blur-surface: 22px;
+  --glass-gutter: var(--space-2);
+  --glass-marker-width: 3px;
+}
+
+/* ─────────────────────────────────────────────
+   02  ADMIN TOKEN REMAP
+   Every admin component already consumes these
+   tokens, so the whole shell re-skins at once.
+───────────────────────────────────────────── */
+
+[data-admin-theme="glass"] {
+  --admin-color-page: var(--glass-page-base);
+  --admin-color-surface-elevated: var(--glass-surface-strong);
+  --admin-color-surface-glass: var(--glass-surface);
+  --admin-color-surface-glass-soft: var(--glass-surface-soft);
+  --admin-color-text: var(--glass-ink);
+  --admin-color-text-muted: var(--glass-ink-muted);
+  --admin-color-text-subtle: var(--glass-ink-subtle);
+  --admin-color-accent: var(--glass-accent);
+  --admin-color-accent-hover: var(--glass-accent-hover);
+  --admin-color-border: var(--glass-edge);
+  --admin-color-border-strong: var(--glass-edge-strong);
+  --admin-color-focus: var(--glass-accent);
+  --admin-surface-blur: var(--glass-blur-surface);
+  --admin-radius-control: var(--radius-xs);
+  --admin-radius-card: var(--radius-md);
+  --admin-radius-panel: var(--radius-md);
+  --admin-shadow-panel: var(--glass-shadow-float);
+  --admin-shadow-card: var(--glass-shadow-card);
+}
+
+/* ─────────────────────────────────────────────
+   03  PAGE CANVAS
+───────────────────────────────────────────── */
+
+[data-admin-theme="glass"] .admin-page {
+  background-color: var(--glass-page-base);
+  background-image: var(--glass-page-backdrop);
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  color: var(--glass-ink);
+}
+
+[data-admin-theme="glass"] .admin-shell {
+  background: transparent;
+}
+
+/* ─────────────────────────────────────────────
+   04  FLOATING GLASS SIDEBAR
+───────────────────────────────────────────── */
+
+[data-admin-theme="glass"] .admin-shell__sidebar {
+  inset-block: var(--glass-gutter);
+  inset-inline-start: var(--glass-gutter);
+  border: var(--ui-border-width) solid var(--glass-edge);
+  border-radius: var(--radius-md);
+  background: var(--glass-surface);
+  box-shadow: var(--glass-shadow-float), var(--glass-highlight);
+  backdrop-filter: blur(var(--glass-blur-surface)) saturate(1.5);
+  -webkit-backdrop-filter: blur(var(--glass-blur-surface)) saturate(1.5);
+}
+
+[data-admin-theme="glass"] .admin-shell__sidebar-header {
+  border-block-end-color: var(--glass-edge);
+}
+
+[data-admin-theme="glass"] .admin-shell__brand-mark {
+  border-color: var(--glass-edge-strong);
+  background: var(--glass-accent-wash);
+  color: var(--glass-accent);
+}
+
+[data-admin-theme="glass"] .admin-shell__brand-label {
+  color: var(--glass-ink);
+}
+
+/* Navigation items */
+[data-admin-theme="glass"] .admin-navigation__link,
+[data-admin-theme="glass"] .admin-navigation__sublink {
+  position: relative;
+  color: var(--glass-ink-muted);
+}
+
+[data-admin-theme="glass"] .admin-navigation__link:hover,
+[data-admin-theme="glass"] .admin-navigation__sublink:hover {
+  border-color: var(--glass-edge);
+  background: var(--glass-surface-hover);
+  color: var(--glass-ink);
+}
+
+[data-admin-theme="glass"] .admin-navigation__link--active {
+  border-color: var(--glass-edge-strong);
+  background: var(--glass-surface-strong);
+  box-shadow: var(--glass-shadow-card), var(--glass-highlight);
+  color: var(--glass-accent);
+  font-weight: 600;
+}
+
+[data-admin-theme="glass"] .admin-navigation__link--active::before {
+  content: "";
+  position: absolute;
+  inset-inline-start: 0;
+  inset-block: 25%;
+  width: var(--glass-marker-width);
+  border-radius: var(--radius-xs);
+  background: var(--glass-accent);
+}
+
+[data-admin-theme="glass"] .admin-navigation__sublink--active {
+  background: var(--glass-accent-wash);
+  color: var(--glass-accent);
+  font-weight: 600;
+}
+
+[data-admin-theme="glass"] .admin-navigation__icon,
+[data-admin-theme="glass"] .admin-navigation__subicon,
+[data-admin-theme="glass"] .admin-navigation__chevron {
+  color: var(--glass-ink-subtle);
+}
+
+[data-admin-theme="glass"] .admin-navigation__link--active .admin-navigation__icon,
+[data-admin-theme="glass"] .admin-navigation__link:hover .admin-navigation__icon,
+[data-admin-theme="glass"] .admin-navigation__sublink--active .admin-navigation__subicon {
+  color: var(--glass-accent);
+}
+
+/* Sidebar footer: brand block is replaced by the account block in glass */
+[data-admin-theme="glass"] .admin-shell__sidebar-footer {
+  border-block-start-color: var(--glass-edge);
+}
+
+[data-admin-theme="glass"] .admin-shell__sidebar-brand-footer {
+  display: none;
+}
+
+[data-admin-theme="glass"] .admin-shell__account {
+  display: grid;
+  gap: calc(var(--space-1) / 2);
+}
+
+[data-admin-theme="glass"] .admin-shell__account-card {
+  display: flex;
+  min-height: var(--admin-touch-target);
+  align-items: center;
+  gap: var(--space-1);
+  border: var(--ui-border-width) solid var(--glass-edge);
+  border-radius: var(--radius-xs);
+  background: var(--glass-surface-strong);
+  box-shadow: var(--glass-highlight);
+  padding-inline: var(--space-1);
+  color: var(--glass-ink);
+  text-decoration: none;
+  transition:
+    background-color var(--admin-duration-fast) var(--admin-ease-standard),
+    border-color var(--admin-duration-fast) var(--admin-ease-standard);
+}
+
+[data-admin-theme="glass"] .admin-shell__account-card:hover {
+  border-color: var(--glass-edge-strong);
+  background: var(--glass-surface-hover);
+}
+
+[data-admin-theme="glass"] .admin-shell__account-avatar {
+  display: grid;
+  width: var(--icon-md);
+  height: var(--icon-md);
+  flex: 0 0 auto;
+  place-items: center;
+  border: var(--ui-border-width) solid var(--glass-edge-strong);
+  border-radius: var(--radius-full);
+  background: var(--glass-accent-wash);
+  color: var(--glass-accent);
+  font-size: var(--text-xs);
+  font-weight: 700;
+}
+
+[data-admin-theme="glass"] .admin-shell__account-body {
+  min-width: 0;
+}
+
+[data-admin-theme="glass"] .admin-shell__account-name {
+  display: block;
+  overflow: hidden;
+  color: var(--glass-ink);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+[data-admin-theme="glass"] .admin-shell__account-role {
+  display: block;
+  color: var(--glass-ink-subtle);
+  font-size: var(--text-xs);
+}
+
+[data-admin-theme="glass"] .admin-shell__account-logout {
+  display: flex;
+  min-height: var(--admin-touch-target);
+  align-items: center;
+  justify-content: center;
+  gap: calc(var(--space-1) / 2);
+  width: 100%;
+  border: var(--ui-border-width) solid var(--glass-edge);
+  border-radius: var(--radius-xs);
+  background: var(--glass-surface-soft);
+  color: var(--glass-ink-muted);
+  font-family: inherit;
+  font-size: var(--text-xs);
+  cursor: pointer;
+  transition:
+    background-color var(--admin-duration-fast) var(--admin-ease-standard),
+    color var(--admin-duration-fast) var(--admin-ease-standard);
+}
+
+[data-admin-theme="glass"] .admin-shell__account-logout:hover {
+  background: var(--glass-surface-hover);
+  color: var(--glass-accent);
+}
+
+/* ─────────────────────────────────────────────
+   05  FLOATING GLASS TOPBAR
+───────────────────────────────────────────── */
+
+[data-admin-theme="glass"] .admin-shell__topbar {
+  margin-block-start: var(--glass-gutter);
+  margin-inline: var(--glass-gutter);
+  border: var(--ui-border-width) solid var(--glass-edge);
+  border-radius: var(--radius-md);
+  background: var(--glass-surface-strong);
+  box-shadow: var(--glass-shadow-card), var(--glass-highlight);
+  backdrop-filter: blur(var(--glass-blur-surface)) saturate(1.5);
+  -webkit-backdrop-filter: blur(var(--glass-blur-surface)) saturate(1.5);
+}
+
+[data-admin-theme="glass"] .admin-shell__search-input {
+  border-color: var(--glass-edge);
+  background: var(--glass-surface-soft);
+  color: var(--glass-ink);
+}
+
+[data-admin-theme="glass"] .admin-shell__search-input::placeholder {
+  color: var(--glass-ink-subtle);
+}
+
+[data-admin-theme="glass"] .admin-shell__icon-button,
+[data-admin-theme="glass"] .admin-shell__collapse-button,
+[data-admin-theme="glass"] .admin-shell__mobile-toggle,
+[data-admin-theme="glass"] .admin-shell__user-placeholder {
+  color: var(--glass-ink-muted);
+}
+
+[data-admin-theme="glass"] .admin-shell__icon-button:hover,
+[data-admin-theme="glass"] .admin-shell__collapse-button:hover,
+[data-admin-theme="glass"] .admin-shell__mobile-toggle:hover,
+[data-admin-theme="glass"] .admin-shell__user-placeholder:not(:disabled):hover {
+  border-color: var(--glass-edge-strong);
+  background: var(--glass-surface-hover);
+  color: var(--glass-accent);
+}
+
+[data-admin-theme="glass"] .admin-shell__notif-panel,
+[data-admin-theme="glass"] .admin-shell__user-panel,
+[data-admin-theme="glass"] .admin-shell__drawer {
+  border-color: var(--glass-edge);
+  background: var(--glass-surface-strong);
+  box-shadow: var(--glass-shadow-float), var(--glass-highlight);
+  backdrop-filter: blur(var(--glass-blur-surface)) saturate(1.5);
+  -webkit-backdrop-filter: blur(var(--glass-blur-surface)) saturate(1.5);
+}
+
+[data-admin-theme="glass"] .admin-shell__drawer-backdrop {
+  background: rgba(22, 30, 52, 0.28);
+}
+
+/* ─────────────────────────────────────────────
+   06  DASHBOARD GLASS PANELS
+───────────────────────────────────────────── */
+
+[data-admin-theme="glass"] .db .rounded-2xl,
+[data-admin-theme="glass"] .db .rounded-xl {
+  /* The panels carry Tailwind's backdrop-blur utility, which owns the
+     composite property; feeding its variable keeps the glass blur real. */
+  --tw-backdrop-blur: blur(var(--glass-blur-surface));
+  border-color: var(--glass-edge);
+  background: var(--glass-surface);
+  box-shadow: var(--glass-shadow-card), var(--glass-highlight);
+  backdrop-filter: blur(var(--glass-blur-surface)) saturate(1.4);
+  -webkit-backdrop-filter: blur(var(--glass-blur-surface)) saturate(1.4);
+}
+
+[data-admin-theme="glass"] .db .rounded-2xl:hover,
+[data-admin-theme="glass"] .db .rounded-xl:hover {
+  border-color: var(--glass-edge-strong);
+  box-shadow: var(--glass-shadow-card-hover), var(--glass-highlight);
+}
+
+/* Tailwind ink utilities inside the dashboard need light-mode ink */
+[data-admin-theme="glass"] .db .text-white,
+[data-admin-theme="glass"] .db .text-amber-100 {
+  color: var(--glass-ink);
+}
+
+[data-admin-theme="glass"] .db .text-gray-300,
+[data-admin-theme="glass"] .db .text-gray-400 {
+  color: var(--glass-ink-muted);
+}
+
+[data-admin-theme="glass"] .db .text-gray-500 {
+  color: var(--glass-ink-subtle);
+}
+
+[data-admin-theme="glass"] .db .text-amber-300,
+[data-admin-theme="glass"] .db .text-amber-400 {
+  color: var(--glass-accent);
+}
+
+[data-admin-theme="glass"] .db__header {
+  border-block-end-color: var(--glass-edge-strong);
+}
+
+[data-admin-theme="glass"] .db-quick__item,
+[data-admin-theme="glass"] .db-shortcut {
+  border-color: var(--glass-edge);
+  background: var(--glass-surface-soft);
+  color: var(--glass-ink-muted);
+}
+
+[data-admin-theme="glass"] .db-quick__item:hover,
+[data-admin-theme="glass"] .db-shortcut:hover {
+  border-color: var(--glass-edge-strong);
+  background: var(--glass-surface-hover);
+  box-shadow: var(--glass-shadow-card);
+  color: var(--glass-accent);
+  opacity: 1;
+}
+
+[data-admin-theme="glass"] .db-cal__day {
+  background: var(--glass-surface-soft);
+  color: var(--glass-ink-muted);
+}
+
+[data-admin-theme="glass"] .db-cal__day--today {
+  background: var(--glass-accent);
+  color: var(--text-primary);
+}
+
+[data-admin-theme="glass"] .db-chart__bar {
+  box-shadow: var(--glass-shadow-card);
+}
+
+[data-admin-theme="glass"] .db-teacher__bar-wrap,
+[data-admin-theme="glass"] .dashboard-progress {
+  background: var(--glass-surface-soft);
+}
+
+[data-admin-theme="glass"] .db-teacher__avatar,
+[data-admin-theme="glass"] .dashboard-entity__avatar {
+  border-color: var(--glass-edge-strong);
+  background: var(--glass-accent-wash);
+  color: var(--glass-accent);
+}
+
+/* ─────────────────────────────────────────────
+   07  ADMIN CALENDAR
+   The calendar surfaces consume the raw dark glass primitives
+   (--glass-bg / --glass-border / --glass-overlay) which the day theme
+   cannot remap globally, so they are re-skinned here instead.
+───────────────────────────────────────────── */
+
+[data-admin-theme="glass"] .calendar-day-timeline,
+[data-admin-theme="glass"] .calendar-week-sidebar,
+[data-admin-theme="glass"] .calendar-filters {
+  box-shadow: var(--glass-shadow-card), var(--glass-highlight);
+}
+
+[data-admin-theme="glass"] .calendar-timegrid-event-content {
+  border-color: var(--glass-edge-strong);
+  background: var(--glass-surface-strong);
+  box-shadow: var(--glass-shadow-card);
+  color: var(--glass-ink);
+}
+
+[data-admin-theme="glass"] .calendar-timegrid-event-content:hover {
+  background: var(--glass-surface-hover);
+  box-shadow: var(--glass-shadow-card-hover);
+}
+
+[data-admin-theme="glass"] .calendar-timegrid-event-content__primary {
+  color: var(--glass-ink);
+}
+
+[data-admin-theme="glass"] .calendar-timegrid-event-content__secondary {
+  color: var(--glass-ink-muted);
+}
+
+[data-admin-theme="glass"] .calendar-timegrid-event-content__time {
+  color: var(--glass-accent);
+}
+
+[data-admin-theme="glass"] .calendar-timegrid-event-content__room,
+[data-admin-theme="glass"] .calendar-timegrid-event-content__instrument {
+  color: var(--glass-ink-subtle);
+}
+
+/* Accent-filled controls need light ink: the day accent is a dark gold. */
+[data-admin-theme="glass"] .calendar-header__control--today,
+[data-admin-theme="glass"] .calendar-header__control--today:hover,
+[data-admin-theme="glass"] .calendar-week-sidebar__day-button[aria-selected="true"],
+[data-admin-theme="glass"] .calendar-week-sidebar__day-button[data-selected="true"],
+[data-admin-theme="glass"] .calendar-filters__count,
+[data-admin-theme="glass"] .calendar .fc .fc-button-primary:not(:disabled).fc-button-active,
+[data-admin-theme="glass"] .calendar .fc .fc-button-primary:not(:disabled):active {
+  color: var(--text-primary);
+}
+
+[data-admin-theme="glass"] .calendar .fc .fc-timegrid-more-link,
+[data-admin-theme="glass"] .calendar .fc .fc-popover {
+  background: var(--glass-surface-strong);
+  box-shadow: var(--glass-shadow-card), var(--glass-highlight);
+}
+
+[data-admin-theme="glass"] .calendar-drawer__overlay {
+  background: rgba(22, 30, 52, 0.28);
+}
+
+[data-admin-theme="glass"] .calendar-drawer__panel {
+  background: var(--glass-surface-strong);
+  box-shadow: var(--glass-shadow-float), var(--glass-highlight);
+  backdrop-filter: blur(var(--glass-blur-surface)) saturate(1.5);
+  -webkit-backdrop-filter: blur(var(--glass-blur-surface)) saturate(1.5);
+}
+
+/* ─────────────────────────────────────────────
+   08  THEME TOGGLE
+───────────────────────────────────────────── */
+
+.admin-shell__theme-toggle {
+  position: relative;
+}
+
+.admin-shell__theme-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Sun offers the day (Glass) theme, moon offers the night (Dark) theme.
+   Swapped with attribute selectors so the correct icon paints on first frame. */
+[data-admin-theme="glass"] .admin-shell__theme-icon--sun,
+[data-admin-theme="dark"] .admin-shell__theme-icon--moon {
+  display: none;
+}
+
+[data-admin-theme="glass"] .admin-shell__theme-toggle {
+  border-color: var(--glass-edge-strong);
+  background: var(--glass-accent-wash);
+  color: var(--glass-accent);
+}
+
+/* ─────────────────────────────────────────────
+   09  DESKTOP OFFSET FOR THE FLOATING SIDEBAR
+───────────────────────────────────────────── */
+
+@media (min-width: 1024px) {
+  [data-admin-theme="glass"] .admin-shell__main {
+    margin-inline-start: calc(var(--admin-sidebar-current-width) + var(--glass-gutter) * 2);
+  }
+}
+
+/* ─────────────────────────────────────────────
+   10  REDUCED MOTION
+───────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  [data-admin-theme="glass"] .admin-shell__account-card,
+  [data-admin-theme="glass"] .admin-shell__account-logout {
+    transition: none;
+  }
+}

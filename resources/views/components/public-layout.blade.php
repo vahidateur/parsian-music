@@ -15,8 +15,7 @@
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
-    <body class="font-sans antialiased overflow-x-hidden"
-          style="background-color: var(--neutral-950); color: var(--text-primary)">
+    <body class="public-site font-sans antialiased overflow-x-hidden">
 
         {{ $slot }}
 

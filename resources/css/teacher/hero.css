@@ -1,448 +1,390 @@
-/**
- * teacher/hero.css — Teacher page Hero + tokens.
- * Depends on: design-tokens, site-theme (z-index).
+/*
+ * teacher/hero.css — cinematic Teacher Hero scene.
+ * Owns Hero composition only; assets remain independent named slots.
  */
 
 :root {
-  /* ===== TEACHER COLORS ===== */
-  --teacher-color-primary:          var(--gold-300);
-  --teacher-color-primary-light:    var(--gold-200);
-  --teacher-color-primary-dark:     var(--gold-400);
-  --teacher-color-surface:          var(--neutral-950);
-  --teacher-color-surface-elevated: var(--neutral-900);
-  --teacher-color-surface-card:     var(--neutral-850);
-  --teacher-color-text:             var(--text-primary);
-  --teacher-color-text-muted:       var(--text-secondary);
-  --teacher-glow-gold:              rgba(213, 175, 88, 0.4);
-  --teacher-glow-warm:              rgba(255, 200, 100, 0.2);
-  --teacher-glow-cool:              rgba(100, 150, 255, 0.15);
-  --teacher-ornament-primary:       var(--gold-300);
-  --teacher-ornament-secondary:     var(--gold-100);
-  --teacher-ornament-shadow:        rgba(0, 0, 0, 0.6);
-
-  /* ===== GLASS ===== */
-  --teacher-glass-bg:       var(--glass-bg);
-  --teacher-glass-bg-panel: var(--glass-bg-panel);
-  --teacher-glass-border:   var(--glass-border);
-  --teacher-glass-blur:     var(--glass-blur);
-  --teacher-glass-overlay:  rgba(0, 0, 0, 0.55);
-
-  /* ===== BORDERS ===== */
-  --teacher-border-color:        var(--glass-border);
-  --teacher-border-color-accent: var(--gold-300);
-  --teacher-border-color-light:  var(--glass-border-light);
-  --teacher-border-width:        1px;
-  --teacher-border-width-accent: 2px;
-
-  /* ===== RADIUS ===== */
-  --teacher-radius-card:           var(--radius-md);
-  --teacher-radius-badge:          var(--radius-xs);
-  --teacher-radius-chip:           var(--radius-xs);
-  --teacher-radius-button:         var(--radius-sm);
-  --teacher-radius-portrait:       var(--radius-md);
-  --teacher-radius-portrait-frame: var(--radius-lg);
-
-  /* ===== SPACING ===== */
-  --teacher-space-section-gap: var(--space-8);
-  --teacher-space-info-gap:    var(--space-3);
-  --teacher-space-chips-gap:   var(--space-1);
-  --teacher-space-badge-px:    var(--space-2);
-  --teacher-space-badge-py:    var(--space-1);
-  --teacher-space-chip-px:     var(--space-2);
-  --teacher-space-chip-py:     var(--space-1);
-  --teacher-space-button-px:   var(--space-4);
-  --teacher-space-button-py:   var(--space-2);
-  --teacher-space-page-x:      var(--space-page-mobile);
-
-  /* ===== TYPOGRAPHY ===== */
-  --teacher-font-name:          var(--text-3xl);
-  --teacher-font-role:          var(--text-lg);
-  --teacher-font-badge:         var(--text-sm);
-  --teacher-font-chip:          var(--text-sm);
-  --teacher-font-button:        var(--text-md);
-  --teacher-font-weight-name:   700;
-  --teacher-font-weight-role:   400;
-  --teacher-font-weight-button: 700;
-
-  /* ===== HERO TOKENS ===== */
-  --teacher-hero-cols-left:    58fr;
-  --teacher-hero-cols-right:   42fr;
-  --teacher-hero-min-h:        820px;
-  --teacher-hero-min-h-tablet: 640px;
-  --teacher-page-pt:           80px;
-  --teacher-right-pt:          48px;
-  --teacher-right-pb:          48px;
-  --teacher-right-gap:         48px;
-  --teacher-info-gap:          16px;
-  --teacher-portrait-max-w:    520px;
-  --teacher-portrait-aspect:   520 / 720;
-  --teacher-cta-max-w:         420px;
-
-  /* ===== PORTRAIT ===== */
-  --teacher-portrait-width:        520px;
-  --teacher-portrait-height:       720px;
-  --teacher-portrait-photo-width:  460px;
-  --teacher-portrait-photo-height: 660px;
-  --teacher-portrait-frame-inset:  30px;
-  --teacher-portrait-bg:           var(--neutral-850);
-  --teacher-portrait-photo-bg:     var(--neutral-900);
-
-  /* ===== BADGES ===== */
-  --teacher-badge-height:       32px;
-  --teacher-badge-bg:           transparent;
-  --teacher-badge-border-color: var(--gold-300);
-  --teacher-badge-text-color:   var(--gold-300);
-  --teacher-badge-font-size:    var(--text-sm);
-
-  /* ===== CHIPS ===== */
-  --teacher-chip-height:       30px;
-  --teacher-chip-bg:           var(--glass-bg);
-  --teacher-chip-border-color: var(--glass-border);
-  --teacher-chip-text-color:   var(--text-secondary);
-  --teacher-chip-font-size:    var(--text-sm);
-
-  /* ===== BUTTONS ===== */
-  --teacher-cta-height:        52px;
-  --teacher-cta-bg:            var(--gold-300);
-  --teacher-cta-bg-hover:      var(--gold-200);
-  --teacher-cta-text-color:    var(--neutral-950);
-  --teacher-cta-font-size:     var(--text-md);
-  --teacher-cta-font-weight:   700;
-  --teacher-cta-shadow:        var(--shadow-button);
-  --teacher-cta-shadow-hover:  var(--shadow-button-hover);
-
-  /* ===== DECORATIONS ===== */
-  --teacher-decoration-opacity:   0;
-  --teacher-decoration-blur:      0px;
-  --teacher-decoration-scale:     1;
-  --teacher-frame-opacity:        0;
-  --teacher-smoke-opacity:        0;
-  --teacher-particles-opacity:    0;
-  --teacher-light-opacity:        0;
-  --teacher-glow-intensity:       0;
-  --teacher-shadow-portrait:      0 40px 120px rgba(0, 0, 0, 0.6);
-  --teacher-shadow-name:          0 2px 20px rgba(213, 175, 88, 0.3);
-  --teacher-shadow-hero:          var(--shadow-xl);
-
-  /* ===== MOTION ===== */
-  --teacher-duration-entrance: var(--duration-slow);
-  --teacher-duration-hover:    var(--duration-fast);
-  --teacher-ease-entrance:     var(--ease-enter);
-  --teacher-ease-hover:        var(--ease-standard);
+  --teacher-color-primary: var(--gold-300);
+  --teacher-color-text: var(--text-primary);
+  --teacher-color-text-muted: var(--text-secondary);
+  --teacher-scene-surface: var(--neutral-950);
+  --teacher-hero-columns: 58fr 42fr;
+  --teacher-hero-min-block: 820px;
+  --teacher-hero-min-block-tablet: 760px;
+  --teacher-hero-min-block-mobile: 720px;
+  --teacher-hero-max-inline: var(--nav-max-width);
+  --teacher-hero-page-padding: var(--space-page-desktop);
+  --teacher-hero-page-padding-tablet: var(--space-page-tablet);
+  --teacher-hero-page-padding-mobile: var(--space-page-mobile);
+  --teacher-nav-overlap-desktop: calc(var(--nav-height-desktop) + var(--nav-floating-offset));
+  --teacher-nav-overlap-tablet: calc(var(--nav-height-tablet) + var(--nav-floating-offset));
+  --teacher-nav-overlap-mobile: calc(var(--nav-height-mobile) + var(--nav-floating-offset));
+  --teacher-portrait-min-inline: calc(var(--space-15) + var(--space-3));
+  --teacher-portrait-max-inline: calc(var(--space-15) + var(--space-10));
+  --teacher-portrait-aspect: 302 / 377;
+  --teacher-portrait-bleed: -10%;
+  --teacher-photo-inset-block: 13%;
+  --teacher-photo-inset-inline: 16%;
+  --teacher-info-max-inline: 420px;
+  --teacher-cta-max-inline: 320px;
+  --teacher-info-perspective: 800px;
+  --teacher-scene-position: center;
+  --teacher-scene-position-mobile: 43% center;
 }
 
-/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-   02 HERO WRAPPER
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-
-.teacher-main {
-  background-color: var(--neutral-950);
+/* 01 — Page and cinematic scene boundary */
+.teacher-main,
+.teacher-page {
+  background-color: var(--teacher-scene-surface);
 }
 
 .teacher-page {
-  padding-top: 0;
   position: relative;
 }
 
-/* hero-area: full viewport height, starts from top of page behind navbar */
 .teacher-hero-area {
   position: relative;
-  height: 100dvh;
-  min-height: 580px;
-  overflow: hidden;
-  /* Pull up so image goes behind floating navbar */
-  margin-top: calc(-1 * (var(--nav-height-desktop) + 12px));
+  isolation: isolate;
+  display: flex;
+  flex-direction: column;
+  min-height: max(100svh, var(--teacher-hero-min-block));
+  margin-block-start: calc(-1 * var(--teacher-nav-overlap-desktop));
+  padding-block-start: var(--teacher-nav-overlap-desktop);
+  overflow: clip;
+  background-color: var(--teacher-scene-surface);
 }
 
-/* Background image fills hero-area */
-.teacher-bg-image {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  background-color: var(--neutral-950);
-  overflow: hidden;
-  background-image: var(--teacher-bg);
-  background-repeat: no-repeat;
-  background-size: cover;
-  background-position: center center;
-}
-
-/* Hide unused img tag */
-.teacher-bg-image img {
-  display: none;
-}
-
-/* Bottom fade */
-.teacher-bg-image::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    to bottom,
-    rgba(8, 10, 14, 0.15) 0%,
-    rgba(8, 10, 14, 0.18) 55%,
-    rgba(8, 10, 14, 0.92) 88%,
-    rgba(8, 10, 14, 1.00) 100%
-  );
-}
-
-/* Breadcrumb + hero grid sit above image */
-.teacher-hero-area > *:not(.teacher-bg-image) {
+.teacher-hero-area > .site-breadcrumb {
   position: relative;
-  z-index: 1;
+  z-index: var(--z-hero-info);
+  width: 100%;
+  flex: 0 0 auto;
 }
 
-/* Hero grid fills hero-area completely */
+/* 02 — Frozen two-column layout */
 .teacher-hero {
   display: grid;
-  grid-template-columns: var(--teacher-hero-cols-left) var(--teacher-hero-cols-right);
-  height: 100%;
-  max-width: 1500px;
+  grid-template-columns: var(--teacher-hero-columns);
+  flex: 1 1 auto;
+  width: 100%;
+  max-width: var(--teacher-hero-max-inline);
+  min-height: 0;
   margin-inline: auto;
-  padding-inline: 32px;
-  /* Push content below navbar */
-  padding-top: calc(var(--nav-height-desktop) + 20px);
+  padding-inline: var(--teacher-hero-page-padding);
+  padding-block-end: var(--space-6);
   direction: ltr;
-  background-color: transparent;
 }
 
-/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-   03 HERO LEFT
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
-
-.hero-left {
-  position: relative;
-  overflow: visible;
-}
-
+.hero-left,
 .background-stack {
-  position: absolute;
-  inset: 0;
+  position: static;
 }
 
-/* Background slot — transparent */
+/* 03 — Full-scene independent background */
 #teacher-background-slot {
   position: absolute;
   inset: 0;
   z-index: var(--z-hero-background);
-  background-color: transparent;
-}
-
-/* Portrait reservation zone — soft elliptical glow, no border, no placeholder */
-.teacher-frame-zone {
-  position: absolute;
-  right: 16%;
-  top: 50%;
-  translate: 0 -50%;
-  width: clamp(220px, 24vw, 380px);
-  height: clamp(310px, 34vw, 540px);
-  border-radius: 55%;
-  background: radial-gradient(
-    ellipse,
-    rgba(214, 177, 91, 0.13),
-    transparent 70%
-  );
+  overflow: hidden;
+  background-color: var(--teacher-scene-surface);
   pointer-events: none;
-  z-index: calc(var(--z-hero-portrait) - 1);
 }
 
-/* Glow slot — reserved, invisible, no content, pointer-events none */
-#teacher-glow-slot {
+#teacher-background-slot img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: var(--teacher-scene-position);
+}
+
+#teacher-background-slot::after {
+  content: "";
   position: absolute;
   inset: 0;
-  z-index: calc(var(--z-hero-background) + 5);
+  background:
+    linear-gradient(
+      to bottom,
+      color-mix(in srgb, var(--teacher-scene-surface) 16%, transparent),
+      transparent 52%,
+      color-mix(in srgb, var(--teacher-scene-surface) 24%, transparent) 72%,
+      var(--teacher-scene-surface) 100%
+    ),
+    linear-gradient(
+      to left,
+      color-mix(in srgb, var(--teacher-scene-surface) 18%, transparent),
+      transparent 52%
+    );
   pointer-events: none;
 }
 
+#teacher-glow-slot,
 #teacher-decoration-slot {
   position: absolute;
   inset: 0;
-  z-index: var(--z-hero-decoration);
   pointer-events: none;
 }
 
-/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-   04 HERO RIGHT — portrait + info centered inside Hero
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+#teacher-glow-slot {
+  z-index: var(--z-hero-decoration);
+  background: radial-gradient(
+    ellipse at 79% 42%,
+    color-mix(in srgb, var(--gold-300) 13%, transparent),
+    transparent 28%
+  );
+}
 
+#teacher-decoration-slot {
+  z-index: var(--z-hero-decoration);
+}
+
+/* 04 — Portrait and teacher information */
 .hero-right {
+  position: relative;
+  z-index: var(--z-hero-info);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 20px;
-  padding-inline: 24px;
+  gap: var(--space-3);
+  min-width: 0;
+  padding-inline: var(--space-3);
   direction: rtl;
-  z-index: var(--z-hero-info);
-  /* No extra padding — content fills hero naturally */
 }
-
-/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-   05 PORTRAIT — oval frame sized to wall frame in artwork
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 
 .teacher-hero figure {
   position: relative;
-  width: clamp(120px, 14vw, 200px);
-  aspect-ratio: 3 / 4;
-  flex-shrink: 0;
-  border-radius: 50%;
-  /* overflow: visible so frame can extend beyond oval boundaries */
-  overflow: visible;
-  margin-inline: auto;
+  z-index: var(--z-hero-portrait);
+  width: clamp(
+    var(--teacher-portrait-min-inline),
+    14vw,
+    var(--teacher-portrait-max-inline)
+  );
+  aspect-ratio: var(--teacher-portrait-aspect);
+  flex: 0 0 auto;
+  margin: 0;
 }
 
-/* Frame slot — sits outside oval, overlays border area */
+.teacher-hero figure::before {
+  content: "";
+  position: absolute;
+  inset: -18%;
+  z-index: calc(var(--z-hero-portrait) - 1);
+  border-radius: var(--radius-full);
+  background: radial-gradient(
+    ellipse,
+    color-mix(in srgb, var(--gold-300) 17%, transparent),
+    transparent 68%
+  );
+  pointer-events: none;
+}
+
 #teacher-frame-slot {
   position: absolute;
-  /* Extend beyond figure boundaries to show full frame artwork */
-  inset: -12%;
+  inset: var(--teacher-portrait-bleed);
   z-index: calc(var(--z-hero-portrait) + 2);
   pointer-events: none;
 }
 
-#teacher-frame-slot img {
+#teacher-frame-slot img,
+#teacher-photo-slot img {
+  display: block;
   width: 100%;
   height: 100%;
-  object-fit: contain;
-  display: block;
 }
 
-/* Photo slot — oval inside frame */
+#teacher-frame-slot img {
+  object-fit: contain;
+}
+
 #teacher-photo-slot {
   position: absolute;
-  inset: 8%;
-  background-color: var(--teacher-portrait-photo-bg);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  inset-block: var(--teacher-photo-inset-block);
+  inset-inline: var(--teacher-photo-inset-inline);
   z-index: calc(var(--z-hero-portrait) + 1);
   overflow: hidden;
+  border-radius: var(--radius-full);
+  background-color: color-mix(in srgb, var(--neutral-900) 86%, transparent);
 }
 
-#teacher-photo-slot::after {
-  content: "PORTRAIT";
-  color: rgba(255, 255, 255, 0.10);
-  font-size: 9px;
-  letter-spacing: 0.22em;
-  font-family: monospace;
-  text-transform: uppercase;
-  pointer-events: none;
+#teacher-photo-slot img {
+  object-fit: cover;
+  object-position: center top;
 }
-
-/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-   06 INFO — wall-text perspective effect
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 
 .teacher-info {
   display: flex;
   flex-direction: column;
-  gap: var(--teacher-info-gap);
   align-items: center;
+  gap: var(--space-2);
   width: 100%;
-  /* Slight perspective tilt — as if written on the wall */
-  perspective: 800px;
-  transform: perspective(800px) rotateX(3deg) rotateY(-2deg);
-  transform-origin: top center;
+  max-width: var(--teacher-info-max-inline);
+  color: var(--teacher-color-text);
+  text-align: center;
+  transform: perspective(var(--teacher-info-perspective)) rotateX(2deg) rotateY(-1deg);
+  transform-origin: center top;
+}
+
+.teacher-info h1,
+.teacher-info > p {
+  margin: 0;
+  text-shadow: var(--shadow-md);
 }
 
 .teacher-info h1 {
-  font-size: var(--teacher-font-name);
-  font-weight: var(--teacher-font-weight-name);
-  color: var(--teacher-color-text);
-  margin: 0;
-  line-height: 1.2;
-  text-align: center;
+  font-size: clamp(var(--text-2xl), 2.2vw, var(--text-4xl));
+  font-weight: 700;
+  line-height: 1.35;
 }
 
 .teacher-info > p {
-  font-size: var(--teacher-font-role);
-  font-weight: var(--teacher-font-weight-role);
   color: var(--teacher-color-text-muted);
-  margin: 0;
-  text-align: center;
+  font-size: var(--text-lg);
 }
-
-/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-   07 CHIPS
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 
 .teacher-chips-row {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--teacher-space-chips-gap);
   justify-content: center;
+  gap: var(--space-1);
 }
-
-/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-   08 CTA
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 
 .teacher-cta-wrap {
   width: 100%;
-  max-width: var(--teacher-cta-max-w);
+  max-width: var(--teacher-cta-max-inline);
 }
 
-/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-   09 RESPONSIVE
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+.teacher-cta-wrap button {
+  box-shadow: var(--shadow-button);
+  transition:
+    background-color var(--duration-fast) var(--ease-standard),
+    box-shadow var(--duration-fast) var(--ease-standard),
+    transform var(--duration-fast) var(--ease-standard);
+}
 
-/* Tablet: 768–1023 — stack layout */
-@media (max-width: 1023px) {
+.teacher-cta-wrap button:hover {
+  background-color: var(--gold-200);
+  box-shadow: var(--shadow-button-hover);
+  transform: translateY(calc(-1 * var(--space-1) / 4));
+}
+
+/* 05 — Responsive scene composition */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .teacher-hero-area {
+    min-height: max(100svh, var(--teacher-hero-min-block-tablet));
+    margin-block-start: calc(-1 * var(--teacher-nav-overlap-tablet));
+    padding-block-start: var(--teacher-nav-overlap-tablet);
+  }
+
   .teacher-hero {
-    grid-template-columns: 1fr;
-    grid-template-rows: auto auto auto;
-    min-height: var(--teacher-hero-min-h-tablet);
-    padding-inline: 24px;
-  }
-
-  .hero-left {
-    min-height: 360px;
-    order: 3;
-  }
-
-  .background-stack {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    min-height: 360px;
-  }
-
-  #teacher-background-slot {
-    position: relative;
-    inset: unset;
-    width: 100%;
-    min-height: 360px;
+    padding-inline: var(--teacher-hero-page-padding-tablet);
+    padding-block-end: var(--space-4);
   }
 
   .hero-right {
-    order: 1;
-    padding-inline: 24px;
-    gap: 32px;
-  }
-}
-
-/* Mobile: < 768 */
-@media (max-width: 767px) {
-  .teacher-hero {
-    padding-inline: 16px;
-    min-height: auto;
-  }
-
-  .teacher-page {
-    padding-top: 40px;
-  }
-
-  .hero-right {
-    padding-inline: 16px;
-    padding-top: 32px;
-    gap: 24px;
+    gap: var(--space-2);
+    padding-inline: var(--space-2);
   }
 
   .teacher-hero figure {
-    width: 90vw;
-    max-width: 380px;
+    width: clamp(
+      var(--teacher-portrait-min-inline),
+      18vw,
+      var(--teacher-portrait-max-inline)
+    );
+  }
+
+  .teacher-info h1 {
+    font-size: var(--text-3xl);
+  }
+}
+
+@media (max-width: 767px) {
+  .teacher-hero-area {
+    min-height: max(100svh, var(--teacher-hero-min-block-mobile));
+    margin-block-start: calc(-1 * var(--teacher-nav-overlap-mobile));
+    padding-block-start: var(--teacher-nav-overlap-mobile);
+  }
+
+  .teacher-hero-area > .site-breadcrumb {
+    margin-block-end: var(--space-1);
+  }
+
+  .teacher-hero {
+    display: block;
+    padding-inline: var(--teacher-hero-page-padding-mobile);
+    padding-block-end: var(--space-4);
+  }
+
+  .hero-left {
+    position: absolute;
+    inset: 0;
+  }
+
+  #teacher-background-slot img {
+    object-position: var(--teacher-scene-position-mobile);
+  }
+
+  #teacher-background-slot::after {
+    background:
+      linear-gradient(
+        to bottom,
+        color-mix(in srgb, var(--teacher-scene-surface) 18%, transparent),
+        transparent 34%,
+        color-mix(in srgb, var(--teacher-scene-surface) 38%, transparent) 68%,
+        var(--teacher-scene-surface) 100%
+      ),
+      linear-gradient(
+        to left,
+        color-mix(in srgb, var(--teacher-scene-surface) 28%, transparent),
+        transparent
+      );
+  }
+
+  #teacher-glow-slot {
+    background: radial-gradient(
+      ellipse at center 24%,
+      color-mix(in srgb, var(--gold-300) 14%, transparent),
+      transparent 26%
+    );
+  }
+
+  .hero-right {
+    min-height: calc(var(--teacher-hero-min-block-mobile) - var(--teacher-nav-overlap-mobile) - var(--space-10));
+    justify-content: flex-start;
+    gap: var(--space-2);
+    padding-block-start: var(--space-2);
+    padding-inline: 0;
+  }
+
+  .teacher-hero figure {
+    width: var(--teacher-portrait-min-inline);
+  }
+
+  .teacher-info {
+    gap: var(--space-1);
+    transform: none;
+  }
+
+  .teacher-info h1 {
+    font-size: var(--text-2xl);
+  }
+
+  .teacher-info > p {
+    font-size: var(--text-md);
+  }
+
+  .teacher-cta-wrap {
+    max-width: calc(var(--space-15) * 2 + var(--space-10));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .teacher-cta-wrap button {
+    transition: none;
+  }
+
+  .teacher-cta-wrap button:hover {
+    transform: none;
   }
 }
