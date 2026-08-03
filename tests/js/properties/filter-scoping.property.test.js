@@ -9,6 +9,14 @@ import { addDays, MAX_RANGE_DAYS, toIsoDate } from '../support/date-generators.j
 // **Validates: Requirements 4.3**
 
 const PAGE_URL = process.env.CALENDAR_PAGE_URL ?? 'http://127.0.0.1:8000/admin/calendar';
+const BASE_URL = process.env.TEST_BASE_URL ?? 'http://127.0.0.1:8000';
+const TEST_NAME = 'scopes each independent filter to matching events without applying absent filters';
+const QUARANTINE = Object.freeze({
+    identifier: 'Q-ADMIN-CALENDAR-FILTER-SCOPING-ENV',
+    reason: 'Requires TEST_ADMIN_PHONE, TEST_ADMIN_PASSWORD, and a reachable calendar base URL.',
+    gapReference: 'admin-operational-ux-baseline#3.4',
+});
+const ENVIRONMENT_PROBE_TIMEOUT_MS = 2_000;
 const PROPERTY_RUNS = 100;
 const MAX_IDENTITIES_PER_FILTER = 6;
 const MAX_WINDOWS = 6;
@@ -74,6 +82,44 @@ const uniqueLabelOptions = (options) => {
 
 const sortedIds = (events) => events.map((event) => event.id).sort((a, b) => a - b);
 
+const isUrlReachable = async (url) => {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), ENVIRONMENT_PROBE_TIMEOUT_MS);
+
+    try {
+        const response = await fetch(url, {
+            headers: { Accept: 'text/html' },
+            redirect: 'manual',
+            signal: controller.signal,
+        });
+
+        await response.body?.cancel();
+        return true;
+    } catch {
+        return false;
+    } finally {
+        clearTimeout(timeout);
+    }
+};
+
+// The test needs the login base URL (authentication) and the calendar page URL
+// (filter option markup); either one being unreachable makes the run impossible.
+const isEnvironmentReachable = async () => {
+    const probes = await Promise.all([`${BASE_URL}/login`, PAGE_URL].map(isUrlReachable));
+
+    return probes.every(Boolean);
+};
+
+const hasCredentials = Boolean(process.env.TEST_ADMIN_PHONE && process.env.TEST_ADMIN_PASSWORD);
+const shouldQuarantine = !hasCredentials || !(await isEnvironmentReachable());
+
+// Stable skip inventory in the default runner output: identifier, reason, gap.
+if (shouldQuarantine) {
+    process.stdout.write(
+        `quarantine: ${QUARANTINE.identifier} | test: ${TEST_NAME} | reason: ${QUARANTINE.reason} | gap: ${QUARANTINE.gapReference}\n`,
+    );
+}
+
 let sessionCookie;
 
 const fetchEvents = async (query) => {
@@ -120,7 +166,7 @@ const discoverWindows = async () => {
     return windows;
 };
 
-test('scopes each independent filter to matching events without applying absent filters', async () => {
+test(TEST_NAME, { skip: shouldQuarantine ? QUARANTINE.reason : false }, async () => {
     sessionCookie = await authenticate();
 
     const pageResponse = await fetch(PAGE_URL, {

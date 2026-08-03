@@ -166,10 +166,30 @@
 .ui-modal__backdrop {
   position: fixed;
   inset: 0;
+  border: 0;
   background: var(--ui-overlay);
   backdrop-filter: blur(var(--glass-blur-light));
   -webkit-backdrop-filter: blur(var(--glass-blur-light));
+  cursor: pointer;
 }
+.ui-modal__confirmation {
+  padding: var(--space-4);
+}
+.ui-modal__confirmation-title {
+  margin: 0;
+  color: var(--ui-text);
+  font-size: var(--text-lg);
+  font-weight: 700;
+}
+.ui-modal__confirmation-summary {
+  display: grid;
+  gap: var(--space-1);
+  margin-block: var(--space-3);
+  color: var(--ui-text-muted);
+  font-size: var(--text-sm);
+}
+.ui-modal__confirmation-summary strong { color: var(--ui-text); }
+.ui-modal__confirmation-content { margin-block-start: var(--space-4); }
 .ui-modal__dialog {
   position: relative;
   width: 100%;

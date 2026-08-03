@@ -7,13 +7,18 @@
     'title' => '',
     'subtitle' => null,
     'badge' => null,
+    'headingLevel' => 'h2',
 ])
+
+@php
+    $headingLevel = in_array($headingLevel, ['h1', 'h2', 'h3'], true) ? $headingLevel : 'h2';
+@endphp
 
 <div {{ $attributes->merge(['class' => 'ui-page-header']) }}>
     <div class="ui-page-header__main">
         <div class="ui-page-header__title-row">
             @if ($title)
-                <h2 class="ui-page-header__title">{{ $title }}</h2>
+                <{{ $headingLevel }} class="ui-page-header__title">{{ $title }}</{{ $headingLevel }}>
             @endif
             @if ($badge)
                 <x-ui.badge variant="accent">{{ $badge }}</x-ui.badge>

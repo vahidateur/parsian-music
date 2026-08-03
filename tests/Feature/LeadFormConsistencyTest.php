@@ -42,18 +42,19 @@ class LeadFormConsistencyTest extends TestCase
         $response = $this->actingAs($this->admin)->get(route('admin.leads.create'));
         $response->assertStatus(200);
 
-        // Assert all required field names are present
-        $response->assertSee('name="full_name"');
-        $response->assertSee('name="phone"');
-        $response->assertSee('name="email"');
-        $response->assertSee('name="age"');
-        $response->assertSee('name="source"');
-        $response->assertSee('name="priority"');
-        $response->assertSee('name="preferred_instrument_id"');
-        $response->assertSee('name="preferred_teacher_id"');
-        $response->assertSee('name="assigned_to"');
-        $response->assertSee('name="next_follow_up_at"');
-        $response->assertSee('name="notes"');
+        // Assert all required field names are present.
+        // assertSeeHtml — we are matching raw HTML attributes, not escaped text.
+        $response->assertSeeHtml('name="full_name"');
+        $response->assertSeeHtml('name="phone"');
+        $response->assertSeeHtml('name="email"');
+        $response->assertSeeHtml('name="age"');
+        $response->assertSeeHtml('name="source"');
+        $response->assertSeeHtml('name="priority"');
+        $response->assertSeeHtml('name="preferred_instrument_id"');
+        $response->assertSeeHtml('name="preferred_teacher_id"');
+        $response->assertSeeHtml('name="assigned_to"');
+        $response->assertSeeHtml('name="next_follow_up_at"');
+        $response->assertSeeHtml('name="notes"');
     }
 
     /**
@@ -65,18 +66,18 @@ class LeadFormConsistencyTest extends TestCase
         $response = $this->actingAs($this->admin)->get(route('admin.leads.edit', $lead));
         $response->assertStatus(200);
 
-        // Assert all same field names
-        $response->assertSee('name="full_name"');
-        $response->assertSee('name="phone"');
-        $response->assertSee('name="email"');
-        $response->assertSee('name="age"');
-        $response->assertSee('name="source"');
-        $response->assertSee('name="priority"');
-        $response->assertSee('name="preferred_instrument_id"');
-        $response->assertSee('name="preferred_teacher_id"');
-        $response->assertSee('name="assigned_to"');
-        $response->assertSee('name="next_follow_up_at"');
-        $response->assertSee('name="notes"');
+        // Assert all same field names (assertSeeHtml — raw HTML attributes)
+        $response->assertSeeHtml('name="full_name"');
+        $response->assertSeeHtml('name="phone"');
+        $response->assertSeeHtml('name="email"');
+        $response->assertSeeHtml('name="age"');
+        $response->assertSeeHtml('name="source"');
+        $response->assertSeeHtml('name="priority"');
+        $response->assertSeeHtml('name="preferred_instrument_id"');
+        $response->assertSeeHtml('name="preferred_teacher_id"');
+        $response->assertSeeHtml('name="assigned_to"');
+        $response->assertSeeHtml('name="next_follow_up_at"');
+        $response->assertSeeHtml('name="notes"');
     }
 
     /**
@@ -208,7 +209,9 @@ class LeadFormConsistencyTest extends TestCase
     {
         $response = $this->actingAs($this->admin)->get(route('admin.leads.create'));
         $response->assertStatus(200);
-        $response->assertDontSee('name="status"');
+        // assertDontSeeHtml — the escaping default would look for name=&quot;status&quot;
+        // which can never appear, making the assertion pass regardless of page content.
+        $response->assertDontSeeHtml('name="status"');
     }
 
     /**
@@ -220,7 +223,8 @@ class LeadFormConsistencyTest extends TestCase
         $lead = Lead::factory()->create();
         $response = $this->actingAs($this->admin)->get(route('admin.leads.edit', $lead));
         $response->assertStatus(200);
-        $response->assertDontSee('name="status"');
+        // assertDontSeeHtml — see note in the create-form counterpart.
+        $response->assertDontSeeHtml('name="status"');
     }
 
     /**

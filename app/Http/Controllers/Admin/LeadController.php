@@ -2,13 +2,17 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Actions\Admin\LeadAction;
 use App\DTOs\ConvertLeadData;
-use App\Enums\LeadPriorityEnum;
-use App\Enums\LeadSourceEnum;
 use App\Enums\LeadStatusEnum;
 use App\Enums\RoleEnum;
 use App\Enums\SkillLevelEnum;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\AssignLeadRequest;
+use App\Http\Requests\Admin\ConvertLeadRequest;
+use App\Http\Requests\Admin\LeadRequest;
+use App\Http\Requests\Admin\ScheduleLeadFollowUpRequest;
+use App\Http\Requests\Admin\UpdateLeadStatusRequest;
 use App\Models\Instrument;
 use App\Models\Lead;
 use App\Models\Teacher;
@@ -17,7 +21,6 @@ use App\Services\LeadService;
 use DomainException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 
 class LeadController extends Controller
@@ -88,16 +91,11 @@ class LeadController extends Controller
         return view('admin.leads.create', compact('instruments', 'teachers', 'assignees'));
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(LeadRequest $request, LeadAction $action): RedirectResponse
     {
         $this->authorize('create', Lead::class);
 
-        $validated = $request->validate($this->rules());
-
-        $validated['status'] = LeadStatusEnum::New->value;
-        $validated['priority'] = $validated['priority'] ?? LeadPriorityEnum::Medium->value;
-
-        Lead::create($validated);
+        $action->create($request->validated());
 
         return redirect()->route('admin.leads.index')
             ->with('success', __('admin.lead_created_successfully'));
@@ -123,65 +121,51 @@ class LeadController extends Controller
         return view('admin.leads.edit', compact('lead', 'instruments', 'teachers', 'assignees'));
     }
 
-    public function update(Request $request, Lead $lead): RedirectResponse
+    public function update(LeadRequest $request, Lead $lead, LeadAction $action): RedirectResponse
     {
         $this->authorize('update', $lead);
 
-        $validated = $request->validate($this->rules());
-        unset($validated['status']);
-
-        $lead->update($validated);
+        // The form never carries `status`; every status move goes through updateStatus.
+        $action->update($lead, $request->validated());
 
         return redirect()->route('admin.leads.show', $lead)
             ->with('success', __('admin.lead_updated_successfully'));
     }
 
-    public function destroy(Lead $lead): RedirectResponse
+    public function destroy(Lead $lead, LeadAction $action): RedirectResponse
     {
         $this->authorize('delete', $lead);
 
-        $lead->delete();
+        $action->delete($lead);
 
         return redirect()->route('admin.leads.index')
             ->with('success', __('admin.lead_deleted_successfully'));
     }
 
-    public function assign(Request $request, Lead $lead): RedirectResponse
+    public function assign(AssignLeadRequest $request, Lead $lead, LeadAction $action): RedirectResponse
     {
-        $this->authorize('update', $lead);
+        $this->authorize('assign', $lead);
 
-        $validated = $request->validate([
-            'assigned_to' => ['nullable', 'exists:users,id'],
-        ]);
-
-        $lead->update($validated);
+        $action->assign($lead, $request->validated());
 
         return back()->with('success', __('admin.lead_assigned_successfully'));
     }
 
-    public function scheduleFollowUp(Request $request, Lead $lead): RedirectResponse
+    public function scheduleFollowUp(ScheduleLeadFollowUpRequest $request, Lead $lead, LeadAction $action): RedirectResponse
     {
-        $this->authorize('update', $lead);
+        $this->authorize('scheduleFollowUp', $lead);
 
-        $validated = $request->validate([
-            'next_follow_up_at' => ['required', 'date'],
-        ]);
-
-        $lead->update($validated);
+        $action->scheduleFollowUp($lead, $request->validated());
 
         return back()->with('success', __('admin.lead_followup_scheduled_successfully'));
     }
 
-    public function updateStatus(Request $request, Lead $lead): RedirectResponse
+    public function updateStatus(UpdateLeadStatusRequest $request, Lead $lead, LeadAction $action): RedirectResponse
     {
-        $this->authorize('update', $lead);
-
-        $validated = $request->validate([
-            'status' => ['required', Rule::in(LeadStatusEnum::values())],
-        ]);
+        $this->authorize('changeStatus', $lead);
 
         try {
-            $lead->transitionTo(LeadStatusEnum::from($validated['status']));
+            $action->changeStatus($lead, (string) $request->validated('status'));
         } catch (DomainException $e) {
             return back()->with('error', $e->getMessage());
         }
@@ -189,15 +173,11 @@ class LeadController extends Controller
         return back()->with('success', __('admin.lead_status_updated_successfully'));
     }
 
-    public function convert(Request $request, Lead $lead, LeadService $service): RedirectResponse
+    public function convert(ConvertLeadRequest $request, Lead $lead, LeadService $service): RedirectResponse
     {
         $this->authorize('convert', $lead);
 
-        $validated = $request->validate([
-            'skill_level' => ['nullable', Rule::in(SkillLevelEnum::values())],
-            'start_date'  => ['nullable', 'date'],
-            'notes'       => ['nullable', 'string'],
-        ]);
+        $validated = $request->validated();
 
         $data = new ConvertLeadData(
             skillLevel: isset($validated['skill_level']) ? SkillLevelEnum::from($validated['skill_level']) : null,
@@ -213,23 +193,6 @@ class LeadController extends Controller
 
         return redirect()->route('admin.students.show', $student)
             ->with('success', __('admin.lead_converted_successfully'));
-    }
-
-    private function rules(): array
-    {
-        return [
-            'full_name'                => ['required', 'string', 'max:255'],
-            'phone'                    => ['required', 'string', 'max:20'],
-            'email'                    => ['nullable', 'email', 'max:255'],
-            'age'                      => ['nullable', 'integer', 'min:1', 'max:120'],
-            'preferred_instrument_id'  => ['nullable', 'exists:instruments,id'],
-            'preferred_teacher_id'     => ['nullable', 'exists:teachers,id'],
-            'source'                   => ['required', Rule::in(LeadSourceEnum::values())],
-            'priority'                 => ['nullable', Rule::in(LeadPriorityEnum::values())],
-            'assigned_to'              => ['nullable', 'exists:users,id'],
-            'notes'                    => ['nullable', 'string'],
-            'next_follow_up_at'        => ['nullable', 'date'],
-        ];
     }
 
     private function formOptions(): array

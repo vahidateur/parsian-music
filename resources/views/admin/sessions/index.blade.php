@@ -17,7 +17,7 @@
 @endphp
 
 {{-- Header --}}
-<x-dashboard.section-header
+<x-dashboard.section-header headingLevel="h1"
     :title="__('admin.class_sessions')"
     :subtitle="__('admin.view_filter_sessions')"
 >
@@ -29,13 +29,8 @@
     </x-slot:actions>
 </x-dashboard.section-header>
 
-{{-- Flash --}}
-@if (session('success'))
-    <x-dashboard.alert-card class="mb-5" :title="session('success')" priority="success" />
-@endif
-@if (session('error'))
-    <x-dashboard.alert-card class="mb-5" :title="session('error')" priority="high" />
-@endif
+{{-- Feedback_Channel: shared success / failure / validation --}}
+<x-admin.feedback />
 
 {{-- Filters --}}
 <x-dashboard.chart-container class="mb-5" title="{{ __('admin.search') }}" aria-label="فیلتر جلسات">
@@ -143,15 +138,26 @@
                                 </span>
                             </td>
                             <td class="px-5 py-3.5">
-                                <form method="POST" action="{{ route('admin.sessions.destroy', $session) }}" class="inline"
-                                      onsubmit="return confirm('{{ __('admin.delete_session_confirm') }}')">
-                                    @csrf @method('DELETE')
-                                    <button type="submit"
-                                            class="rounded p-1 text-red-400 transition duration-150 hover:bg-red-500/10 hover:text-red-300 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-red-500/60"
-                                            aria-label="{{ __('admin.delete') }}">
-                                        <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-                                    </button>
-                                </form>
+                                <button type="button"
+                                        x-on:click="$dispatch('open-modal', 'confirm-session-delete-{{ $session->id }}')"
+                                        class="rounded p-1 text-red-400 transition duration-150 hover:bg-red-500/10 hover:text-red-300 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-red-500/60"
+                                        aria-label="{{ __('admin.delete') }}">
+                                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                </button>
+                                <x-modal name="confirm-session-delete-{{ $session->id }}" variant="confirmation"
+                                         :entity="$sName"
+                                         :action="__('admin.delete')"
+                                         :consequence="__('admin.confirmation_consequence_irreversible')">
+                                    <x-admin.form-state>
+                                        <form method="POST" action="{{ route('admin.sessions.destroy', $session) }}">
+                                            @csrf @method('DELETE')
+                                            <div class="flex justify-end gap-2">
+                                                <button type="button" x-on:click="$dispatch('close')" class="rounded-lg border border-gray-700 px-4 py-2 text-sm text-gray-300">{{ __('admin.cancel') }}</button>
+                                                <button type="submit" x-bind:disabled="pending" x-bind:aria-busy="pending" class="rounded-lg bg-red-500/15 px-4 py-2 text-sm font-medium text-red-300 disabled:cursor-not-allowed disabled:opacity-60">{{ __('admin.confirm') }}</button>
+                                            </div>
+                                        </form>
+                                    </x-admin.form-state>
+                                </x-modal>
                             </td>
                         </tr>
                     @endforeach

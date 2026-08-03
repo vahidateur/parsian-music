@@ -27,7 +27,13 @@ class StudentHistoryService
     /**
      * Build a timeline for the given student.
      *
+     * Every event carries a stable `key` derived from the persisted record it
+     * originates from. The key is the unique tie-breaker of the ordering, so
+     * events sharing the same timestamp keep one deterministic order across
+     * requests instead of following an incidental query order.
+     *
      * @return Collection<int, array{
+     *     key: string,
      *     type: string,
      *     timestamp: Carbon,
      *     description: string,
@@ -40,6 +46,7 @@ class StudentHistoryService
 
         // 1. student_created
         $events->push([
+            'key'         => 'student:' . $student->id . ':created',
             'type'        => 'student_created',
             'timestamp'   => $student->created_at,
             'description' => __('admin.history_student_created_desc', ['name' => $student->full_name]),
@@ -52,6 +59,7 @@ class StudentHistoryService
             && $student->updated_at->ne($student->created_at)
         ) {
             $events->push([
+                'key'         => 'student:' . $student->id . ':note',
                 'type'        => 'admin_note',
                 'timestamp'   => $student->updated_at,
                 'description' => __('admin.history_note_excerpt'),
@@ -72,6 +80,7 @@ class StudentHistoryService
 
             // 3. enrollment_created
             $events->push([
+                'key'         => 'enrollment:' . $enrollment->id . ':created',
                 'type'        => 'enrollment_created',
                 'timestamp'   => $enrollment->created_at,
                 'description' => __('admin.history_enrollment_created_desc', [
@@ -90,12 +99,14 @@ class StudentHistoryService
             // only when updated_at strictly differs from created_at.
             if ($enrollment->updated_at && $enrollment->updated_at->ne($enrollment->created_at)) {
                 $events->push([
+                    'key'         => 'enrollment:' . $enrollment->id . ':teacher_changed',
                     'type'        => 'teacher_changed',
                     'timestamp'   => $enrollment->updated_at,
                     'description' => __('admin.history_teacher_changed_desc', ['teacher' => $teacherName]),
                     'meta'        => ['teacher' => $teacherName],
                 ]);
                 $events->push([
+                    'key'         => 'enrollment:' . $enrollment->id . ':instrument_changed',
                     'type'        => 'instrument_changed',
                     'timestamp'   => $enrollment->updated_at,
                     'description' => __('admin.history_instrument_changed_desc', ['instrument' => $instrumentName]),
@@ -123,6 +134,7 @@ class StudentHistoryService
                     $instrumentName = $instrumentByEnrollment[$session->enrollment_id] ?? '—';
 
                     $events->push([
+                        'key'         => 'session:' . $session->id . ':' . $type,
                         'type'        => $type,
                         'timestamp'   => $session->updated_at ?? $session->created_at,
                         'description' => __("admin.history_{$type}_desc", [
@@ -145,6 +157,7 @@ class StudentHistoryService
                 ->get()
                 ->each(function (ClassSession $session) use (&$events) {
                     $events->push([
+                        'key'         => 'session:' . $session->id . ':discount_assigned',
                         'type'        => 'discount_assigned',
                         'timestamp'   => $session->updated_at ?? $session->created_at,
                         'description' => __('admin.history_discount_assigned_desc'),
@@ -171,6 +184,7 @@ class StudentHistoryService
                 $ts = $attendance->marked_at ?? $attendance->created_at;
 
                 $events->push([
+                    'key'         => 'attendance:' . $attendance->id . ':marked',
                     'type'        => 'attendance_marked',
                     'timestamp'   => $ts,
                     'description' => __('admin.history_attendance_marked_desc', [
@@ -184,10 +198,14 @@ class StudentHistoryService
                 ]);
             });
 
-        // Sort descending by timestamp, cap at MAX_EVENTS
+        // Newest first, with the stable event key as tie-breaker so equal
+        // timestamps cannot reorder between requests. Then cap at MAX_EVENTS.
         return $events
             ->filter(fn ($e) => $e['timestamp'] !== null)
-            ->sortByDesc(fn ($e) => $e['timestamp']->timestamp)
+            ->sortBy([
+                fn (array $a, array $b) => $b['timestamp']->getTimestamp() <=> $a['timestamp']->getTimestamp(),
+                fn (array $a, array $b) => strcmp($a['key'], $b['key']),
+            ])
             ->values()
             ->take(self::MAX_EVENTS);
     }

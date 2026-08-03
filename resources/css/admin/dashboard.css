@@ -37,7 +37,7 @@
 }
 
 /* KPI / stat-card inner padding override */
-.db .rounded-2xl.group { padding: var(--space-2) !important; }
+.db .rounded-2xl.group { padding: var(--space-2); }
 .db .rounded-2xl > .flex {
   padding-block: var(--space-1) var(--space-2);
   padding-inline: var(--space-3);
@@ -45,7 +45,7 @@
   border-block-end-color: var(--admin-color-border);
 }
 .db .rounded-2xl > .p-4,
-.db .rounded-2xl > .sm\:p-6 { padding: var(--space-2) !important; }
+.db .rounded-2xl > .sm\:p-6 { padding: var(--space-2); }
 .db .rounded-2xl > .flex h2 {
   color: var(--admin-color-text);
   font-size: var(--text-sm);
@@ -110,9 +110,10 @@
 }
 
 .db__header-controls .ui-button {
+  background: var(--admin-color-surface-glass-soft);
   padding-inline: var(--space-1);
   font-size: var(--text-xs);
-  color: var(--admin-color-text-muted);
+  color: var(--admin-color-text);
   border-color: var(--admin-color-border);
   box-shadow: none;
   transform: none;

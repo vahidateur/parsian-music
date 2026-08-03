@@ -2,16 +2,20 @@
 
 namespace Tests\Feature;
 
-use PHPUnit\Framework\TestCase;
+use Illuminate\Support\Facades\Lang;
+use Tests\TestCase;
 
 /**
  * Validates: Requirements 1
  * Translation Completeness Property Test
- * Verifies all translation keys referenced in lead views exist in lang/fa/admin.php with non-empty Persian values.
+ * Verifies every translation key referenced in lead views resolves to a non-empty
+ * localized Persian value through the application translator — not to the raw key.
  */
 class LeadTranslationsTest extends TestCase
 {
-    protected array $translations;
+    /** Raw source of the fa admin lang file, used for duplicate-key detection. */
+    protected string $source;
+
     protected array $requiredKeys = [
         'leads', 'manage_leads', 'new_lead', 'kanban_view', 'list_view',
         'leads_kanban', 'kanban_subtitle', 'lead_information', 'lead_timeline',
@@ -25,73 +29,83 @@ class LeadTranslationsTest extends TestCase
         'overdue', 'no_leads_found', 'no_leads_in_column', 'all_priorities', 'all_sources',
         'all_admins', 'assigned_admin', 'preferred_instrument', 'preferred_teacher',
         'next_follow_up', 'source', 'priority', 'email', 'age',
-        'history_lead_created_desc', 'history_lead_status_desc', 'view_student', 'start_date'
+        'history_lead_created_desc', 'history_lead_status_desc', 'view_student', 'start_date',
     ];
 
     protected function setUp(): void
     {
         parent::setUp();
-        $this->translations = require __DIR__ . '/../../lang/fa/admin.php';
+
+        $this->source = file_get_contents(lang_path('fa/admin.php'));
     }
 
+    /** Every required key must be registered for the fa locale. */
     public function test_all_required_lead_translation_keys_exist(): void
     {
         foreach ($this->requiredKeys as $key) {
-            $this->assertArrayHasKey(
-                $key,
-                $this->translations,
+            $this->assertTrue(
+                Lang::has('admin.' . $key, 'fa'),
                 "Translation key 'admin.$key' is missing from lang/fa/admin.php"
             );
         }
     }
 
-    public function test_all_required_translation_keys_have_non_empty_values(): void
+    /**
+     * The translator must return the LOCALIZED value, never the raw key.
+     * A view rendering __('admin.overdue') must not output 'admin.overdue'.
+     */
+    public function test_all_required_keys_resolve_to_localized_values(): void
     {
         foreach ($this->requiredKeys as $key) {
-            if (!array_key_exists($key, $this->translations)) {
-                $this->fail("Key '$key' missing entirely");
-            }
+            $value = trans('admin.' . $key, [], 'fa');
 
-            $value = $this->translations[$key];
-            $this->assertNotEmpty(
-                $value,
-                "Translation key 'admin.$key' has empty or null value"
-            );
             $this->assertIsString(
                 $value,
-                "Translation key 'admin.$key' must be a string, got " . gettype($value)
+                "Translation key 'admin.$key' must resolve to a string, got " . gettype($value)
             );
-            $this->assertStringNotContainsString(
+            $this->assertNotSame(
                 'admin.' . $key,
                 $value,
-                "Translation key 'admin.$key' appears to reference itself (raw key string)"
+                "Translation key 'admin.$key' resolves to the raw key instead of a localized value"
+            );
+            $this->assertNotEmpty(
+                trim($value),
+                "Translation key 'admin.$key' has an empty localized value"
             );
         }
     }
 
+    /**
+     * The same top-level key declared twice is silently overwritten by PHP, so the
+     * loaded array can never reveal it. Duplicates are detected in the file source.
+     */
     public function test_no_duplicate_keys_in_translation_file(): void
     {
-        // Count occurrences of each required key
-        $counts = [];
         foreach ($this->requiredKeys as $key) {
-            $counts[$key] = array_key_exists($key, $this->translations) ? 1 : 0;
-        }
+            // Top-level keys are indented with exactly four spaces; nested keys use more.
+            $occurrences = preg_match_all(
+                '/^ {4}\'' . preg_quote($key, '/') . '\'\s*=>/m',
+                $this->source
+            );
 
-        foreach ($counts as $key => $count) {
-            $this->assertGreaterThanOrEqual(1, $count, "Key '$key' should exist exactly once");
+            $this->assertSame(
+                1,
+                $occurrences,
+                "Key '$key' must be declared exactly once at top level, found {$occurrences}"
+            );
         }
     }
 
+    /** Localized values must be Persian text (or carry placeholder variables). */
     public function test_translation_values_are_persian_text(): void
     {
-        $persianRange = '/[\x{0600}-\x{06FF}]+/u'; // Persian/Farsi unicode range
+        $persianRange = '/[\x{0600}-\x{06FF}]+/u';
 
         foreach ($this->requiredKeys as $key) {
-            $value = $this->translations[$key] ?? '';
-            // Check if value contains at least some Persian characters (allowing variables like :source, etc)
-            $hasPersian = preg_match($persianRange, $value);
+            $value = (string) trans('admin.' . $key, [], 'fa');
+
             $this->assertTrue(
-                $hasPersian || str_contains($value, ':'),
+                (bool) preg_match($persianRange, $value) || str_contains($value, ':'),
                 "Translation key 'admin.$key' does not contain Persian text or placeholder variables"
             );
         }

@@ -2,6 +2,8 @@
 
 namespace Tests\Feature\Admin;
 
+use App\DTOs\RecordDetailData;
+use App\DTOs\RecordDetailSection;
 use App\Enums\AttendanceStatusEnum;
 use App\Enums\RoleEnum;
 use App\Enums\SessionStatusEnum;
@@ -12,6 +14,7 @@ use App\Models\Student;
 use App\Models\StudentEnrollment;
 use App\Models\Teacher;
 use App\Models\User;
+use App\Services\Details\StudentDetailQuery;
 use App\Services\StudentHistoryService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -142,9 +145,143 @@ class StudentHistoryTest extends TestCase
             ->get(route('admin.students.show', $this->student));
 
         $response->assertOk();
-        // Timeline section should be present (key renders in either locale)
-        $response->assertSee('student_history', false);
-        // Timeline card for student_created should appear
-        $response->assertSee('student_created', false);
+        // The timeline heading renders the LOCALIZED value of admin.student_history,
+        // never the raw key. Both expected strings are plain Persian text with no
+        // HTML-escapable characters, so the escaping-aware default assertSee is used.
+        $response->assertSee(__('admin.student_history'));
+        // The student_created event renders its localized event-type label.
+        $response->assertSee(__('admin.history_event_types.student_created'));
+    }
+
+    /** The history section exposes the stable machine-readable identifier. */
+    public function test_student_show_exposes_stable_history_section_identifier(): void
+    {
+        $response = $this->actingAs($this->admin)
+            ->get(route('admin.students.show', $this->student));
+
+        $response->assertOk();
+        $response->assertSee('id="student_history"', false);
+        $response->assertSee('data-section="student_history"', false);
+    }
+
+    /** Events sharing a timestamp keep one deterministic order across requests. */
+    public function test_history_order_is_deterministic_for_equal_timestamps(): void
+    {
+        $sharedMoment = now()->subHour();
+
+        foreach ([1, 2, 3] as $ignored) {
+            ClassSession::create([
+                'enrollment_id' => $this->enrollment->id,
+                'session_date' => now()->subDay(),
+                'start_time' => '16:00',
+                'duration_minutes' => 60,
+                'room' => 'A101',
+                'status' => SessionStatusEnum::Completed->value,
+                'created_at' => $sharedMoment,
+                'updated_at' => $sharedMoment,
+            ]);
+        }
+
+        $service = new StudentHistoryService();
+        $firstKeys = $service->buildTimeline($this->student)->pluck('key')->all();
+        $secondKeys = $service->buildTimeline($this->student->fresh())->pluck('key')->all();
+
+        $this->assertSame($firstKeys, $secondKeys);
+        $this->assertSame(array_values(array_unique($firstKeys)), $firstKeys);
+
+        // Rendered order matches the resolved order of persisted events.
+        $response = $this->actingAs($this->admin)
+            ->get(route('admin.students.show', $this->student));
+
+        $response->assertOk();
+        preg_match_all('/data-history-key="([^"]+)"/', $response->getContent(), $matches);
+        $this->assertSame($firstKeys, $matches[1]);
+    }
+
+    /** Rendered history order is identical across repeated requests. */
+    public function test_rendered_history_order_is_identical_across_repeated_requests(): void
+    {
+        $sharedMoment = now()->subHour();
+
+        foreach ([1, 2, 3] as $ignored) {
+            ClassSession::create([
+                'enrollment_id' => $this->enrollment->id,
+                'session_date' => now()->subDay(),
+                'start_time' => '16:00',
+                'duration_minutes' => 60,
+                'room' => 'A101',
+                'status' => SessionStatusEnum::Completed->value,
+                'created_at' => $sharedMoment,
+                'updated_at' => $sharedMoment,
+            ]);
+        }
+
+        $renderedKeys = function (): array {
+            $response = $this->actingAs($this->admin)
+                ->get(route('admin.students.show', $this->student));
+
+            $response->assertOk();
+            preg_match_all('/data-history-key="([^"]+)"/', $response->getContent(), $matches);
+
+            return $matches[1];
+        };
+
+        $first = $renderedKeys();
+        $second = $renderedKeys();
+
+        $this->assertNotEmpty($first);
+        $this->assertSame($first, $second);
+        $this->assertSame(array_values(array_unique($first)), $first);
+    }
+
+    /** Absent history renders the shared Empty_State component. */
+    public function test_empty_history_renders_shared_empty_state(): void
+    {
+        $detail = new RecordDetailData(
+            entity: 'students',
+            id: $this->student->id,
+            label: (string) $this->student->full_name,
+            sections: [
+                new RecordDetailSection(
+                    id: StudentDetailQuery::SECTION_HISTORY,
+                    title: __('admin.student_history'),
+                    empty_message: __('admin.no_history_events'),
+                ),
+            ],
+            placeholder: __('admin.value_not_provided'),
+        );
+
+        $rendered = view('admin.partials.timeline', [
+            'detail' => $detail,
+            'section' => $detail->section(StudentDetailQuery::SECTION_HISTORY),
+        ])->render();
+
+        $this->assertStringContainsString('ui-empty-state', $rendered);
+        $this->assertStringContainsString(__('admin.no_history_events'), $rendered);
+        $this->assertStringContainsString('id="student_history"', $rendered);
+        $this->assertStringContainsString('data-section="student_history"', $rendered);
+    }
+
+    /** Absent persisted values render the localized placeholder. */
+    public function test_absent_values_render_the_localized_placeholder(): void
+    {
+        $this->student->update(['parent_phone' => null, 'notes' => null]);
+
+        $response = $this->actingAs($this->admin)
+            ->get(route('admin.students.show', $this->student));
+
+        $response->assertOk();
+        $response->assertSee('id="student_profile"', false);
+        $response->assertSee(__('admin.value_not_provided'));
+    }
+
+    /** The detail screen keeps exactly one h1. */
+    public function test_detail_renders_exactly_one_h1(): void
+    {
+        $response = $this->actingAs($this->admin)
+            ->get(route('admin.students.show', $this->student));
+
+        $response->assertOk();
+        $this->assertSame(1, substr_count($response->getContent(), '<h1'));
     }
 }

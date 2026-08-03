@@ -23,7 +23,6 @@
         <div>
             <label for="mail_password" class="{{ $labelClass }}">رمز عبور</label>
             <input id="mail_password" type="password" name="mail_password"
-                   value="{{ old('mail_password', $s['mail_password'] ?? '') }}"
                    placeholder="••••••••" class="{{ $inputClass }}" dir="ltr">
             <p class="{{ $hintClass }}">فیلد را خالی بگذارید تا رمز قبلی حفظ شود.</p>
         </div>

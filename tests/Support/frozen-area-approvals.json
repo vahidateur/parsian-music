@@ -1,0 +1,12 @@
+{
+    "_comment": "Explicit product-owner approvals for frozen-path byte changes (Requirement 14.7). Each record needs: path, previous_sha256, approved_sha256, reason, approval_reference. An unrecorded change fails the preservation gate.",
+    "approvals": [
+        {
+            "path": "resources/css/admin/glass.css",
+            "previous_sha256": "4a99157dd827741c4ac527c867a20430fdf0839bd86454e514c3a5b9be12beba",
+            "approved_sha256": "d9b39bf61bdb09b3fed9d1b49542c7eaf3ae10778d1a2a446549d1e2c2905322",
+            "reason": "Task 14.5 WCAG contrast ownership reconciliation",
+            "approval_reference": "PRODUCT-OWNER-APPROVAL-GLASS-WCAG-2026-07-31"
+        }
+    ]
+}

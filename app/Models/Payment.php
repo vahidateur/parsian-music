@@ -7,6 +7,16 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * @deprecated Legacy flat payment record, superseded by the Invoice domain
+ *             (Invoice + InvoiceItem + InvoicePayment, Sprint 19.4–19.5).
+ *
+ * The admin surface for this model was removed; the model and the `payments`
+ * table are retained read-only so historical rows are not lost. Dropping the
+ * table requires an explicit data-migration decision.
+ *
+ * Do NOT build new features on this model — use {@see \App\Services\InvoiceService}.
+ */
 class Payment extends Model
 {
     use HasFactory;

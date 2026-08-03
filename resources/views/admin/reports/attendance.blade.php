@@ -9,7 +9,7 @@
 @endphp
 
 {{-- Header --}}
-<x-dashboard.section-header
+<x-dashboard.section-header headingLevel="h1"
     :title="__('admin.attendance_report')"
     :subtitle="__('admin.attendance_report_desc')"
 />

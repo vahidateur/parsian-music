@@ -215,7 +215,9 @@ class AdminShellPreservationTest extends TestCase
             'Dashboard' => ['admin/dashboard.blade.php', 'db__header'],
             'Teachers' => ['admin/teachers/index.blade.php', 'admin.teachers.index'],
             'Students' => ['admin/students/index.blade.php', 'admin.students.index'],
-            'Calendar' => ['admin/calendar.blade.php', 'admin.calendar.index'],
+            // Canonical calendar view target of `admin.calendar.index`; the parallel
+            // `admin/calendar.blade.php` was removed as an unreferenced duplicate.
+            'Calendar' => ['admin/calendar/index.blade.php', 'calendar-page-title'],
             'Settings' => ['admin/settings/index.blade.php', 'x-settings.shell'],
         ];
 

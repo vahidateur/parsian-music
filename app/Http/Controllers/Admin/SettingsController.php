@@ -65,6 +65,16 @@ class SettingsController extends Controller
             $validated['telegram_enabled'] = $request->boolean('telegram_enabled');
         }
 
+        $secretField = match ($section) {
+            'email' => 'mail_password',
+            'telegram' => 'telegram_bot_token',
+            default => null,
+        };
+
+        if ($secretField !== null && ($validated[$secretField] ?? '') === '') {
+            unset($validated[$secretField]);
+        }
+
         if ($section === 'login') {
             // Handle logo upload
             if ($request->hasFile('login_logo')) {

@@ -10,28 +10,21 @@
     <h1 class="text-2xl font-semibold text-amber-100">{{ __('admin.create_instrument') }}</h1>
 </div>
 
-@if ($errors->any())
-    <div class="mb-6 rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">
-        <ul class="list-disc pr-5 space-y-1">
-            @foreach ($errors->all() as $error)
-                <li>{{ $error }}</li>
-            @endforeach
-        </ul>
-    </div>
-@endif
+{{-- Feedback_Channel + Error_State recovery path --}}
+<x-admin.feedback :returnUrl="route('admin.instruments.index')" />
 
+{{-- Loading_State owner of this Record_Form --}}
+<x-admin.form-state>
 <form method="POST" action="{{ route('admin.instruments.store') }}" class="max-w-xl space-y-5">
     @csrf
 
     {{-- Persian name (required) --}}
     <div>
         <label class="mb-1.5 block text-sm font-medium text-gray-300">{{ __('admin.instrument_name_fa') }}</label>
-        <input type="text" name="name_fa" value="{{ old('name_fa') }}" required
+        <input type="text" name="name_fa" {{ feedback_field_attributes('name_fa') }} value="{{ old('name_fa') }}" required
                class="block w-full rounded-lg border border-gray-700 bg-gray-800/50 px-4 py-3 text-sm text-gray-100 placeholder-gray-500 transition focus:border-amber-500/50 focus:outline-none focus:ring-2 focus:ring-amber-500/20"
                placeholder="مثلاً: پیانو">
-        @error('name_fa')
-            <p class="mt-1 text-sm text-red-400">{{ $message }}</p>
-        @enderror
+        <x-admin.feedback field="name_fa" />
     </div>
 
     {{-- English name (optional) --}}
@@ -40,12 +33,10 @@
             {{ __('admin.instrument_name_en') }}
             <span class="text-gray-500 text-xs">({{ __('admin.optional') }})</span>
         </label>
-        <input type="text" name="name" value="{{ old('name') }}"
+        <input type="text" name="name" {{ feedback_field_attributes('name') }} value="{{ old('name') }}"
                class="block w-full rounded-lg border border-gray-700 bg-gray-800/50 px-4 py-3 text-sm text-gray-100 placeholder-gray-500 transition focus:border-amber-500/50 focus:outline-none focus:ring-2 focus:ring-amber-500/20"
                placeholder="e.g. Piano">
-        @error('name')
-            <p class="mt-1 text-sm text-red-400">{{ $message }}</p>
-        @enderror
+        <x-admin.feedback field="name" />
     </div>
 
     {{-- is_active --}}
@@ -59,13 +50,12 @@
 
     {{-- Actions --}}
     <div class="flex items-center gap-4 pt-2">
-        <button type="submit" class="rounded-lg bg-gradient-to-r from-amber-600 to-amber-500 px-6 py-2.5 text-sm font-semibold text-gray-950 shadow-lg transition hover:from-amber-500 hover:to-amber-400">
-            {{ __('admin.create_instrument') }}
-        </button>
+        <x-admin.submit-button :label="__('admin.create_instrument')" />
         <a href="{{ route('admin.instruments.index') }}" class="rounded-lg border border-gray-700 px-6 py-2.5 text-sm font-medium text-gray-400 transition hover:border-gray-600 hover:text-gray-200">
             {{ __('admin.cancel') }}
         </a>
     </div>
 </form>
+</x-admin.form-state>
 
 @endsection

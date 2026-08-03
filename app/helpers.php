@@ -32,3 +32,19 @@ if (! function_exists('institute')) {
         return settings()->institute();
     }
 }
+
+if (! function_exists('feedback_field_attributes')) {
+    /**
+     * Accessible wiring for an invalid form control of the shared Feedback_Channel.
+     *
+     * Emits `aria-invalid="true" aria-describedby="{field}-error"` when the current
+     * request has a validation error for the field, and nothing otherwise.
+     *
+     * Usage: <input name="phone" {{ feedback_field_attributes('phone') }}>
+     *        <x-admin.feedback field="phone" />
+     */
+    function feedback_field_attributes(string $field, mixed $errors = null): \Illuminate\Support\HtmlString
+    {
+        return \App\Support\Feedback\FeedbackChannel::fieldAttributes($field, $errors);
+    }
+}

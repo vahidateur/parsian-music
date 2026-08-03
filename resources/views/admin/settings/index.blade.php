@@ -21,7 +21,7 @@
     }
 @endphp
 
-<x-dashboard.section-header
+<x-dashboard.section-header headingLevel="h1"
     title="تنظیمات"
     subtitle="پیکربندی و مدیریت تمام جنبه‌های آموزشگاه"
     :badge="count($catalogue) . ' بخش'"

@@ -1,7 +1,10 @@
 <?php
 /**
- * Creates a test admin user for JS property tests.
+ * Compatibility entry point for the JS property-test environment.
  * Run: php tests/js/support/create-test-admin.php
+ *
+ * The canonical fixture is owned by TestDataSeeder; this wrapper intentionally
+ * does not contain credentials or a second authentication mechanism.
  */
 
 require __DIR__ . '/../../../vendor/autoload.php';
@@ -9,18 +12,4 @@ require __DIR__ . '/../../../vendor/autoload.php';
 $app = require __DIR__ . '/../../../bootstrap/app.php';
 $app->make(\Illuminate\Contracts\Console\Kernel::class)->bootstrap();
 
-use App\Models\User;
-use Illuminate\Support\Facades\Hash;
-
-$user = User::updateOrCreate(
-    ['phone' => '09999999999'],
-    [
-        'full_name' => 'Test Admin',
-        'password' => Hash::make('testpass123'),
-        'role' => 'admin',
-        'is_active' => true,
-        'force_password_change' => false,
-    ]
-);
-
-echo "Test admin created: phone={$user->phone}\n";
+app(\Database\Seeders\TestDataSeeder::class)->seedE2EAdmin();

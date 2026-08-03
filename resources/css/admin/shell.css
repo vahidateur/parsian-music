@@ -12,6 +12,18 @@
   background: var(--admin-color-page);
   color: var(--admin-color-text);
   font-family: inherit;
+
+  /* Shared UI primitives consume these aliases inside the admin contract. */
+  --ui-overlay: var(--glass-overlay);
+  --ui-surface: var(--admin-color-surface-glass);
+  --ui-surface-elevated: var(--admin-color-surface-elevated);
+  --ui-border: var(--admin-color-border-strong);
+  --ui-border-subtle: var(--admin-color-border);
+  --ui-text: var(--admin-color-text);
+  --ui-text-muted: var(--admin-color-text-muted);
+  --ui-text-subtle: var(--admin-color-text-subtle);
+  --ui-accent: var(--admin-color-accent);
+  --ui-accent-hover: var(--admin-color-accent-hover);
 }
 
 .admin-shell {
@@ -653,6 +665,14 @@ button.admin-navigation__link {
 @media (max-width: 767px) {
   .admin-shell__search { display: none; }
   .admin-shell__brand-mobile { display: inline; }
+  .admin-shell__notif-panel,
+  .admin-shell__user-panel {
+    position: fixed;
+    inset-block-start: var(--admin-topbar-height);
+    inset-inline-end: auto;
+    inset-inline-start: var(--space-2);
+    max-inline-size: calc(100vw - (var(--space-2) * 2));
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -670,9 +690,17 @@ button.admin-navigation__link {
   .admin-navigation__submenu-leave,
   .admin-navigation__sublink,
   .admin-shell__search-input,
+  .admin-shell__notif-panel,
+  .admin-shell__user-panel {
+    transition: none;
+  }
+
   .admin-shell__notif-item,
   .admin-shell__user-chevron,
   .admin-shell__user-panel-item,
   .admin-shell__panel-enter,
-  .admin-shell__panel-leave { transition: none; }
+  .admin-shell__panel-leave {
+    transition: none;
+  }
 }
+

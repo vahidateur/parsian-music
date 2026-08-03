@@ -1,6 +1,19 @@
+{{--
+    Student Record_Detail screen (route: admin.students.show).
+    Expects: $detail (App\DTOs\RecordDetailData) resolved by StudentDetailQuery,
+    plus $student and $financialSummary for the sections owned elsewhere.
+    Absent persisted values fall back to the localized placeholder of the DTO.
+--}}
 @extends('layouts.dashboard')
 
 @section('content')
+
+@php
+    $profile = $detail->section(\App\Services\Details\StudentDetailQuery::SECTION_PROFILE);
+    $history = $detail->section(\App\Services\Details\StudentDetailQuery::SECTION_HISTORY);
+    // Explicit map: Tailwind cannot resolve interpolated class names.
+    $studentStatusColors = ['active' => 'emerald', 'paused' => 'amber', 'inactive' => 'gray', 'graduated' => 'sky'];
+@endphp
 
 {{-- Back + Actions --}}
 <div class="mb-8 flex items-center justify-between">
@@ -18,45 +31,39 @@
     </div>
 </div>
 
-{{-- Section 1: Student Info --}}
-<div class="mb-8 overflow-hidden rounded-2xl border border-gray-800/60 bg-gray-900/50 shadow-xl backdrop-blur-sm">
-    <div class="border-b border-gray-800/60 px-6 py-4">
-        <h2 class="text-lg font-semibold text-amber-100">{{ __('admin.student_information') }}</h2>
+{{-- Page heading: the single h1 of this screen --}}
+<header class="mb-6">
+    <div class="flex flex-wrap items-center gap-3">
+        <h1 class="text-2xl font-semibold text-amber-100">{{ $detail->label }}</h1>
+        @if ($detail->status_label)
+            <x-admin.status-badge :label="$detail->status_label" :color="$studentStatusColors[$detail->status] ?? 'gray'" />
+        @endif
     </div>
-    <div class="grid grid-cols-1 gap-6 px-6 py-6 sm:grid-cols-2 lg:grid-cols-3">
-        <div>
-            <p class="text-xs font-medium uppercase tracking-wider text-gray-500">{{ __('admin.full_name') }}</p>
-            <p class="mt-1 text-sm text-gray-100">{{ $student->full_name }}</p>
-        </div>
-        <div>
-            <p class="text-xs font-medium uppercase tracking-wider text-gray-500">{{ __('admin.phone') }}</p>
-            <p class="mt-1 text-sm text-gray-100">{{ $student->phone }}</p>
-        </div>
-        <div>
-            <p class="text-xs font-medium uppercase tracking-wider text-gray-500">{{ __('admin.parent_phone') }}</p>
-            <p class="mt-1 text-sm text-gray-100">{{ $student->parent_phone ?? '—' }}</p>
-        </div>
-        <div>
-            <p class="text-xs font-medium uppercase tracking-wider text-gray-500">{{ __('admin.status') }}</p>
-            @php
-                $studentStatusValue = $student->status instanceof \BackedEnum ? $student->status->value : (string) $student->status;
-            @endphp
-            <span class="mt-1 inline-block rounded-full {{ $studentStatusValue === 'active' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-gray-700/50 text-gray-400' }} px-2.5 py-0.5 text-xs font-medium">
-                {{ __('admin.statuses.' . $studentStatusValue) }}
-            </span>
-        </div>
-        <div>
-            <p class="text-xs font-medium uppercase tracking-wider text-gray-500">{{ __('admin.join_date') }}</p>
-            <p class="mt-1 text-sm text-gray-100">{{ \App\Helpers\Jalalian::fromCarbon($student->join_date) }}</p>
-        </div>
-        <div>
-            <p class="text-xs font-medium uppercase tracking-wider text-gray-500">{{ __('admin.notes') }}</p>
-            <p class="mt-1 text-sm text-gray-400">{{ $student->notes ?? '—' }}</p>
-        </div>
-    </div>
-</div>
+</header>
 
-{{-- Section 2: Enrollments --}}
+{{-- Section 1: persisted profile values --}}
+<section id="{{ $profile->id }}" data-section="{{ $profile->id }}" aria-labelledby="{{ $profile->id }}_heading"
+         class="mb-8 overflow-hidden rounded-2xl border border-gray-800/60 bg-gray-900/50 shadow-xl backdrop-blur-sm">
+    <div class="border-b border-gray-800/60 px-6 py-4">
+        <h2 id="{{ $profile->id }}_heading" class="text-lg font-semibold text-amber-100">{{ $profile->title }}</h2>
+    </div>
+    <dl class="grid grid-cols-1 gap-6 px-6 py-6 sm:grid-cols-2 lg:grid-cols-3">
+        @foreach ($profile->fields as $field)
+            <div @class(['lg:col-span-3' => $field['multiline']])>
+                <dt class="text-xs font-medium uppercase tracking-wider text-gray-500">{{ $field['label'] }}</dt>
+                <dd @class(['mt-1 text-sm text-gray-100', 'tabular-nums' => $field['dir'] === 'ltr', 'whitespace-pre-line' => $field['multiline']])
+                    @if ($field['dir']) dir="{{ $field['dir'] }}" @endif>
+                    {{ $detail->display($field['value']) }}
+                </dd>
+            </div>
+        @endforeach
+    </dl>
+</section>
+
+{{-- Section 2: Financial Summary --}}
+@include('admin.partials.financial-summary', ['student' => $student, 'financialSummary' => $financialSummary])
+
+{{-- Section 3: Enrollments --}}
 <div class="overflow-hidden rounded-2xl border border-gray-800/60 bg-gray-900/50 shadow-xl backdrop-blur-sm">
     <div class="flex items-center justify-between border-b border-gray-800/60 px-6 py-4">
         <h2 class="text-lg font-semibold text-amber-100">{{ __('admin.enrollments') }}</h2>
@@ -116,7 +123,7 @@
 
 @include('admin.partials.subscription-summary')
 
-{{-- Section 3: History Timeline --}}
-@include('admin.partials.timeline', ['timeline' => $timeline])
+{{-- Section 4: history timeline (stable identifier `student_history`) --}}
+@include('admin.partials.timeline', ['detail' => $detail, 'section' => $history])
 
 @endsection

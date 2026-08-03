@@ -5,8 +5,10 @@ namespace App\Providers;
 use App\Enums\NotificationChannelEnum;
 use App\Enums\RoleEnum;
 use App\Models\ClassSession;
+use App\Models\Instrument;
 use App\Models\Invoice;
 use App\Models\Lead;
+use App\Models\Room;
 use App\Models\Student;
 use App\Models\StudentEnrollment;
 use App\Models\Teacher;
@@ -14,8 +16,10 @@ use App\Models\User;
 use App\Notifications\Drivers\DatabaseDriver;
 use App\Notifications\Drivers\NullDriver;
 use App\Policies\EnrollmentPolicy;
+use App\Policies\InstrumentPolicy;
 use App\Policies\InvoicePolicy;
 use App\Policies\LeadPolicy;
+use App\Policies\RoomPolicy;
 use App\Policies\SessionPolicy;
 use App\Policies\StudentPolicy;
 use App\Policies\TeacherPolicy;
@@ -37,6 +41,8 @@ class AppServiceProvider extends ServiceProvider
         Invoice::class          => InvoicePolicy::class,
         Lead::class             => LeadPolicy::class,
         User::class             => UserPolicy::class,
+        Room::class             => RoomPolicy::class,
+        Instrument::class       => InstrumentPolicy::class,
     ];
 
     public function register(): void

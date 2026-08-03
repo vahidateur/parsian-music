@@ -1,0 +1,208 @@
+{
+    "frozen_paths": [
+        "resources/views/auth/login.blade.php",
+        "resources/views/components/auth/",
+        "resources/css/teacher/hero.css",
+        "resources/css/teacher/biography.css",
+        "resources/views/components/ui/teacher/",
+        "resources/css/design-tokens.css",
+        "resources/css/semantic-tokens.css",
+        "resources/css/admin/tokens.css",
+        "resources/css/admin/glass.css"
+    ],
+    "files": {
+        "resources/css/admin/glass.css": {
+            "sha256": "4a99157dd827741c4ac527c867a20430fdf0839bd86454e514c3a5b9be12beba",
+            "bytes": 19830
+        },
+        "resources/css/admin/tokens.css": {
+            "sha256": "54e548931bd076955ec84cda1b7970916909b26522e93860b349c33089408144",
+            "bytes": 2231
+        },
+        "resources/css/design-tokens.css": {
+            "sha256": "1ab889d5d1b71182853033a1dd187fc8a714ea08152745ea7ea023d79ec72b10",
+            "bytes": 8594
+        },
+        "resources/css/semantic-tokens.css": {
+            "sha256": "94d3e8e62607d224e9a583c6c26fe6575c63014dd28aa257e39728558d8b64b6",
+            "bytes": 5219
+        },
+        "resources/css/teacher/biography.css": {
+            "sha256": "77708aba8affe81226bbd58051b936d25a1a63023ac1e750b2b56e94d21e2101",
+            "bytes": 8405
+        },
+        "resources/css/teacher/hero.css": {
+            "sha256": "724ac32b35fb3bae91822f12e0c2385fca7b73d3a844f42a3c1b7b6fc1e2d26f",
+            "bytes": 9915
+        },
+        "resources/views/auth/login.blade.php": {
+            "sha256": "89e5f4ec13affb7b851365f8652d1e0fdd4100b71659cf986ff3738a6a014bd8",
+            "bytes": 28474
+        },
+        "resources/views/components/auth/login-card.blade.php": {
+            "sha256": "db0546d1aa7ad566c3fdbd0cbe6e0354da771b182a06855d3cbfa544c68dea49",
+            "bytes": 1738
+        },
+        "resources/views/components/auth/login-footer.blade.php": {
+            "sha256": "e752425cb597831b3d8c5a0b09ef65244b7249e7dbbc333bbcd6f45dc2856a87",
+            "bytes": 789
+        },
+        "resources/views/components/auth/login-form.blade.php": {
+            "sha256": "50a3653b84e9eea34b758a8b19e0f93d79e7de7c13f5e0f60cbdb39c6f19d33f",
+            "bytes": 3642
+        },
+        "resources/views/components/auth/login-header.blade.php": {
+            "sha256": "5fee6dcd2f845f1edb4b706e36b3a5a5966678730838d6b5050370cf2a38a8ba",
+            "bytes": 1138
+        },
+        "resources/views/components/auth/login-social.blade.php": {
+            "sha256": "57a59b78bb64cced8565f1ccb6c8b44216d159d50fbffb1355be94839f8764f2",
+            "bytes": 832
+        },
+        "resources/views/components/ui/teacher/badges/experience-badge.blade.php": {
+            "sha256": "0131095945a7bcdb2c78dd51faa4cd20db5fff08ed1e9789d6e326d2b76313a9",
+            "bytes": 650
+        },
+        "resources/views/components/ui/teacher/biography/biography-content.blade.php": {
+            "sha256": "71b88967dfbaf8e110098f9264454dd968bf90caa35cba2b87920ca4d08510d5",
+            "bytes": 843
+        },
+        "resources/views/components/ui/teacher/biography/biography-panel.blade.php": {
+            "sha256": "dfc3f9fba62a32f8550e34eb0ac5c90012f94f079ca4c87d0bdb19927e43f48d",
+            "bytes": 763
+        },
+        "resources/views/components/ui/teacher/buttons/cta-button.blade.php": {
+            "sha256": "d4131bd0e123850cdc21f87f8094e6f77e995707a7d988a93cdae1afd69d2c7f",
+            "bytes": 787
+        },
+        "resources/views/components/ui/teacher/chips/instrument-chip.blade.php": {
+            "sha256": "6937bbd8989f2a44dc1bb0795ae8b9d782174718ddd353b293e4ce607ac3d087",
+            "bytes": 564
+        },
+        "resources/views/components/ui/teacher/hero/background-layer.blade.php": {
+            "sha256": "a96b96a94d9c0bdce76d9c5f3d7456c7a6d24043ef2feb37bba6c908ad72d4d1",
+            "bytes": 548
+        },
+        "resources/views/components/ui/teacher/hero/decoration-layer.blade.php": {
+            "sha256": "60af2293830a66f838f38f92b14fcd891ffb5f8ebedc73ebe5660ef1576dd058",
+            "bytes": 301
+        },
+        "resources/views/components/ui/teacher/hero/hero.blade.php": {
+            "sha256": "3cdf4f9fb9f67ad465d4370ed69f34ac6f704d4a5cde9b2c4b9693bcde23492d",
+            "bytes": 833
+        },
+        "resources/views/components/ui/teacher/hero/info-layer.blade.php": {
+            "sha256": "b12597d3e0673d660e373b76fe67222b63006eba62f458b051eecf6eb3720c31",
+            "bytes": 592
+        },
+        "resources/views/components/ui/teacher/hero/portrait-layer.blade.php": {
+            "sha256": "c2158fac009d7e8ea32ae0d7f9756a784e6cf10af6f53857d7b79474e567f510",
+            "bytes": 280
+        },
+        "resources/views/components/ui/teacher/portrait/portrait-frame.blade.php": {
+            "sha256": "7fe9260e7d8a26294454501268d0243464b2c4f698f5b3cc8c09a2c78e6e386d",
+            "bytes": 1065
+        },
+        "resources/views/components/ui/teacher/portrait/portrait-image.blade.php": {
+            "sha256": "eef76ea050b7c86a70eab8ccdf85fd61e7d9901aaacff4b08913ac3b0a3ee8aa",
+            "bytes": 307
+        },
+        "resources/views/components/ui/teacher/professional/professional-card.blade.php": {
+            "sha256": "a20a7dbc55135a76060e48b1f44368dd873a975cca5a8186c0c067ebd0cb4e5a",
+            "bytes": 1865
+        }
+    },
+    "important": {
+        "resources/css/admin/dashboard.css": 2,
+        "resources/css/animations.css": 4,
+        "resources/css/components/navbar.css": 1,
+        "resources/css/design-tokens.css": 6,
+        "resources/css/site-theme.css": 1,
+        "resources/views/auth/login.blade.php": 65
+    },
+    "theme_selectors": {
+        "resources/css/admin/glass.css": [
+            ".admin-shell__theme-icon",
+            ".admin-shell__theme-toggle",
+            "@media (min-width: 1024px)",
+            "@media (prefers-reduced-motion: reduce)",
+            "[data-admin-theme=\"glass\"]",
+            "[data-admin-theme=\"glass\"] .admin-navigation__icon, [data-admin-theme=\"glass\"] .admin-navigation__subicon, [data-admin-theme=\"glass\"] .admin-navigation__chevron",
+            "[data-admin-theme=\"glass\"] .admin-navigation__link, [data-admin-theme=\"glass\"] .admin-navigation__sublink",
+            "[data-admin-theme=\"glass\"] .admin-navigation__link--active",
+            "[data-admin-theme=\"glass\"] .admin-navigation__link--active .admin-navigation__icon, [data-admin-theme=\"glass\"] .admin-navigation__link:hover .admin-navigation__icon, [data-admin-theme=\"glass\"] .admin-navigation__sublink--active .admin-navigation__subicon",
+            "[data-admin-theme=\"glass\"] .admin-navigation__link--active::before",
+            "[data-admin-theme=\"glass\"] .admin-navigation__link:hover, [data-admin-theme=\"glass\"] .admin-navigation__sublink:hover",
+            "[data-admin-theme=\"glass\"] .admin-navigation__sublink--active",
+            "[data-admin-theme=\"glass\"] .admin-page",
+            "[data-admin-theme=\"glass\"] .admin-shell",
+            "[data-admin-theme=\"glass\"] .admin-shell__account",
+            "[data-admin-theme=\"glass\"] .admin-shell__account-avatar",
+            "[data-admin-theme=\"glass\"] .admin-shell__account-body",
+            "[data-admin-theme=\"glass\"] .admin-shell__account-card",
+            "[data-admin-theme=\"glass\"] .admin-shell__account-card, [data-admin-theme=\"glass\"] .admin-shell__account-logout",
+            "[data-admin-theme=\"glass\"] .admin-shell__account-card:hover",
+            "[data-admin-theme=\"glass\"] .admin-shell__account-logout",
+            "[data-admin-theme=\"glass\"] .admin-shell__account-logout:hover",
+            "[data-admin-theme=\"glass\"] .admin-shell__account-name",
+            "[data-admin-theme=\"glass\"] .admin-shell__account-role",
+            "[data-admin-theme=\"glass\"] .admin-shell__brand-label",
+            "[data-admin-theme=\"glass\"] .admin-shell__brand-mark",
+            "[data-admin-theme=\"glass\"] .admin-shell__drawer-backdrop",
+            "[data-admin-theme=\"glass\"] .admin-shell__icon-button, [data-admin-theme=\"glass\"] .admin-shell__collapse-button, [data-admin-theme=\"glass\"] .admin-shell__mobile-toggle, [data-admin-theme=\"glass\"] .admin-shell__user-placeholder",
+            "[data-admin-theme=\"glass\"] .admin-shell__icon-button:hover, [data-admin-theme=\"glass\"] .admin-shell__collapse-button:hover, [data-admin-theme=\"glass\"] .admin-shell__mobile-toggle:hover, [data-admin-theme=\"glass\"] .admin-shell__user-placeholder:not(:disabled):hover",
+            "[data-admin-theme=\"glass\"] .admin-shell__main",
+            "[data-admin-theme=\"glass\"] .admin-shell__notif-panel, [data-admin-theme=\"glass\"] .admin-shell__user-panel, [data-admin-theme=\"glass\"] .admin-shell__drawer",
+            "[data-admin-theme=\"glass\"] .admin-shell__search-input",
+            "[data-admin-theme=\"glass\"] .admin-shell__search-input::placeholder",
+            "[data-admin-theme=\"glass\"] .admin-shell__sidebar",
+            "[data-admin-theme=\"glass\"] .admin-shell__sidebar-brand-footer",
+            "[data-admin-theme=\"glass\"] .admin-shell__sidebar-footer",
+            "[data-admin-theme=\"glass\"] .admin-shell__sidebar-header",
+            "[data-admin-theme=\"glass\"] .admin-shell__theme-icon--sun, [data-admin-theme=\"dark\"] .admin-shell__theme-icon--moon",
+            "[data-admin-theme=\"glass\"] .admin-shell__theme-toggle",
+            "[data-admin-theme=\"glass\"] .admin-shell__topbar",
+            "[data-admin-theme=\"glass\"] .calendar .fc .fc-timegrid-more-link, [data-admin-theme=\"glass\"] .calendar .fc .fc-popover",
+            "[data-admin-theme=\"glass\"] .calendar-day-timeline, [data-admin-theme=\"glass\"] .calendar-week-sidebar, [data-admin-theme=\"glass\"] .calendar-filters",
+            "[data-admin-theme=\"glass\"] .calendar-drawer__overlay",
+            "[data-admin-theme=\"glass\"] .calendar-drawer__panel",
+            "[data-admin-theme=\"glass\"] .calendar-header__control--today, [data-admin-theme=\"glass\"] .calendar-header__control--today:hover, [data-admin-theme=\"glass\"] .calendar-week-sidebar__day-button[aria-selected=\"true\"], [data-admin-theme=\"glass\"] .calendar-week-sidebar__day-button[data-selected=\"true\"], [data-admin-theme=\"glass\"] .calendar-filters__count, [data-admin-theme=\"glass\"] .calendar .fc .fc-button-primary:not(:disabled).fc-button-active, [data-admin-theme=\"glass\"] .calendar .fc .fc-button-primary:not(:disabled):active",
+            "[data-admin-theme=\"glass\"] .calendar-timegrid-event-content",
+            "[data-admin-theme=\"glass\"] .calendar-timegrid-event-content:hover",
+            "[data-admin-theme=\"glass\"] .calendar-timegrid-event-content__primary",
+            "[data-admin-theme=\"glass\"] .calendar-timegrid-event-content__room, [data-admin-theme=\"glass\"] .calendar-timegrid-event-content__instrument",
+            "[data-admin-theme=\"glass\"] .calendar-timegrid-event-content__secondary",
+            "[data-admin-theme=\"glass\"] .calendar-timegrid-event-content__time",
+            "[data-admin-theme=\"glass\"] .db .rounded-2xl, [data-admin-theme=\"glass\"] .db .rounded-xl",
+            "[data-admin-theme=\"glass\"] .db .rounded-2xl:hover, [data-admin-theme=\"glass\"] .db .rounded-xl:hover",
+            "[data-admin-theme=\"glass\"] .db .text-amber-300, [data-admin-theme=\"glass\"] .db .text-amber-400",
+            "[data-admin-theme=\"glass\"] .db .text-gray-300, [data-admin-theme=\"glass\"] .db .text-gray-400",
+            "[data-admin-theme=\"glass\"] .db .text-gray-500",
+            "[data-admin-theme=\"glass\"] .db .text-white, [data-admin-theme=\"glass\"] .db .text-amber-100",
+            "[data-admin-theme=\"glass\"] .db-cal__day",
+            "[data-admin-theme=\"glass\"] .db-cal__day--today",
+            "[data-admin-theme=\"glass\"] .db-chart__bar",
+            "[data-admin-theme=\"glass\"] .db-quick__item, [data-admin-theme=\"glass\"] .db-shortcut",
+            "[data-admin-theme=\"glass\"] .db-quick__item:hover, [data-admin-theme=\"glass\"] .db-shortcut:hover",
+            "[data-admin-theme=\"glass\"] .db-teacher__avatar, [data-admin-theme=\"glass\"] .dashboard-entity__avatar",
+            "[data-admin-theme=\"glass\"] .db-teacher__bar-wrap, [data-admin-theme=\"glass\"] .dashboard-progress",
+            "[data-admin-theme=\"glass\"] .db__header"
+        ],
+        "resources/css/admin/tokens.css": [
+            ":root",
+            "@media (min-width: 1280px)",
+            "@media (min-width: 768px)"
+        ],
+        "resources/css/design-tokens.css": [
+            "*, *::before, *::after",
+            ":root",
+            "@media (prefers-reduced-motion: reduce)"
+        ],
+        "resources/css/semantic-tokens.css": [
+            ":root"
+        ]
+    },
+    "theme_scoped_files": [
+        "resources/css/admin/glass.css"
+    ]
+}

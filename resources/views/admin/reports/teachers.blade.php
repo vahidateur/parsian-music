@@ -8,7 +8,7 @@
 @endphp
 
 {{-- Header --}}
-<x-dashboard.section-header
+<x-dashboard.section-header headingLevel="h1"
     :title="__('admin.teacher_performance_report')"
     :subtitle="__('admin.teacher_performance_desc')"
     :badge="\App\Helpers\Jalalian::fromCarbon($startDate) . ' ← ' . \App\Helpers\Jalalian::fromCarbon($endDate)"

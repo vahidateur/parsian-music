@@ -2,21 +2,29 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Enums\RoleEnum;
+use App\Actions\Admin\UserAction;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\StoreUserRequest;
+use App\Http\Requests\Admin\UpdateUserRequest;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Str;
-use Illuminate\Validation\Rule;
-use Illuminate\Validation\Rules\Password;
 use Illuminate\View\View;
 
+/**
+ * Account management surface.
+ *
+ * Authorization is resolved through the named UserPolicy abilities before any
+ * record is read or written; the controller body compares no role. The
+ * privilege-escalation boundary for the role field comes from
+ * `RoleEnum::assignableRoles()`, which is also what the forms render.
+ */
 class UserController extends Controller
 {
     public function index(Request $request): View
     {
+        $this->authorize('viewAny', User::class);
+
         $query = User::query()->with('createdBy');
 
         if ($request->filled('search')) {
@@ -41,107 +49,68 @@ class UserController extends Controller
         return view('admin.users.index', compact('users'));
     }
 
-    public function create(): View
+    public function create(Request $request): View
     {
-        return view('admin.users.create');
+        $this->authorize('create', User::class);
+
+        return view('admin.users.create', [
+            'assignableRoles' => $request->user()->role->assignableRoles(),
+        ]);
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(StoreUserRequest $request, UserAction $action): RedirectResponse
     {
-        $actor = $request->user();
+        $this->authorize('create', User::class);
 
-        $validated = $request->validate([
-            'full_name' => ['required', 'string', 'max:255'],
-            'phone'     => ['required', 'string', 'max:20', 'unique:users,phone'],
-            'email'     => ['nullable', 'email', 'max:255', 'unique:users,email'],
-            'role'      => ['required', Rule::in(
-                // Prevent privilege escalation: can only assign lower roles
-                collect(RoleEnum::cases())
-                    ->filter(fn (RoleEnum $r) => $actor->role->canManage($r))
-                    ->map(fn (RoleEnum $r) => $r->value)
-                    ->toArray()
-            )],
-            'password'  => ['required', 'confirmed', Password::min(8)],
-        ]);
-
-        User::create([
-            'full_name'  => $validated['full_name'],
-            'phone'      => $validated['phone'],
-            'email'      => $validated['email'] ?? null,
-            'role'       => $validated['role'],
-            'password'   => Hash::make($validated['password']),
-            'is_active'  => true,
-            'created_by' => $actor->id,
-        ]);
+        $action->create($request->validated(), $request->user());
 
         return redirect()->route('admin.users.index')
             ->with('success', 'کاربر جدید با موفقیت ایجاد شد.');
     }
 
-    public function edit(User $user): View
+    public function edit(Request $request, User $user): View
     {
-        return view('admin.users.edit', compact('user'));
+        $this->authorize('update', $user);
+        // The edit form carries the role field, so role assignment is authorized too.
+        $this->authorize('assign', $user);
+        $this->denySelfManagement($request, $user);
+
+        return view('admin.users.edit', [
+            'user' => $user,
+            'assignableRoles' => $request->user()->role->assignableRoles(),
+        ]);
     }
 
-    public function update(Request $request, User $user): RedirectResponse
+    public function update(UpdateUserRequest $request, User $user, UserAction $action): RedirectResponse
     {
-        $actor = $request->user();
+        $this->authorize('update', $user);
+        $this->authorize('assign', $user);
+        $this->denySelfManagement($request, $user);
 
-        // Prevent editing users of equal or higher rank
-        if (! $actor->role->canManage($user->role)) {
-            abort(403, 'شما مجاز به ویرایش این کاربر نیستید.');
-        }
-
-        $validated = $request->validate([
-            'full_name' => ['required', 'string', 'max:255'],
-            'phone'     => ['required', 'string', 'max:20', Rule::unique('users', 'phone')->ignore($user->id)],
-            'email'     => ['nullable', 'email', 'max:255', Rule::unique('users', 'email')->ignore($user->id)],
-            'role'      => ['required', Rule::in(
-                collect(RoleEnum::cases())
-                    ->filter(fn (RoleEnum $r) => $actor->role->canManage($r))
-                    ->map(fn (RoleEnum $r) => $r->value)
-                    ->toArray()
-            )],
-        ]);
-
-        $user->update($validated);
+        $action->update($user, $request->validated());
 
         return redirect()->route('admin.users.index')
             ->with('success', 'اطلاعات کاربر به‌روزرسانی شد.');
     }
 
-    public function destroy(User $user): RedirectResponse
+    public function destroy(Request $request, User $user, UserAction $action): RedirectResponse
     {
-        $actor = request()->user();
+        $this->authorize('delete', $user);
+        $this->denySelfManagement($request, $user);
 
-        if (! $actor->role->canManage($user->role)) {
-            abort(403);
-        }
-
-        if ($user->id === $actor->id) {
-            return back()->with('error', 'نمی‌توانید حساب خودتان را حذف کنید.');
-        }
-
-        $user->delete();
+        $action->delete($user);
 
         return redirect()->route('admin.users.index')
             ->with('success', 'کاربر حذف شد.');
     }
 
     /** Toggle active/inactive status. */
-    public function toggle(User $user): RedirectResponse
+    public function toggle(Request $request, User $user, UserAction $action): RedirectResponse
     {
-        $actor = request()->user();
+        $this->authorize('toggle', $user);
+        $this->denySelfManagement($request, $user);
 
-        if (! $actor->role->canManage($user->role)) {
-            abort(403);
-        }
-
-        if ($user->id === $actor->id) {
-            return back()->with('error', 'نمی‌توانید حساب خودتان را غیرفعال کنید.');
-        }
-
-        $user->update(['is_active' => ! $user->is_active]);
+        $action->toggle($user);
 
         $label = $user->is_active ? 'فعال' : 'غیرفعال';
 
@@ -152,22 +121,26 @@ class UserController extends Controller
      * Generate a temporary password, set force_password_change, and flash it.
      * The actor must then communicate it to the user out-of-band.
      */
-    public function resetPassword(User $user): RedirectResponse
+    public function resetPassword(Request $request, User $user, UserAction $action): RedirectResponse
     {
-        $actor = request()->user();
+        $this->authorize('resetPassword', $user);
+        $this->denySelfManagement($request, $user);
 
-        if (! $actor->role->canManage($user->role)) {
-            abort(403);
-        }
-
-        $temp = Str::password(12, symbols: false);
-
-        $user->update([
-            'password'              => Hash::make($temp),
-            'force_password_change' => true,
-        ]);
+        $temp = $action->resetPassword($user);
 
         return back()->with('temp_password', $temp)
             ->with('success', "رمز موقت برای {$user->full_name} تنظیم شد.");
+    }
+
+    /**
+     * An account is never managed from this module by its own owner.
+     *
+     * Super admins bypass every Gate check, so this boundary is an identity
+     * comparison — never a role comparison — and the profile module stays the
+     * only place where an actor edits their own account.
+     */
+    private function denySelfManagement(Request $request, User $user): void
+    {
+        abort_if($user->id === $request->user()->id, 403, 'حساب خودتان از این بخش قابل مدیریت نیست.');
     }
 }

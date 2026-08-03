@@ -70,6 +70,10 @@ return [
     'joined'                         => 'Joined',
     'hire_date'                      => 'Hire Date',
     'bio'                            => 'Bio',
+    'teacher_code'                   => 'Teacher Code',
+    'teacher_details'                => 'Teacher Details',
+    'teacher_details_desc'           => 'Review the persisted profile and related operational data of this teacher.',
+    'view_teacher'                   => 'View Teacher',
 
     // ── Teacher panel ──────────────────────────────────────────────────────
     'weekly_sessions'       => 'Weekly Sessions',
@@ -143,6 +147,7 @@ return [
     'schedule_session_manually_desc' => 'Schedule a new class session manually.',
     'duration_minutes_label'   => 'Duration (minutes)',
     'select_room_placeholder' => 'Select room...',
+    'room_not_available'     => 'The selected room is missing or inactive.',
     'active_enrollment'       => 'Active Enrollment',
     'session_fee'             => 'Session Fee',
     'discount'                => 'Discount',
@@ -295,6 +300,85 @@ return [
     'search_name'  => 'Search name...',
     'search_phone' => 'Search phone...',
 
+    // ── Feedback_Channel (shared success / failure / validation) ───────────
+    'feedback_success_generic'    => 'The operation completed successfully.',
+    'feedback_failure_generic'    => 'The operation could not be completed. Please try again or return to the list.',
+    'feedback_validation_generic' => 'This value was not accepted. Please correct the field.',
+    'feedback_validation_title'   => 'The following inputs need correction',
+    'feedback_dismiss'            => 'Dismiss message',
+
+    // ── Bulk result and error payloads ──────────────────────────────────────
+    'bulk_result' => [
+        'reasons' => [
+            'not_found' => [
+                'category' => 'Not found',
+                'message' => 'The selected record is no longer available.',
+            ],
+            'unauthorized' => [
+                'category' => 'Unauthorized',
+                'message' => 'You are not authorized to change this record.',
+            ],
+            'protected_dependency' => [
+                'category' => 'Protected dependency',
+                'message' => 'The record has protected dependencies.',
+            ],
+            'processing_error' => [
+                'category' => 'Processing error',
+                'message' => 'The selected record could not be processed.',
+            ],
+            'invalid_action' => [
+                'category' => 'Invalid transition',
+                'message' => 'The requested status action is invalid.',
+            ],
+            'invalid_status' => [
+                'category' => 'Invalid status',
+                'message' => 'The stored status is not a valid entity status.',
+            ],
+            'invalid_transition' => [
+                'category' => 'Invalid transition',
+                'message' => 'This lifecycle status cannot be changed by this action.',
+            ],
+            'generic' => [
+                'category' => 'Processing error',
+                'message' => 'The item could not be processed.',
+            ],
+        ],
+    ],
+    'bulk_errors' => [
+        'unavailable' => 'Bulk execution is currently unavailable.',
+    ],
+    'bulk_selection' => [
+        'toolbar_label' => ':entity bulk actions',
+        'actions_label' => 'Allowed actions',
+        'selected_suffix' => 'selected',
+        'selected_count' => ':count selected',
+        'select_all_visible' => 'Select all selectable items on this page',
+        'select_row' => 'Select :entity :label',
+        'all_filtered' => 'Select all filtered results',
+        'previewing' => 'Resolving the filtered result count…',
+        'preview_ready' => ':count results are ready for the bulk action.',
+        'result_complete' => 'The operation completed: :succeeded succeeded, :skipped skipped, :failed failed.',
+        'result_partial' => 'The operation completed partially: :succeeded succeeded, :skipped skipped, :failed failed.',
+        'delete_warning' => 'This permanently deletes the selected records and cannot be undone.',
+        'result_label' => ':entity bulk action result',
+        'result_title' => 'Bulk action result',
+        'recovery' => 'Return to list',
+    ],
+
+    // ── Operational list controls ──────────────────────────────────────────
+    'clear_filters'        => 'Clear filters',
+    'search_placeholder'   => 'Search...',
+    'results_total'        => ':count results',
+    'no_results_for_query' => 'No record matches the applied filters.',
+    'filters_label'        => 'Search and filter',
+
+    // ── Shared Empty / Loading / Error states ──────────────────────────────
+    'empty_no_records'   => 'No record has been created yet.',
+    'create'             => 'Create a record',
+    'state_submitting'   => 'Submitting…',
+    'state_error_retry'  => 'Try again',
+    'state_error_return' => 'Back to the list',
+
     // ── Select placeholders ────────────────────────────────────────────────
     'all_students'    => 'All Students',
     'all_teachers'    => 'All Teachers',
@@ -367,6 +451,7 @@ return [
     'room_updated_successfully' => 'Room updated successfully.',
     'room_deleted_successfully' => 'Room deleted successfully.',
     'no_rooms_found'           => 'No rooms found.',
+    'room_name'                => 'Room name',
     'room_capacity'            => 'Capacity',
 
     // ── Nested: rooms ──────────────────────────────────────────────────────
@@ -443,6 +528,72 @@ return [
     'no_students_enrolled'     => 'No students enrolled in this session.',
     'total_students_count'     => 'Total Students',
     'unmarked_count_label'     => 'Unmarked',
+
+    // ── Billing / Invoices ─────────────────────────────────────────────────
+    'billing'                    => 'Billing',
+    'invoices'                   => 'Invoices',
+    'invoice'                    => 'Invoice',
+    'manage_invoices'            => 'Issue and track student invoices.',
+    'new_invoice'                => 'New Invoice',
+    'create_invoice'             => 'Create Invoice',
+    'edit_invoice'               => 'Edit Invoice',
+    'update_invoice'             => 'Update Invoice',
+    'invoice_details'            => 'Invoice Details',
+    'new_invoice_desc'           => 'Create a draft invoice for a student.',
+    'update_invoice_desc'        => 'Update invoice details and line items.',
+    'back_to_invoices'           => '← Back to Invoices',
+    'invoice_number'             => 'Invoice #',
+    'issue_date'                 => 'Issue Date',
+    'due_date'                   => 'Due Date',
+    'subtotal'                   => 'Subtotal',
+    'tax'                        => 'Tax',
+    'total_amount'               => 'Total',
+    'amount_paid'                => 'Paid',
+    'amount_due'                 => 'Due',
+    'invoice_items'              => 'Line Items',
+    'item_title'                 => 'Title',
+    'item_description'           => 'Description',
+    'quantity'                   => 'Qty',
+    'unit_price'                 => 'Unit Price',
+    'line_total'                 => 'Line Total',
+    'add_item'                   => 'Add Item',
+    'remove_item'                => 'Remove Item',
+    'no_invoice_items'           => 'No line items yet.',
+    'no_invoices_found'          => 'No invoices found.',
+    'invoice_created_successfully'    => 'Invoice created successfully.',
+    'invoice_updated_successfully'    => 'Invoice updated successfully.',
+    'invoice_deleted_successfully'    => 'Invoice deleted successfully.',
+    'invoice_issued_successfully'     => 'Invoice issued.',
+    'invoice_cancelled_successfully'  => 'Invoice cancelled.',
+    'invoice_duplicated_successfully' => 'A new draft copy was created.',
+    'delete_invoice_confirm'     => 'Delete this invoice?',
+    'cancel_invoice_confirm'     => 'Cancel this invoice?',
+    'issue_invoice'              => 'Issue',
+    'cancel_invoice'             => 'Cancel Invoice',
+    'duplicate_invoice'          => 'Duplicate',
+    'invoice_not_editable'       => 'This invoice can no longer be edited.',
+
+    // ── Payments (invoice ledger) ──────────────────────────────────────────
+    'payments'                   => 'Payments',
+    'register_payment'           => 'Register Payment',
+    'payment_amount'             => 'Amount',
+    'payment_method'             => 'Method',
+    'payment_reference'          => 'Reference',
+    'paid_at'                    => 'Paid At',
+    'no_payments_yet'            => 'No payments recorded yet.',
+    'payment_registered_successfully' => 'Payment registered successfully.',
+    'payment_deleted_successfully'    => 'Payment deleted successfully.',
+    'delete_payment_confirm'     => 'Delete this payment?',
+    'payment_blocked'            => 'A payment cannot be registered for this invoice.',
+
+    // ── Student financial summary ─────────────────────────────────────────
+    'financial_summary'          => 'Financial Summary',
+    'total_invoiced'             => 'Total Invoiced',
+    'total_paid'                 => 'Total Paid',
+    'total_outstanding'          => 'Outstanding',
+    'last_payment_date'          => 'Last Payment',
+    'no_financial_records'       => 'No financial records yet.',
+    'view_invoices'              => 'View Invoices',
 ];
 
 

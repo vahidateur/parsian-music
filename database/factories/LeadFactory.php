@@ -56,6 +56,58 @@ class LeadFactory extends Factory
     }
 
     /**
+     * Status state: `new`.
+     *
+     * Named `statusNew` because `Factory::new()` is a static framework method.
+     */
+    public function statusNew(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'status' => LeadStatusEnum::New->value,
+        ]);
+    }
+
+    /** Status state: `contacted`. */
+    public function contacted(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'status' => LeadStatusEnum::Contacted->value,
+        ]);
+    }
+
+    /** Status state: `interested`. */
+    public function interested(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'status' => LeadStatusEnum::Interested->value,
+        ]);
+    }
+
+    /** Status state: `trial_scheduled`. */
+    public function trialScheduled(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'status' => LeadStatusEnum::TrialScheduled->value,
+        ]);
+    }
+
+    /** Status state: `registered`. */
+    public function registered(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'status' => LeadStatusEnum::Registered->value,
+        ]);
+    }
+
+    /** Status state: `lost`. */
+    public function lost(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'status' => LeadStatusEnum::Lost->value,
+        ]);
+    }
+
+    /**
      * Mark lead as converted.
      */
     public function converted(): static

@@ -24,7 +24,7 @@
     ═══════════════════════════════════════════ --}}
     <div class="db__header">
         <div class="db__header-title-group">
-            <h2 class="db__title">داشبورد</h2>
+            <h1 class="db__title">داشبورد</h1>
             <p class="db__subtitle">نمای کلی عملکرد آکادمی در یک نگاه</p>
         </div>
         <div class="db__header-controls" role="group" aria-label="پیش‌نمایش وضعیت‌های داشبورد">

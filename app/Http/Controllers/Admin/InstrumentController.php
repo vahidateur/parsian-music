@@ -2,52 +2,44 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Actions\Admin\InstrumentAction;
+use App\Exceptions\RecordInUseException;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\InstrumentRequest;
 use App\Models\Instrument;
+use App\Services\Lists\InstrumentListQuery;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
 use Illuminate\View\View;
 
+/**
+ * Every action resolves its named InstrumentPolicy ability through the
+ * Authorization_Layer before any input is read or any record is written, so a
+ * hidden UI control is never the only protection.
+ */
 class InstrumentController extends Controller
 {
-    public function index(): View
+    public function index(Request $request, InstrumentListQuery $listQuery): View
     {
-        $instruments = Instrument::orderBy('name_fa')->orderBy('name')->get();
+        $this->authorize('viewAny', Instrument::class);
 
-        return view('admin.instruments.index', compact('instruments'));
+        return view('admin.instruments.index', [
+            'list' => $listQuery->forInput($request->query(), $request->user()),
+        ]);
     }
 
     public function create(): View
     {
+        $this->authorize('create', Instrument::class);
+
         return view('admin.instruments.create');
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(InstrumentRequest $request, InstrumentAction $action): RedirectResponse
     {
-        $validated = $request->validate([
-            'name_fa'   => ['required', 'string', 'max:100', 'unique:instruments,name_fa'],
-            'name'      => ['nullable', 'string', 'max:100'],
-            'is_active' => ['nullable', 'boolean'],
-        ]);
+        $this->authorize('create', Instrument::class);
 
-        // English name defaults to Persian name if not provided
-        $englishName = trim($validated['name'] ?? '') ?: $validated['name_fa'];
-        $slug = Str::slug($englishName);
-
-        // Ensure slug uniqueness
-        $baseSlug = $slug;
-        $counter  = 1;
-        while (Instrument::where('slug', $slug)->exists()) {
-            $slug = $baseSlug . '-' . $counter++;
-        }
-
-        Instrument::create([
-            'name'      => $englishName,
-            'name_fa'   => $validated['name_fa'],
-            'slug'      => $slug,
-            'is_active' => (bool) ($validated['is_active'] ?? true),
-        ]);
+        $action->create($request->validated());
 
         return redirect()->route('admin.instruments.index')
             ->with('success', __('admin.instrument_created_successfully'));
@@ -55,45 +47,40 @@ class InstrumentController extends Controller
 
     public function edit(Instrument $instrument): View
     {
+        $this->authorize('update', $instrument);
+
         return view('admin.instruments.edit', compact('instrument'));
     }
 
-    public function update(Request $request, Instrument $instrument): RedirectResponse
+    public function update(InstrumentRequest $request, Instrument $instrument, InstrumentAction $action): RedirectResponse
     {
-        $validated = $request->validate([
-            'name_fa'   => ['required', 'string', 'max:100', \Illuminate\Validation\Rule::unique('instruments', 'name_fa')->ignore($instrument->id)],
-            'name'      => ['nullable', 'string', 'max:100'],
-            'is_active' => ['nullable', 'boolean'],
-        ]);
+        $this->authorize('update', $instrument);
 
-        $englishName = trim($validated['name'] ?? '') ?: $validated['name_fa'];
-
-        $instrument->update([
-            'name'      => $englishName,
-            'name_fa'   => $validated['name_fa'],
-            'is_active' => (bool) ($validated['is_active'] ?? false),
-        ]);
+        $action->update($instrument, $request->validated());
 
         return redirect()->route('admin.instruments.index')
             ->with('success', __('admin.instrument_updated_successfully'));
     }
 
-    public function destroy(Instrument $instrument): RedirectResponse
+    public function destroy(Instrument $instrument, InstrumentAction $action): RedirectResponse
     {
-        // Prevent deletion if instrument is in use
-        if ($instrument->enrollments()->exists() || $instrument->teachers()->exists()) {
-            return back()->with('error', __('admin.instrument_in_use_error'));
-        }
+        $this->authorize('delete', $instrument);
 
-        $instrument->delete();
+        try {
+            $action->delete($instrument);
+        } catch (RecordInUseException $e) {
+            return back()->with('error', $e->getMessage());
+        }
 
         return redirect()->route('admin.instruments.index')
             ->with('success', __('admin.instrument_deleted_successfully'));
     }
 
-    public function toggle(Instrument $instrument): RedirectResponse
+    public function toggle(Instrument $instrument, InstrumentAction $action): RedirectResponse
     {
-        $instrument->update(['is_active' => ! $instrument->is_active]);
+        $this->authorize('toggle', $instrument);
+
+        $action->toggle($instrument);
 
         return back()->with('success', __('admin.instrument_updated_successfully'));
     }

@@ -12,7 +12,7 @@
 @endphp
 
 {{-- Header --}}
-<x-dashboard.section-header
+<x-dashboard.section-header headingLevel="h1"
     :title="__('admin.leads')"
     :subtitle="__('admin.manage_leads')"
     :badge="$leads->total() . ' ' . __('admin.total')"
@@ -29,13 +29,8 @@
     </x-slot:actions>
 </x-dashboard.section-header>
 
-{{-- Flash --}}
-@if (session('success'))
-    <x-dashboard.alert-card class="mb-5" :title="session('success')" priority="success" />
-@endif
-@if (session('error'))
-    <x-dashboard.alert-card class="mb-5" :title="session('error')" priority="high" />
-@endif
+{{-- Feedback_Channel: shared success / failure / validation --}}
+<x-admin.feedback />
 
 {{-- Filters --}}
 <x-dashboard.chart-container class="mb-5" title="{{ __('admin.search') }}" aria-label="فیلتر سرنخ‌ها">
@@ -150,14 +145,25 @@
                                        class="text-xs font-medium text-amber-400 transition duration-150 hover:text-amber-300 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-amber-500/60">
                                         {{ __('admin.edit') }}
                                     </a>
-                                    <form method="POST" action="{{ route('admin.leads.destroy', $lead) }}" class="inline"
-                                          onsubmit="return confirm('{{ __('admin.delete_lead_confirm') }}')">
-                                        @csrf @method('DELETE')
-                                        <button type="submit"
-                                                class="text-xs font-medium text-red-400 transition duration-150 hover:text-red-300 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-red-500/60">
-                                            {{ __('admin.delete') }}
-                                        </button>
-                                    </form>
+                                    <button type="button"
+                                            x-on:click="$dispatch('open-modal', 'confirm-lead-delete-{{ $lead->id }}')"
+                                            class="text-xs font-medium text-red-400 transition duration-150 hover:text-red-300 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-red-500/60">
+                                        {{ __('admin.delete') }}
+                                    </button>
+                                    <x-modal name="confirm-lead-delete-{{ $lead->id }}" variant="confirmation"
+                                             :entity="$lead->full_name"
+                                             :action="__('admin.delete')"
+                                             :consequence="__('admin.confirmation_consequence_irreversible')">
+                                        <x-admin.form-state>
+                                            <form method="POST" action="{{ route('admin.leads.destroy', $lead) }}">
+                                                @csrf @method('DELETE')
+                                                <div class="flex justify-end gap-2">
+                                                    <button type="button" x-on:click="$dispatch('close')" class="rounded-lg border border-gray-700 px-4 py-2 text-sm text-gray-300">{{ __('admin.cancel') }}</button>
+                                                    <button type="submit" x-bind:disabled="pending" x-bind:aria-busy="pending" class="rounded-lg bg-red-500/15 px-4 py-2 text-sm font-medium text-red-300 disabled:cursor-not-allowed disabled:opacity-60">{{ __('admin.confirm') }}</button>
+                                                </div>
+                                            </form>
+                                        </x-admin.form-state>
+                                    </x-modal>
                                 </div>
                             </td>
                         </tr>

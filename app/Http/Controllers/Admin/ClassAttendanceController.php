@@ -17,6 +17,8 @@ class ClassAttendanceController extends Controller
 {
     public function show(ClassSession $session): View
     {
+        $this->authorize('view', $session);
+
         $session->load([
             'enrollment.student',
             'enrollment.teacher',
@@ -54,6 +56,8 @@ class ClassAttendanceController extends Controller
 
     public function store(Request $request, ClassSession $session): RedirectResponse
     {
+        $this->authorize('markAttendance', $session);
+
         $validated = $request->validate([
             'student_id' => ['required', 'exists:students,id'],
             'status' => ['required', 'string', 'in:' . implode(',', AttendanceStatusEnum::values())],

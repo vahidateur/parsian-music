@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Enums\SessionStatusEnum;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\SessionCreateRequest;
 use App\Models\ClassSession;
 use App\Models\Instrument;
 use App\Models\RecurringSchedule;
@@ -11,18 +12,31 @@ use App\Models\Student;
 use App\Models\Teacher;
 use App\Models\Subscription;
 use App\Services\ConflictDetectionService;
+use App\Services\SessionCreateOptionsProvider;
 use App\Services\SessionGeneratorService;
-use Carbon\Carbon;
-use Carbon\CarbonPeriod;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 
+/**
+ * Session list/create/generate surface.
+ *
+ * The calendar surface is owned by `CalendarController` and the single canonical
+ * view `resources/views/admin/calendar/index.blade.php`; this controller renders
+ * no calendar view.
+ *
+ * Session edit/update behavior stays owned by `admin-bulk-selection-actions`;
+ * this controller only resolves the named SessionPolicy ability before each
+ * action so no mutation relies on a hidden UI control.
+ */
 class ClassSessionController extends Controller
 {
     public function index(Request $request): View
     {
+        $this->authorize('viewAny', ClassSession::class);
+
         // Columns on class_sessions itself
         $directSort = ['session_date', 'start_time', 'duration_minutes', 'room', 'status'];
         // Columns via JOIN
@@ -83,6 +97,8 @@ class ClassSessionController extends Controller
 
     public function generate(SessionGeneratorService $generator): RedirectResponse
     {
+        $this->authorize('generate', ClassSession::class);
+
         $schedules = RecurringSchedule::active()->get();
 
         $totalCreated = 0;
@@ -96,54 +112,16 @@ class ClassSessionController extends Controller
             ->with('success', __('admin.sessions_generated_successfully', ['count' => $totalCreated]));
     }
 
-    public function create(): View
+    public function create(SessionCreateOptionsProvider $optionsProvider): View
     {
-        // Phase 1: manual session creation no longer depends on enrollment.
-        // Student, teacher, and instrument are all selected independently.
-        // Subscriptions are embedded so Alpine.js can filter teachers/instruments client-side.
-        $students = Student::with(['subscriptions.teacher', 'subscriptions.instrument'])
-            ->orderBy('full_name')
-            ->get()
-            ->map(fn ($s) => [
-                'id'        => $s->id,
-                'full_name' => $s->full_name,
-                'subscriptions' => $s->subscriptions->map(fn ($sub) => [
-                    'teacher_id'    => $sub->teacher_id,
-                    'teacher_name'  => $sub->teacher?->full_name,
-                    'instrument_id' => $sub->instrument_id,
-                    'instrument_name' => $sub->instrument?->name_fa ?? $sub->instrument?->name,
-                    'sessions_used'       => $sub->sessions_used,
-                    'sessions_allocated'  => $sub->sessions_allocated,
-                ])->values(),
-            ]);
-        $teachers = Teacher::orderBy('full_name')->get();
-        $instruments = Instrument::active()->orderBy('name_fa')->orderBy('name')->get();
+        $this->authorize('create', ClassSession::class);
 
-        // Temporary hardcoded room list per business rule — no rooms table
-        // query for this form.
-        $rooms = ['A101', 'A102', 'A103'];
-
-        return view('admin.sessions.create', compact('students', 'teachers', 'instruments', 'rooms'));
+        return view('admin.sessions.create', $optionsProvider->prepare());
     }
 
-    public function store(Request $request, ConflictDetectionService $conflictDetector): RedirectResponse
+    public function store(SessionCreateRequest $request, ConflictDetectionService $conflictDetector): RedirectResponse
     {
-        $validated = $request->validate([
-            'student_id' => ['required', 'exists:students,id'],
-            'teacher_id' => ['required', 'exists:teachers,id'],
-            'instrument_id' => ['required', 'exists:instruments,id'],
-            'session_date' => ['required', 'date'],
-            'start_time' => ['required', 'date_format:H:i', 'after_or_equal:15:00', 'before_or_equal:21:30'],
-            'duration_minutes' => ['required', 'integer', 'min:30', 'max:120'],
-            'room' => ['required', 'string', 'in:A101,A102,A103'],
-            'notes' => ['nullable', 'string'],
-        ]);
-
-        $subscription = Subscription::where([
-            'student_id' => $request->student_id,
-            'teacher_id' => $request->teacher_id,
-            'instrument_id' => $request->instrument_id,
-        ])->first();
+        $validated = $request->validated();
 
         $hasConflict = $conflictDetector->checkTeacherConflict(
             $validated['teacher_id'], $validated['session_date'], $validated['start_time'], $validated['duration_minutes']
@@ -159,80 +137,28 @@ class ClassSessionController extends Controller
             ]);
         }
 
-        ClassSession::create($validated);
+        DB::transaction(function () use ($validated): void {
+            ClassSession::create($validated);
 
-        // Increment sessions_used only when a subscription exists for this combination.
-        if ($subscription) {
-            $subscription->sessions_used += 1;
-            $subscription->save();
-        }
+            $subscription = Subscription::query()->where([
+                'student_id' => $validated['student_id'],
+                'teacher_id' => $validated['teacher_id'],
+                'instrument_id' => $validated['instrument_id'],
+            ])->lockForUpdate()->first();
+
+            if ($subscription) {
+                $subscription->increment('sessions_used');
+            }
+        });
 
         return redirect()->route('admin.sessions.index')
             ->with('success', __('admin.session_created_successfully'));
     }
 
-    public function calendar(Request $request): View
-    {
-        // Week navigation: default to the current Persian week (Sat-Fri)
-        $weekStart = $request->filled('week')
-            ? Carbon::parse($request->week)->startOfWeek(Carbon::SATURDAY)
-            : Carbon::now()->startOfWeek(Carbon::SATURDAY);
-
-        $weekEnd = $weekStart->copy()->endOfWeek(Carbon::FRIDAY);
-
-        // Build the 7-day column range
-        $days = CarbonPeriod::create($weekStart, $weekEnd)->toArray();
-
-        // Time slots: 08:00 → 20:00 (inclusive, hourly)
-        $hours = range(8, 20);
-
-        // Base query with relations + week range (centralized scopes)
-        $query = ClassSession::withEnrollmentDetails()
-            ->forDateRange($weekStart->toDateString(), $weekEnd->toDateString());
-
-        if ($request->filled('teacher_id')) {
-            $query->forTeacher($request->teacher_id);
-        }
-
-        if ($request->filled('student_id')) {
-            $query->forStudent($request->student_id);
-        }
-
-        if ($request->filled('room')) {
-            $query->where('room', $request->room);
-        }
-
-        $sessions = $query->orderBy('start_time')->get();
-
-        // Group sessions by [date][hour] for O(1) grid lookup
-        $grid = [];
-        foreach ($sessions as $session) {
-            $dateKey = $session->session_date->toDateString();
-            $hourKey = (int) $session->start_time->format('G');
-            $grid[$dateKey][$hourKey][] = $session;
-        }
-
-        $prevWeek = $weekStart->copy()->subWeek()->toDateString();
-        $nextWeek = $weekStart->copy()->addWeek()->toDateString();
-
-        $students = Student::orderBy('full_name')->get();
-        $teachers = Teacher::orderBy('full_name')->get();
-
-        return view('admin.calendar', compact(
-            'weekStart',
-            'weekEnd',
-            'days',
-            'hours',
-            'grid',
-            'prevWeek',
-            'nextWeek',
-            'students',
-            'teachers'
-        ));
-    }
-
     public function destroy(ClassSession $session): RedirectResponse
     {
+        $this->authorize('delete', $session);
+
         $session->delete();
 
         return redirect()->route('admin.sessions.index')

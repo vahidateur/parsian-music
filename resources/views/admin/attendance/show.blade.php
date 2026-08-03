@@ -22,7 +22,7 @@
 </a>
 
 {{-- Page Header --}}
-<x-dashboard.section-header
+<x-dashboard.section-header headingLevel="h1"
     :title="__('admin.attendance')"
     :subtitle="__('admin.attendance_desc')"
 >
@@ -60,13 +60,8 @@
     </div>
 </div>
 
-{{-- Flash --}}
-@if (session('success'))
-    <x-dashboard.alert-card class="mb-5" :title="session('success')" priority="success" />
-@endif
-@if (session('error'))
-    <x-dashboard.alert-card class="mb-5" :title="session('error')" priority="high" />
-@endif
+{{-- Feedback_Channel: shared success / failure / validation --}}
+<x-admin.feedback />
 
 <div class="grid grid-cols-1 gap-5 xl:grid-cols-3">
 

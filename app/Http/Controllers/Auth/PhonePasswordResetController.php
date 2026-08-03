@@ -60,7 +60,7 @@ class PhonePasswordResetController extends Controller
             ]);
         }
 
-        RateLimiter::hit($rateLimitKey, decay: 3600);
+        RateLimiter::hit($rateLimitKey, decaySeconds: 3600);
 
         // Always return success response to prevent phone enumeration
         $user = User::where('phone', $phone)->first();
@@ -89,7 +89,7 @@ class PhonePasswordResetController extends Controller
 
             // ── Delivery ─────────────────────────────────────────────────────
             // Priority: SMS (future) → Telegram (if enabled) → Email (if set)
-            // Development fallback: log the token
+            // No delivery fallback logs or exposes the token.
             $this->deliverToken($user, $token);
         } else {
             // Log failed attempt (wrong phone or disallowed role) but don't reveal this to the caller
@@ -206,11 +206,9 @@ class PhonePasswordResetController extends Controller
             }
         }
 
-        // Development fallback: always log the token
-        Log::debug('[DEV] Password reset token', [
-            'phone'     => $user->phone,
-            'token'     => $plainToken,
-            'reset_url' => $resetUrl,
+        // Keep the fallback observable without exposing the token or reset URL.
+        Log::warning('Password reset token delivery unavailable', [
+            'user_id' => $user->id,
         ]);
     }
 }

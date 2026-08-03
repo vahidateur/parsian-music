@@ -5,10 +5,12 @@
     "scripts": {
         "build": "vite build",
         "dev": "vite",
-        "test:js": "node --test \"tests/js/unit/*.test.js\" \"tests/js/properties/!(api-)*.property.test.js\"",
-        "test:js:api": "node --test \"tests/js/properties/api-*.property.test.js\"",
-        "test:calendar": "node --test \"tests/js/unit/calendar-*.test.js\" \"tests/js/properties/*.property.test.js\"",
-        "test:calendar:browser": "playwright test tests/browser/admin-calendar.spec.js"
+        "baseline:gate": "node scripts/baseline-gate.mjs",
+        "test:js": "node --test --import ./tests/js/support/test-isolation.js \"tests/js/unit/*.test.js\" \"tests/js/properties/!(api-)*.property.test.js\"",
+        "test:js:api": "node --test --import ./tests/js/support/test-isolation.js \"tests/js/properties/api-*.property.test.js\"",
+        "test:calendar": "node --test --import ./tests/js/support/test-isolation.js \"tests/js/unit/calendar-*.test.js\" \"tests/js/properties/*.property.test.js\"",
+        "test:calendar:browser": "playwright test tests/browser/admin-calendar.spec.js",
+        "test:admin:a11y": "playwright test --config=playwright.config.mjs tests/browser/admin-operational-ux-accessibility.spec.js"
     },
     "devDependencies": {
         "@tailwindcss/forms": "^0.5.2",

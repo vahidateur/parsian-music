@@ -79,6 +79,7 @@ return [
     'history_lead_created_desc'      => 'سرنخ از طریق :source ثبت شد.',
     'history_lead_status_desc'       => 'وضعیت سرنخ به :status تغییر کرد.',
     'view_student'                   => 'مشاهده هنرجو',
+    'start_date'                     => 'تاریخ شروع',
     'priority'                       => 'اولویت',
     'source'                         => 'منبع',
     'all_priorities'                 => 'همه اولویت‌ها',
@@ -459,4 +460,89 @@ return [
     'no_students_enrolled'     => 'هیچ هنرجویی در این کلاس ثبت‌نام نکرده.',
     'total_students_count'     => 'کل هنرجویان',
     'unmarked_count_label'     => 'ثبت‌نشده',
+
+    // ── Feedback_Channel (shared success / failure / validation) ───────────
+    'feedback_success_generic'    => 'عملیات با موفقیت انجام شد.',
+    'feedback_failure_generic'    => 'انجام این عملیات ممکن نشد. لطفاً دوباره تلاش کنید یا به فهرست بازگردید.',
+    'feedback_validation_generic' => 'مقدار این فیلد پذیرفته نشد. لطفاً آن را اصلاح کنید.',
+    'feedback_validation_title'   => 'ورودی‌های زیر نیاز به اصلاح دارند',
+    'feedback_dismiss'            => 'بستن پیام',
+
+    // ── پیام‌های نتیجه و خطای عملیات گروهی ─────────────────────────────────
+    'bulk_result' => [
+        'reasons' => [
+            'not_found' => [
+                'category' => 'رکورد یافت نشد',
+                'message' => 'رکورد انتخاب‌شده دیگر در دسترس نیست.',
+            ],
+            'unauthorized' => [
+                'category' => 'غیرمجاز',
+                'message' => 'شما مجاز به تغییر این رکورد نیستید.',
+            ],
+            'protected_dependency' => [
+                'category' => 'وابستگی محافظت‌شده',
+                'message' => 'این رکورد دارای وابستگی‌های محافظت‌شده است.',
+            ],
+            'processing_error' => [
+                'category' => 'خطای پردازش',
+                'message' => 'پردازش رکورد انتخاب‌شده ممکن نشد.',
+            ],
+            'invalid_action' => [
+                'category' => 'انتقال نامعتبر',
+                'message' => 'عملیات وضعیت درخواستی معتبر نیست.',
+            ],
+            'invalid_status' => [
+                'category' => 'وضعیت نامعتبر',
+                'message' => 'وضعیت ذخیره‌شده برای این موجودیت معتبر نیست.',
+            ],
+            'invalid_transition' => [
+                'category' => 'انتقال نامعتبر',
+                'message' => 'وضعیت چرخه‌عمر این رکورد با این عملیات قابل تغییر نیست.',
+            ],
+            'generic' => [
+                'category' => 'خطای پردازش',
+                'message' => 'پردازش این مورد ممکن نشد.',
+            ],
+        ],
+    ],
+    'bulk_errors' => [
+        'unavailable' => 'اجرای عملیات گروهی در حال حاضر در دسترس نیست.',
+    ],
+    'bulk_selection' => [
+        'toolbar_label' => 'عملیات گروهی :entity',
+        'actions_label' => 'عملیات مجاز',
+        'selected_suffix' => 'مورد انتخاب شده',
+        'selected_count' => ':count مورد انتخاب شده',
+        'select_all_visible' => 'انتخاب همه موارد قابل انتخاب در این صفحه',
+        'select_row' => 'انتخاب :entity :label',
+        'all_filtered' => 'انتخاب همه نتایج فیلترشده',
+        'previewing' => 'در حال محاسبه تعداد نتایج فیلترشده…',
+        'preview_ready' => ':count نتیجه برای عملیات گروهی آماده است.',
+        'result_complete' => 'عملیات با موفقیت انجام شد: :succeeded موفق، :skipped ردشده، :failed ناموفق.',
+        'result_partial' => 'عملیات به‌صورت ناقص انجام شد: :succeeded موفق، :skipped ردشده، :failed ناموفق.',
+        'delete_warning' => 'این عملیات حذف دائمی است و قابل بازگشت نیست.',
+        'result_label' => 'نتیجه عملیات گروهی :entity',
+        'result_title' => 'نتیجه عملیات گروهی',
+        'recovery' => 'بازگشت به فهرست',
+    ],
+    'confirm' => 'تأیید',
+    'close' => 'بستن',
+    'confirm_action_title' => 'تأیید عملیات',
+    'confirm_entity' => 'موجودیت: :entity',
+    'confirm_action' => 'عملیات: :action',
+    'confirm_consequence' => ':consequence',
+
+    // ── Operational list controls ──────────────────────────────────────────
+    'clear_filters'        => 'پاک کردن فیلترها',
+    'search_placeholder'   => 'جستجو...',
+    'results_total'        => ':count نتیجه',
+    'no_results_for_query' => 'نتیجه‌ای مطابق فیلترهای اعمال‌شده یافت نشد.',
+    'filters_label'        => 'جست‌وجو و فیلتر',
+
+    // ── Shared Empty / Loading / Error states ──────────────────────────────
+    'empty_no_records'   => 'هنوز رکوردی ثبت نشده است.',
+    'create'             => 'ثبت رکورد جدید',
+    'state_submitting'   => 'در حال ارسال…',
+    'state_error_retry'  => 'تلاش دوباره',
+    'state_error_return' => 'بازگشت به فهرست',
 ];

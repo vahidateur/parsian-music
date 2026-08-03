@@ -16,7 +16,11 @@
             <h1 class="text-3xl font-bold text-white">ویرایش اتاق</h1>
         </div>
 
+        {{-- Feedback_Channel + Error_State recovery path; field errors render per field --}}
+        <x-admin.feedback :validation="false" :returnUrl="route('admin.rooms.index')" />
+
         <!-- Form -->
+        <x-admin.form-state>
         <form action="{{ route('admin.rooms.update', $room) }}" method="POST" class="space-y-6">
             @csrf
             @method('PUT')
@@ -26,31 +30,27 @@
                     <!-- Name -->
                     <div>
                         <label for="name" class="block text-sm font-medium text-slate-300 mb-2">نام اتاق</label>
-                        <input type="text" name="name" id="name" value="{{ old('name', $room->name) }}"
+                        <input type="text" name="name" {{ feedback_field_attributes('name') }} id="name" value="{{ old('name', $room->name) }}"
                                class="w-full rounded-lg border border-slate-600 bg-slate-700/50 px-4 py-2.5 text-white placeholder-slate-500 focus:border-amber-500 focus:outline-none transition"
                                placeholder="مثلاً: اتاق ۱" required>
-                        @error('name')
-                            <p class="mt-1 text-sm text-red-400">{{ $message }}</p>
-                        @enderror
+                        <x-admin.feedback field="name" />
                     </div>
 
                     <!-- Capacity -->
                     <div>
                         <label for="capacity" class="block text-sm font-medium text-slate-300 mb-2">ظرفیت</label>
-                        <input type="number" name="capacity" id="capacity" value="{{ old('capacity', $room->capacity) }}"
+                        <input type="number" name="capacity" {{ feedback_field_attributes('capacity') }} id="capacity" value="{{ old('capacity', $room->capacity) }}"
                                class="w-full rounded-lg border border-slate-600 bg-slate-700/50 px-4 py-2.5 text-white placeholder-slate-500 focus:border-amber-500 focus:outline-none transition"
                                placeholder="مثلاً: 30">
-                        @error('capacity')
-                            <p class="mt-1 text-sm text-red-400">{{ $message }}</p>
-                        @enderror
+                        <x-admin.feedback field="capacity" />
                     </div>
 
                     <!-- Buttons -->
                     <div class="flex gap-3 pt-4">
-                        <button type="submit" 
-                                class="flex-1 rounded-lg bg-gradient-to-r from-amber-600 to-amber-500 px-4 py-2.5 font-semibold text-gray-950 shadow-lg transition hover:from-amber-500 hover:to-amber-400">
-                            ذخیره تغییرات
-                        </button>
+                        <x-admin.submit-button
+                            :label="__('admin.save')"
+                            wrapper="flex-1"
+                            class="w-full justify-center px-4 py-2.5" />
                         <a href="{{ route('admin.rooms.index') }}"
                            class="flex-1 rounded-lg border border-slate-600 bg-slate-700/50 px-4 py-2.5 font-semibold text-slate-300 text-center transition hover:bg-slate-700">
                             لغو
@@ -59,6 +59,7 @@
                 </div>
             </div>
         </form>
+        </x-admin.form-state>
     </div>
 </div>
 @endsection

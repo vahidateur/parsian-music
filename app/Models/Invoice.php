@@ -110,10 +110,23 @@ class Invoice extends Model
         return "INV-{$year}-{$seq}";
     }
 
+    /**
+     * Recompute header amounts from the line items.
+     *
+     * `subtotal` is the GROSS line value (quantity × unit_price) because the
+     * saving hook applies `subtotal - discount + tax`. Summing the already
+     * net `invoice_items.total` here would subtract line discounts twice.
+     */
     public function recalculate(): static
     {
-        $this->subtotal = $this->items()->sum('total');
-        $this->discount = $this->items()->sum('discount');
+        $aggregate = $this->items()
+            ->reorder()
+            ->selectRaw('COALESCE(SUM(quantity * unit_price), 0) as gross_total')
+            ->selectRaw('COALESCE(SUM(discount), 0) as discount_total')
+            ->first();
+
+        $this->subtotal = (float) ($aggregate->gross_total ?? 0);
+        $this->discount = (float) ($aggregate->discount_total ?? 0);
         $this->save();
 
         return $this;

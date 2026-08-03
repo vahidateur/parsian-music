@@ -2,17 +2,18 @@
 
 @section('content')
 
+<header class="mb-5">
+    <h1 class="text-2xl font-semibold text-amber-100">{{ $teacher->full_name }} — {{ __('admin.instruments') }}</h1>
+</header>
+
 {{-- Back + Actions --}}
 <div class="mb-8 flex items-center justify-between">
     <a href="{{ route('admin.teachers.index') }}" class="text-sm text-gray-400 transition hover:text-gray-200">{{ __('admin.back_to_teachers') }}</a>
     <a href="{{ route('admin.teachers.edit', $teacher) }}" class="rounded-lg border border-gray-700 px-4 py-2.5 text-sm font-medium text-gray-300 transition hover:border-gray-600 hover:text-gray-100">{{ __('admin.edit_teacher') }}</a>
 </div>
 
-@if (session('success'))
-    <div class="mb-6 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-300">
-        {{ session('success') }}
-    </div>
-@endif
+{{-- Feedback_Channel: shared success / failure feedback; field errors render per field --}}
+<x-admin.feedback :validation="false" />
 
 {{-- Section 1: Teacher Info --}}
 <div class="mb-8 overflow-hidden rounded-2xl border border-gray-800/60 bg-gray-900/50 shadow-xl backdrop-blur-sm">
@@ -73,12 +74,27 @@
                                     @endif
                                 </td>
                                 <td class="px-6 py-4 text-right">
-                                    <form method="POST" action="{{ route('admin.teachers.detachInstrument', $teacher) }}" class="inline">
-                                        @csrf
-                                        @method('DELETE')
-                                        <input type="hidden" name="instrument_id" value="{{ $instrument->id }}">
-                                        <button type="submit" class="text-red-400 transition hover:text-red-300">{{ __('admin.remove') }}</button>
-                                    </form>
+                                    <button type="button"
+                                            x-on:click="$dispatch('open-modal', 'confirm-instrument-detach-{{ $teacher->id }}-{{ $instrument->id }}')"
+                                            class="text-red-400 transition hover:text-red-300">
+                                        {{ __('admin.remove') }}
+                                    </button>
+                                    <x-modal name="confirm-instrument-detach-{{ $teacher->id }}-{{ $instrument->id }}" variant="confirmation"
+                                             :entity="$instrument->display_name"
+                                             :action="__('admin.remove')"
+                                             :consequence="__('admin.confirmation_consequence_detach')">
+                                        <x-admin.form-state>
+                                            <form method="POST" action="{{ route('admin.teachers.detachInstrument', $teacher) }}">
+                                                @csrf
+                                                @method('DELETE')
+                                                <input type="hidden" name="instrument_id" {{ feedback_field_attributes('instrument_id') }} value="{{ $instrument->id }}">
+                                                <div class="flex justify-end gap-2">
+                                                    <button type="button" x-on:click="$dispatch('close')" class="rounded-lg border border-gray-700 px-4 py-2 text-sm text-gray-300">{{ __('admin.cancel') }}</button>
+                                                    <button type="submit" x-bind:disabled="pending" x-bind:aria-busy="pending" class="rounded-lg bg-red-500/15 px-4 py-2 text-sm font-medium text-red-300 disabled:cursor-not-allowed disabled:opacity-60">{{ __('admin.confirm') }}</button>
+                                                </div>
+                                            </form>
+                                        </x-admin.form-state>
+                                    </x-modal>
                                 </td>
                             </tr>
                         @endforeach
@@ -102,32 +118,28 @@
 
             {{-- instrument_id --}}
             <div>
-                <label class="mb-1.5 block text-sm font-medium text-gray-300">{{ __('admin.instrument') }}</label>
-                <select name="instrument_id" required
+                <label for="instrument_id" class="mb-1.5 block text-sm font-medium text-gray-300">{{ __('admin.instrument') }}</label>
+                <select id="instrument_id" name="instrument_id" {{ feedback_field_attributes('instrument_id') }} required
                         class="block w-full rounded-lg border border-gray-700 bg-gray-800/50 px-4 py-3 text-sm text-gray-100 transition focus:border-amber-500/50 focus:outline-none focus:ring-2 focus:ring-amber-500/20">
                     <option value="">{{ __('admin.select_instrument') }}</option>
                     @foreach ($allInstruments as $instrument)
                         <option value="{{ $instrument->id }}" {{ old('instrument_id') == $instrument->id ? 'selected' : '' }}>{{ $instrument->display_name }}</option>
                     @endforeach
                 </select>
-                @error('instrument_id')
-                    <p class="mt-1 text-sm text-red-400">{{ $message }}</p>
-                @enderror
+                <x-admin.feedback field="instrument_id" />
             </div>
 
             {{-- skill_level --}}
             <div>
-                <label class="mb-1.5 block text-sm font-medium text-gray-300">{{ __('admin.skill_level') }}</label>
-                <select name="skill_level" required
+                <label for="skill_level" class="mb-1.5 block text-sm font-medium text-gray-300">{{ __('admin.skill_level') }}</label>
+                <select id="skill_level" name="skill_level" {{ feedback_field_attributes('skill_level') }} required
                         class="block w-full rounded-lg border border-gray-700 bg-gray-800/50 px-4 py-3 text-sm text-gray-100 transition focus:border-amber-500/50 focus:outline-none focus:ring-2 focus:ring-amber-500/20">
                     <option value="">{{ __('admin.select_level') }}</option>
                     @foreach (['beginner', 'intermediate', 'advanced', 'expert'] as $level)
                         <option value="{{ $level }}" {{ old('skill_level') === $level ? 'selected' : '' }}>{{ __('admin.skill_levels.' . $level) }}</option>
                     @endforeach
                 </select>
-                @error('skill_level')
-                    <p class="mt-1 text-sm text-red-400">{{ $message }}</p>
-                @enderror
+                <x-admin.feedback field="skill_level" />
             </div>
 
             {{-- is_primary --}}

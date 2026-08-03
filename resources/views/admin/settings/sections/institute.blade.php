@@ -226,12 +226,13 @@
 
     <x-dashboard.chart-container title="ساعات و روزهای کاری">
         <p class="{{ $labelClass }} mb-3">روزهای کاری</p>
-        <div class="flex flex-wrap gap-2">
+        <div class="flex flex-wrap gap-2" x-data="settingsWorkingDays">
             @foreach ($days as $val => $label)
-                <label class="inline-flex cursor-pointer items-center gap-1.5 rounded-lg border px-3 py-2 text-sm transition duration-150
-                    {{ in_array($val, $activeDays) ? 'border-amber-500/40 bg-amber-500/10 text-amber-300' : 'border-gray-700/60 bg-gray-800/40 text-gray-400 hover:border-gray-600 hover:text-gray-200' }}">
+                <label class="inline-flex cursor-pointer items-center gap-1.5 rounded-lg border px-3 py-2 text-sm transition duration-150 hover:border-gray-600 hover:text-gray-200"
+                       x-bind:class="isDayActive('{{ $val }}') ? activeClasses : inactiveClasses">
                     <input type="checkbox" name="working_days[]" value="{{ $val }}"
                            class="sr-only"
+                           x-model="selectedDays"
                            {{ in_array($val, $activeDays) ? 'checked' : '' }}>
                     {{ $label }}
                 </label>
@@ -273,18 +274,3 @@
     </div>
 
 </form>
-
-{{-- Alpine: toggle day-chip highlight on click --}}
-<script>
-    document.querySelectorAll('input[name="working_days[]"]').forEach(function (cb) {
-        var label = cb.closest('label');
-        cb.addEventListener('change', function () {
-            label.classList.toggle('border-amber-500/40', cb.checked);
-            label.classList.toggle('bg-amber-500/10', cb.checked);
-            label.classList.toggle('text-amber-300', cb.checked);
-            label.classList.toggle('border-gray-700/60', !cb.checked);
-            label.classList.toggle('bg-gray-800/40', !cb.checked);
-            label.classList.toggle('text-gray-400', !cb.checked);
-        });
-    });
-</script>

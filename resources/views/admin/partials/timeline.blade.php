@@ -1,13 +1,16 @@
 {{--
-    Student history timeline partial.
-    Expects: $timeline (Collection of event arrays)
-    Each event: ['type', 'timestamp', 'description', 'meta']
+    Student history detail section (stable identifier `student_history`).
+    Expects:
+      $detail  App\DTOs\RecordDetailData  — carries the localized placeholder
+      $section App\DTOs\RecordDetailSection — history rows in deterministic order
+    Rows arrive already resolved from persisted data by StudentDetailQuery, so no
+    query runs here. The shared Empty_State renders when no event exists.
 --}}
 
 @php
 /**
- * Returns Tailwind classes for each event type.
- * [dot_color, badge_bg, badge_text, icon_path]
+ * Presentation config per event type: [dot, badge, border, icon path].
+ * Tailwind cannot resolve interpolated class names, so the map stays explicit.
  */
 if (!function_exists('timelineConfig')) {
 function timelineConfig(string $type): array {
@@ -37,52 +40,56 @@ function timelineConfig(string $type): array {
 }
 @endphp
 
-<div class="mt-8 overflow-hidden rounded-2xl border border-gray-800/60 bg-gray-900/50 shadow-xl backdrop-blur-sm">
-    <div class="border-b border-gray-800/60 px-6 py-4">
-        <h2 class="text-lg font-semibold text-amber-100">{{ __('admin.student_history') }}</h2>
+<section id="{{ $section->id }}" data-section="{{ $section->id }}" aria-labelledby="{{ $section->id }}_heading"
+         class="mt-8 overflow-hidden rounded-2xl border border-gray-800/60 bg-gray-900/50 shadow-xl backdrop-blur-sm">
+    <div class="flex flex-wrap items-center justify-between gap-3 border-b border-gray-800/60 px-6 py-4">
+        <h2 id="{{ $section->id }}_heading" class="text-lg font-semibold text-amber-100">{{ $section->title }}</h2>
+        @if ($section->rowCount())
+            <span class="rounded-full bg-amber-500/10 px-3 py-1 text-xs font-medium text-amber-300">
+                {{ __('admin.total_count', ['count' => $section->rowCount()]) }}
+            </span>
+        @endif
     </div>
 
-    @if ($timeline->isEmpty())
-        <div class="px-6 py-12 text-center text-gray-500">
-            {{ __('admin.no_history_events') }}
-        </div>
+    @if ($section->rowCount() === 0)
+        <x-dashboard.empty-state :message="$section->empty_message" compact>
+            <x-slot:icon>
+                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+            </x-slot:icon>
+        </x-dashboard.empty-state>
     @else
         <div class="px-6 py-6">
-            <ol class="relative border-r border-gray-800/60 pr-6 space-y-0">
-                @foreach ($timeline as $i => $event)
+            <ol class="relative space-y-0 border-e border-gray-800/60 pe-6">
+                @foreach ($section->rows as $i => $row)
                     @php
-                        [$dot, $badgeBg, $badgeBorder, $iconPath] = timelineConfig($event['type']);
-                        $jalaliTs = \App\Helpers\Jalalian::fromCarbon($event['timestamp'], 'Y/m/d H:i');
-                        $label = __('admin.history_event_types.' . $event['type']);
-                        $isLast = $i === $timeline->count() - 1;
+                        [$dot, $badgeBg, $badgeBorder, $iconPath] = timelineConfig((string) $row->field('event_type'));
+                        $isLast = $i === $section->rowCount() - 1;
                     @endphp
-                    <li class="{{ $isLast ? '' : 'pb-6' }} relative">
+                    <li data-history-key="{{ $row->id }}" class="{{ $isLast ? '' : 'pb-6' }} relative">
                         {{-- Connector dot --}}
-                        <span class="absolute -right-[1.3rem] flex h-6 w-6 items-center justify-center rounded-full border border-gray-800 {{ $dot }} shadow-lg">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 text-gray-950" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                        <span class="absolute -end-[1.3rem] flex h-6 w-6 items-center justify-center rounded-full border border-gray-800 {{ $dot }} shadow-lg">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 text-gray-950" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5" aria-hidden="true">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="{{ $iconPath }}" />
                             </svg>
                         </span>
 
-                        {{-- Card --}}
-                        <div class="rounded-xl border {{ $badgeBorder }} bg-gray-800/30 px-4 py-3 transition hover:bg-gray-800/50">
+                        {{-- Event card --}}
+                        <div class="rounded-xl border {{ $badgeBorder }} bg-gray-800/30 px-4 py-3 transition duration-200 hover:bg-gray-800/50">
                             <div class="flex flex-wrap items-center justify-between gap-2">
-                                {{-- Badge --}}
                                 <span class="inline-flex items-center rounded-full {{ $badgeBg }} px-2.5 py-0.5 text-xs font-medium">
-                                    {{ $label }}
+                                    {{ $row->label }}
                                 </span>
-                                {{-- Timestamp --}}
-                                <time class="text-xs text-gray-500 tabular-nums" dir="ltr">{{ $jalaliTs }}</time>
+                                <time class="text-xs text-gray-500 tabular-nums" dir="ltr">{{ $detail->display($row->field('timestamp')) }}</time>
                             </div>
 
-                            {{-- Description --}}
-                            <p class="mt-1.5 text-sm text-gray-300">{{ $event['description'] }}</p>
+                            <p class="mt-1.5 text-sm text-gray-300">{{ $detail->display($row->field('description')) }}</p>
 
-                            {{-- Meta chips --}}
-                            @if (!empty($event['meta']))
+                            @if ($row->relations !== [])
                                 <div class="mt-2 flex flex-wrap gap-2">
-                                    @foreach ($event['meta'] as $key => $value)
-                                        @if ($value !== null && $value !== '' && $value !== '—')
+                                    @foreach ($row->relations as $value)
+                                        @if ($value !== null && $value !== '—')
                                             <span class="inline-flex items-center gap-1 rounded-md border border-gray-700/50 bg-gray-700/20 px-2 py-0.5 text-xs text-gray-400">
                                                 {{ $value }}
                                             </span>
@@ -96,4 +103,4 @@ function timelineConfig(string $type): array {
             </ol>
         </div>
     @endif
-</div>
+</section>

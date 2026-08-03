@@ -1,5 +1,27 @@
 # Implementation Plan
 
+> **STATUS: RECONCILED 2026-07-28 — Batch 1 done, Batch 2 superseded, Batch 3 partially done.**
+>
+> The `## Tasks` section of this file is empty (no checkbox items), so nothing here is
+> dispatchable. The batch bodies below are kept as historical reference only.
+>
+> | Batch | Actual repository state | Resolution |
+> |---|---|---|
+> | 1.1 Vazirmatn font + Persian typography | **Already implemented.** `resources/css/app.css` has the `@layer base` block with `html`/`:lang(fa)` font rules (note: `letter-spacing` was deliberately set to `0`, not `0.5px` — the spec value made Persian look loose). | Stale checkbox. No action. |
+> | 1.2 Tailwind font config | **Already implemented.** `tailwind.config.js` defines `fontFamily.sans = ['Vazirmatn', ...]` and `fontFamily.fa`, plus a `playfair` family the spec did not know about. | Stale checkbox. No action. |
+> | 1.3 Base CSS components (`.glass`, `.table-*`, `.stat-card`) | **Superseded.** Admin appearance now lives in the scoped admin CSS layer (`resources/css/admin/*`, incl. `glass.css`) driven by `data-admin-theme="dark" \| "glass"` on `<html>`. Adding global `.glass` / `.sidebar-transition` utilities would create a second, unscoped theme mechanism. | Superseded — do not implement. |
+> | 2.1 Sidebar polish | **SUPERSEDED — would cause regression.** The snippet targets an inline-Alpine sidebar (`app-shell`, `sidebar-fixed-width`, `backdrop-blur-xl`, inline `x-data` with `localStorage`) that no longer exists. The current shell is `<x-admin.shell>` → `<x-admin.sidebar>` with the `adminShell` Alpine component registered in `resources/js/app.js` and layout owned by CSS. The snippet also uses `backdrop-blur-xl`, contradicting this spec's own 4px guardrail. | Rejected. Preserve current architecture. |
+> | 2.2 Stat card glass + trend indicators | **Superseded** for styling (owned by the admin CSS layer / Glass theme). The *trend indicator* idea is the only unrealised piece, and it needs real comparison data before it can be honest — hardcoding `↑ +12%` would ship fake numbers. | Superseded; re-spec trends with a real data source. |
+> | 3.0 `data-table.blade.php` audit | **Audit result: NOT USED — the component does not exist.** Admin tables are written per view and share `admin/partials/sort-th.blade.php` for sortable headers. | Audit closed. |
+> | 3.1 Enhance table component | **Skipped** by this spec's own rule (component absent). | Not applicable. |
+> | 3.2 Empty state component | **Already implemented** at `resources/views/components/dashboard/empty-state.blade.php` (different path than the spec proposed). | Stale checkbox. Reuse the existing component; do not create a duplicate at `components/empty-state.blade.php`. |
+> | 3.3 Apply table/empty-state styling | **Partially done.** Existing admin tables already render `@forelse … @empty` empty rows with localized `no_*_found` messages. Sticky headers and zebra rows were not applied and remain optional polish. | Open, low priority; must go through the admin CSS layer, not global utilities. |
+>
+> **Guardrail for any future work here:** the newer Glass/Dark theme architecture wins.
+> No old Phase 5A snippet may reintroduce global appearance utilities or inline sidebar state.
+
+---
+
 ## Overview
 
 Phase 5A implementation is split into 3 isolated batches for safe, phased execution. Each batch is independently executable and rollbackable. Execute one batch, review, then proceed to the next.
@@ -7,6 +29,8 @@ Phase 5A implementation is split into 3 isolated batches for safe, phased execut
 ---
 
 ## Tasks
+
+_(intentionally empty — see the reconciliation table above)_
 
 ---
 

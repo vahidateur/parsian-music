@@ -12,6 +12,16 @@ enum LeadSourceEnum: string
     case Referral  = 'referral';
     case Other     = 'other';
 
+    /**
+     * All valid source values for validation.
+     *
+     * @return string[]
+     */
+    public static function values(): array
+    {
+        return array_column(self::cases(), 'value');
+    }
+
     public function label(): string
     {
         return match ($this) {

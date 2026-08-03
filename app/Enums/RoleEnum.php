@@ -50,4 +50,30 @@ enum RoleEnum: string
     {
         return $this->hierarchyLevel() > $target->hierarchyLevel();
     }
+
+    /**
+     * Roles this role may assign to another account.
+     *
+     * Keeps the privilege-escalation boundary in the domain layer so no
+     * controller body or Blade template has to compare roles itself.
+     *
+     * @return array<int, self>
+     */
+    public function assignableRoles(): array
+    {
+        return array_values(array_filter(
+            self::cases(),
+            fn (self $target): bool => $this->canManage($target)
+        ));
+    }
+
+    /**
+     * Values of `assignableRoles()`, ready for a validation `in:` rule.
+     *
+     * @return array<int, string>
+     */
+    public function assignableRoleValues(): array
+    {
+        return array_map(fn (self $role): string => $role->value, $this->assignableRoles());
+    }
 }

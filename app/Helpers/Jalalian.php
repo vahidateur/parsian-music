@@ -17,6 +17,11 @@ class Jalalian
             return '—';
         }
 
+        // Row DTOs carry persisted dates as ISO strings, not date objects.
+        if (is_string($date)) {
+            $date = \Illuminate\Support\Carbon::parse($date);
+        }
+
         [$jy, $jm, $jd] = self::toJalali(
             (int) $date->format('Y'),
             (int) $date->format('m'),

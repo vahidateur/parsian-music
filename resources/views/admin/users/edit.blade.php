@@ -3,13 +3,9 @@
 @section('title', 'ویرایش کاربر')
 
 @section('content')
-@php
-    $actor = auth()->user();
-    $assignableRoles = collect(\App\Enums\RoleEnum::cases())
-        ->filter(fn ($r) => $actor->role->canManage($r));
-@endphp
+{{-- $assignableRoles comes from the controller: no role comparison in the view. --}}
 
-<x-dashboard.section-header title="ویرایش کاربر" subtitle="{{ $user->full_name }}">
+<x-dashboard.section-header headingLevel="h1" title="ویرایش کاربر" subtitle="{{ $user->full_name }}">
     <x-slot name="actions">
         <a href="{{ route('admin.users.index') }}"
            class="inline-flex items-center gap-2 rounded-xl border border-gray-700/60 px-4 py-2 text-sm text-gray-300 transition hover:border-gray-600 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-500">
@@ -19,9 +15,8 @@
     </x-slot>
 </x-dashboard.section-header>
 
-@if(session('success'))
-    <x-dashboard.alert-card priority="success" :message="session('success')" class="mt-4" />
-@endif
+{{-- Feedback_Channel: shared success / failure / validation --}}
+<x-admin.feedback :validation="false" />
 
 <x-dashboard.chart-container title="اطلاعات کاربر" class="mt-5">
     <form method="POST" action="{{ route('admin.users.update', $user) }}" class="space-y-5">
@@ -30,41 +25,40 @@
         @php
             $inputClass = 'w-full rounded-xl border border-gray-700/60 bg-gray-800/40 px-4 py-2.5 text-sm text-gray-100 placeholder-gray-500 focus:border-amber-500/50 focus:outline-none focus:ring-1 focus:ring-amber-500/30';
             $labelClass = 'block text-xs font-semibold text-gray-400 mb-1.5';
-            $errorClass = 'mt-1 text-xs text-red-400';
         @endphp
 
         <div class="grid grid-cols-1 gap-5 sm:grid-cols-2">
             <div>
-                <label class="{{ $labelClass }}">نام کامل <span class="text-red-400">*</span></label>
-                <input type="text" name="full_name" value="{{ old('full_name', $user->full_name) }}"
+                <label for="full_name" class="{{ $labelClass }}">نام کامل <span class="text-red-400">*</span></label>
+                <input id="full_name" type="text" name="full_name" {{ feedback_field_attributes('full_name') }} value="{{ old('full_name', $user->full_name) }}"
                        class="{{ $inputClass }} @error('full_name') border-red-500/50 @enderror" required>
-                @error('full_name')<p class="{{ $errorClass }}">{{ $message }}</p>@enderror
+                <x-admin.feedback field="full_name" />
             </div>
 
             <div>
-                <label class="{{ $labelClass }}">تلفن <span class="text-red-400">*</span></label>
-                <input type="text" name="phone" value="{{ old('phone', $user->phone) }}"
+                <label for="phone" class="{{ $labelClass }}">تلفن <span class="text-red-400">*</span></label>
+                <input id="phone" type="text" name="phone" {{ feedback_field_attributes('phone') }} value="{{ old('phone', $user->phone) }}"
                        class="{{ $inputClass }} @error('phone') border-red-500/50 @enderror" required>
-                @error('phone')<p class="{{ $errorClass }}">{{ $message }}</p>@enderror
+                <x-admin.feedback field="phone" />
             </div>
 
             <div>
-                <label class="{{ $labelClass }}">ایمیل</label>
-                <input type="email" name="email" value="{{ old('email', $user->email) }}"
+                <label for="email" class="{{ $labelClass }}">ایمیل</label>
+                <input id="email" type="email" name="email" {{ feedback_field_attributes('email') }} value="{{ old('email', $user->email) }}"
                        class="{{ $inputClass }} @error('email') border-red-500/50 @enderror">
-                @error('email')<p class="{{ $errorClass }}">{{ $message }}</p>@enderror
+                <x-admin.feedback field="email" />
             </div>
 
             <div>
-                <label class="{{ $labelClass }}">نقش <span class="text-red-400">*</span></label>
-                <select name="role" class="{{ $inputClass }} @error('role') border-red-500/50 @enderror" required>
+                <label for="role" class="{{ $labelClass }}">نقش <span class="text-red-400">*</span></label>
+                <select id="role" name="role" {{ feedback_field_attributes('role') }} class="{{ $inputClass }} @error('role') border-red-500/50 @enderror" required>
                     @foreach($assignableRoles as $role)
                         <option value="{{ $role->value }}" @selected(old('role', $user->role->value) === $role->value)>
                             {{ $role->label() }}
                         </option>
                     @endforeach
                 </select>
-                @error('role')<p class="{{ $errorClass }}">{{ $message }}</p>@enderror
+                <x-admin.feedback field="role" />
             </div>
         </div>
 
@@ -72,7 +66,7 @@
         <div class="flex items-center gap-3 rounded-xl border border-gray-700/40 bg-gray-800/20 px-4 py-3">
             <span class="h-2 w-2 rounded-full {{ $user->is_active ? 'bg-emerald-400' : 'bg-red-400' }}"></span>
             <span class="text-sm text-gray-300">وضعیت: {{ $user->is_active ? 'فعال' : 'غیرفعال' }}</span>
-            @if($actor->role->canManage($user->role) && $user->id !== $actor->id)
+            @can('toggle', $user)
             <form method="POST" action="{{ route('admin.users.toggle', $user) }}" class="mr-auto">
                 @csrf @method('PATCH')
                 <button type="submit"
@@ -80,7 +74,7 @@
                     {{ $user->is_active ? 'غیرفعال‌سازی' : 'فعال‌سازی' }}
                 </button>
             </form>
-            @endif
+            @endcan
         </div>
 
         <div class="flex items-center justify-end gap-3 border-t border-gray-800/40 pt-5">

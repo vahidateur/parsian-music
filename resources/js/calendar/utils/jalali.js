@@ -135,6 +135,77 @@ export function toJalali(value) {
     };
 }
 
+/**
+ * Convert a Jalali calendar date to Gregorian date parts.
+ * @param {{ year: number, month: number, day: number }|number} value
+ * @param {number} month
+ * @param {number} day
+ * @returns {{ year: number, month: number, day: number }}
+ */
+export function toGregorian(value, month, day) {
+    const jalali = typeof value === 'object' && value !== null
+        ? value
+        : { year: value, month, day };
+    const jy = Number(jalali.year);
+    const jm = Number(jalali.month);
+    const jd = Number(jalali.day);
+
+    if (!Number.isInteger(jy) || !Number.isInteger(jm) || !Number.isInteger(jd) || jm < 1 || jm > 12 || jd < 1 || jd > (jm <= 6 ? 31 : jm <= 11 ? 30 : 30)) {
+        throw new TypeError('Expected a valid Jalali date.');
+    }
+
+    const normalizedYear = jy - 979;
+    let days = 365 * normalizedYear
+        + Math.floor(normalizedYear / 33) * 8
+        + Math.floor(((normalizedYear % 33) + 3) / 4)
+        + 79;
+
+    for (let index = 1; index < jm; index += 1) {
+        days += index <= 6 ? 31 : 30;
+    }
+    days += jd - 1;
+
+    let gy = 1600 + 400 * Math.floor(days / 146097);
+    days %= 146097;
+
+    if (days >= 36525) {
+        days -= 1;
+        gy += 100 * Math.floor(days / 36524);
+        days %= 36524;
+        if (days >= 365) {
+            days += 1;
+        }
+    }
+
+    gy += 4 * Math.floor(days / 1461);
+    days %= 1461;
+    if (days >= 366) {
+        gy += Math.floor((days - 1) / 365);
+        days = (days - 1) % 365;
+    }
+
+    const gregorianMonthDays = [0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+    const isGregorianLeapYear = gy % 4 === 0 && (gy % 100 !== 0 || gy % 400 === 0);
+    if (isGregorianLeapYear) {
+        gregorianMonthDays[2] = 29;
+    }
+
+    let gm = 1;
+    while (gm <= 12 && days >= gregorianMonthDays[gm]) {
+        days -= gregorianMonthDays[gm];
+        gm += 1;
+    }
+
+    const result = { year: gy, month: gm, day: days + 1 };
+    const roundTrip = toJalali(`${result.year}-${String(result.month).padStart(2, '0')}-${String(result.day).padStart(2, '0')}`);
+    if (roundTrip.year !== jy || roundTrip.month !== jm || roundTrip.day !== jd) {
+        throw new TypeError('Expected a valid Jalali date.');
+    }
+
+    return result;
+}
+
+export const fromJalali = toGregorian;
 export const getJalaliDate = toJalali;
 
 export function getPersianDayIndex(value) {
@@ -293,6 +364,8 @@ export default Object.freeze({
     JALALI_MONTH_NAMES,
     toDate,
     toJalali,
+    toGregorian,
+    fromJalali,
     getJalaliDate,
     toWesternDigits,
     formatWesternDigits,

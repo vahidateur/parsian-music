@@ -9,6 +9,43 @@
  * - Focus returns to the triggering button on close.
  */
 
+export const normalizeAdminTheme = (value) => value === 'glass' ? 'glass' : 'dark';
+
+const readAdminTheme = () => {
+    const marker = globalThis.document?.documentElement?.dataset?.adminTheme;
+
+    if (marker === 'dark' || marker === 'glass') {
+        return marker;
+    }
+
+    try {
+        return normalizeAdminTheme(globalThis.localStorage?.getItem('pmAdminTheme'));
+    } catch {
+        return 'dark';
+    }
+};
+
+const applyAdminTheme = (theme) => {
+    const normalized = normalizeAdminTheme(theme);
+    const root = globalThis.document?.documentElement;
+
+    if (root?.dataset) {
+        root.dataset.adminTheme = normalized;
+    }
+
+    try {
+        if (globalThis.document) {
+            const oneYearInSeconds = 60 * 60 * 24 * 365;
+            globalThis.document.cookie = `pm_admin_theme=${normalized};path=/;max-age=${oneYearInSeconds};samesite=lax`;
+        }
+        globalThis.localStorage?.setItem('pmAdminTheme', normalized);
+    } catch {
+        /* optional persistence */
+    }
+
+    return normalized;
+};
+
 export default function adminShell() {
     return {
         /* Sidebar */
@@ -26,29 +63,24 @@ export default function adminShell() {
         userMenuOpen: false,
 
         init() {
-            this.accessibilityReady = window.__alpineFocusReady === true;
+            this.accessibilityReady = globalThis.window?.__alpineFocusReady === true
+                || globalThis.__alpineFocusReady === true;
 
             try {
-                this.collapsed = window.localStorage.getItem('adminSidebarCollapsed') === 'true';
+                this.collapsed = globalThis.localStorage?.getItem('adminSidebarCollapsed') === 'true';
             } catch {
                 this.collapsed = false;
             }
 
-            // Server already rendered the marker from the cookie; mirror it.
-            this.theme = document.documentElement.dataset.adminTheme === 'glass' ? 'glass' : 'dark';
+            // The server marker wins when present; missing or malformed state is dark.
+            this.theme = applyAdminTheme(readAdminTheme());
         },
 
         /* ── Theme ── */
         toggleTheme() {
-            this.theme = this.theme === 'glass' ? 'dark' : 'glass';
-            document.documentElement.dataset.adminTheme = this.theme;
-
-            const oneYearInSeconds = 60 * 60 * 24 * 365;
-            document.cookie = `pm_admin_theme=${this.theme};path=/;max-age=${oneYearInSeconds};samesite=lax`;
-
-            try {
-                window.localStorage.setItem('pmAdminTheme', this.theme);
-            } catch { /* optional persistence */ }
+            this.theme = applyAdminTheme(
+                normalizeAdminTheme(this.theme) === 'glass' ? 'dark' : 'glass'
+            );
         },
 
         /* ── Sidebar ── */

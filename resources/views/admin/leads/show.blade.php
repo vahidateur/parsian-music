@@ -9,27 +9,37 @@
 @endphp
 
 {{-- Back + Actions --}}
-<div class="mb-8 flex flex-wrap items-center justify-between gap-4">
-    <a href="{{ route('admin.leads.index') }}" class="text-sm text-gray-400 transition hover:text-gray-200">{{ __('admin.back_to_leads') }}</a>
+<header class="mb-8 flex flex-wrap items-center justify-between gap-4">
+    <div>
+        <a href="{{ route('admin.leads.index') }}" class="text-sm text-gray-400 transition hover:text-gray-200">{{ __('admin.back_to_leads') }}</a>
+        <h1 class="mt-3 text-2xl font-semibold text-amber-100">{{ $lead->full_name }}</h1>
+    </div>
     <div class="flex flex-wrap gap-3">
         <a href="{{ route('admin.leads.edit', $lead) }}" class="rounded-lg border border-gray-700 px-4 py-2.5 text-sm font-medium text-gray-300 transition hover:border-gray-600 hover:text-gray-100">
             {{ __('admin.edit_lead') }}
         </a>
-        <form method="POST" action="{{ route('admin.leads.destroy', $lead) }}" onsubmit="return confirm('{{ __('admin.delete_lead_confirm') }}')">
-            @csrf @method('DELETE')
-            <button type="submit" class="rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-2.5 text-sm font-medium text-red-400 transition hover:bg-red-500/20">
-                {{ __('admin.delete') }}
-            </button>
-        </form>
+        <button type="button" x-on:click="$dispatch('open-modal', 'confirm-lead-delete-{{ $lead->id }}')" class="rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-2.5 text-sm font-medium text-red-400 transition hover:bg-red-500/20">
+            {{ __('admin.delete') }}
+        </button>
+        <x-modal name="confirm-lead-delete-{{ $lead->id }}" variant="confirmation"
+                 :entity="$lead->full_name"
+                 :action="__('admin.delete')"
+                 :consequence="__('admin.confirmation_consequence_irreversible')">
+            <x-admin.form-state>
+                <form method="POST" action="{{ route('admin.leads.destroy', $lead) }}">
+                    @csrf @method('DELETE')
+                    <div class="flex justify-end gap-2">
+                        <button type="button" x-on:click="$dispatch('close')" class="rounded-lg border border-gray-700 px-4 py-2 text-sm text-gray-300">{{ __('admin.cancel') }}</button>
+                        <button type="submit" x-bind:disabled="pending" x-bind:aria-busy="pending" class="rounded-lg bg-red-500/15 px-4 py-2 text-sm font-medium text-red-300 disabled:cursor-not-allowed disabled:opacity-60">{{ __('admin.confirm') }}</button>
+                    </div>
+                </form>
+            </x-admin.form-state>
+        </x-modal>
     </div>
-</div>
+</header>
 
-@if (session('success'))
-    <x-dashboard.alert-card class="mb-5" :title="session('success')" priority="success" />
-@endif
-@if (session('error'))
-    <x-dashboard.alert-card class="mb-5" :title="session('error')" priority="high" />
-@endif
+{{-- Feedback_Channel: shared success / failure / validation --}}
+<x-admin.feedback />
 
 <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
     {{-- Main info --}}

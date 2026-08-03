@@ -2,41 +2,39 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Enums\StudentStatusEnum;
+use App\Actions\Admin\StudentAction;
+use App\Enums\InvoiceStatusEnum;
+use App\Enums\PaymentStatusEnum;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\StudentRequest;
+use App\Models\Invoice;
 use App\Models\Student;
-use App\Services\StudentHistoryService;
+use App\Services\Details\StudentDetailQuery;
+use App\Services\Lists\StudentListQuery;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 
+/**
+ * Every action resolves its named StudentPolicy ability through the
+ * Authorization_Layer before any input is read or any record is written, so a
+ * hidden UI control is never the only protection.
+ */
 class StudentController extends Controller
 {
-    public function index(Request $request): View
+    public function index(Request $request, StudentListQuery $listQuery): View
     {
-        $sortCol = in_array($request->sort, ['full_name', 'phone', 'status', 'join_date', 'created_at'], true)
-            ? $request->sort : 'full_name';
-        $sortDir = $request->direction === 'desc' ? 'desc' : 'asc';
+        $this->authorize('viewAny', Student::class);
 
-        $query = Student::query();
-
-        if ($request->filled('full_name')) {
-            $query->where('full_name', 'like', "%{$request->full_name}%");
-        }
-
-        if ($request->filled('phone')) {
-            $query->where('phone', 'like', "%{$request->phone}%");
-        }
-
-        $students = $query->orderBy($sortCol, $sortDir)->paginate(15)->withQueryString();
-
-        return view('admin.students.index', compact('students', 'sortCol', 'sortDir'));
+        return view('admin.students.index', [
+            'list' => $listQuery->forInput($request->query(), $request->user()),
+        ]);
     }
 
-    public function show(Student $student, StudentHistoryService $historyService): View
+    public function show(Request $request, Student $student, StudentDetailQuery $detailQuery): View
     {
+        $this->authorize('view', $student);
+
         $student->load([
             'enrollments.teacher',
             'enrollments.instrument',
@@ -44,36 +42,24 @@ class StudentController extends Controller
             'subscriptions.instrument',
         ]);
 
-        try {
-            $timeline = $historyService->buildTimeline($student);
-        } catch (\Throwable $e) {
-            Log::error('StudentHistoryService failed for student ' . $student->id . ': ' . $e->getMessage());
-            $timeline = collect();
-        }
+        $detail = $detailQuery->forRecord($student, $request->user());
+        $financialSummary = $this->buildFinancialSummary($student);
 
-        return view('admin.students.show', compact('student', 'timeline'));
+        return view('admin.students.show', compact('student', 'detail', 'financialSummary'));
     }
 
     public function create(): View
     {
+        $this->authorize('create', Student::class);
+
         return view('admin.students.create');
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(StudentRequest $request, StudentAction $action): RedirectResponse
     {
-        $validated = $request->validate([
-            'full_name' => ['required', 'string', 'max:255'],
-            'phone' => ['required', 'string', 'max:20', 'unique:students,phone'],
-            'parent_phone' => ['nullable', 'string', 'max:20'],
-            'status' => ['nullable', 'string', Rule::in(StudentStatusEnum::values())],
-            'join_date' => ['nullable', 'date'],
-            'notes' => ['nullable', 'string'],
-        ]);
+        $this->authorize('create', Student::class);
 
-        // Default status to active when not provided
-        $validated['status'] = $validated['status'] ?? StudentStatusEnum::Active->value;
-
-        Student::create($validated);
+        $action->create($request->validated());
 
         return redirect()->route('admin.students.index')
             ->with('success', __('admin.student_created_successfully'));
@@ -81,33 +67,61 @@ class StudentController extends Controller
 
     public function edit(Student $student): View
     {
+        $this->authorize('update', $student);
+
         return view('admin.students.edit', compact('student'));
     }
 
-    public function update(Request $request, Student $student): RedirectResponse
+    public function update(StudentRequest $request, Student $student, StudentAction $action): RedirectResponse
     {
-        $validated = $request->validate([
-            'full_name' => ['required', 'string', 'max:255'],
-            'phone' => ['required', 'string', 'max:20', Rule::unique('students', 'phone')->ignore($student->id)],
-            'parent_phone' => ['nullable', 'string', 'max:20'],
-            'status' => ['nullable', 'string', Rule::in(StudentStatusEnum::values())],
-            'join_date' => ['nullable', 'date'],
-            'notes' => ['nullable', 'string'],
-        ]);
+        $this->authorize('update', $student);
 
-        $validated['status'] = $validated['status'] ?? StudentStatusEnum::Active->value;
-
-        $student->update($validated);
+        $action->update($student, $request->validated());
 
         return redirect()->route('admin.students.index')
             ->with('success', __('admin.student_updated_successfully'));
     }
 
-    public function destroy(Student $student): RedirectResponse
+    public function destroy(Student $student, StudentAction $action): RedirectResponse
     {
-        $student->delete();
+        $this->authorize('delete', $student);
+
+        $action->delete($student);
 
         return redirect()->route('admin.students.index')
             ->with('success', __('admin.student_deleted_successfully'));
+    }
+
+    /**
+     * Aggregate the student's billing position from the Invoice domain.
+     *
+     * Cancelled invoices are excluded from the invoiced total so a voided
+     * invoice never inflates the outstanding balance.
+     *
+     * @return array{invoice_count: int, total_invoiced: float, total_paid: float, total_outstanding: float, last_payment_at: ?\Illuminate\Support\Carbon}
+     */
+    private function buildFinancialSummary(Student $student): array
+    {
+        $invoices = $student->invoices()
+            ->where('status', '!=', InvoiceStatusEnum::Cancelled->value)
+            ->with('payments')
+            ->get();
+
+        $totalInvoiced = (float) $invoices->sum(fn (Invoice $invoice) => (float) $invoice->total);
+        $totalPaid = (float) $invoices->sum(fn (Invoice $invoice) => $invoice->amountPaid());
+        $totalOutstanding = (float) $invoices->sum(fn (Invoice $invoice) => $invoice->amountDue());
+
+        $lastPaymentAt = $invoices
+            ->flatMap(fn (Invoice $invoice) => $invoice->payments)
+            ->where('status', PaymentStatusEnum::Completed)
+            ->max('paid_at');
+
+        return [
+            'invoice_count'     => $invoices->count(),
+            'total_invoiced'    => $totalInvoiced,
+            'total_paid'        => $totalPaid,
+            'total_outstanding' => $totalOutstanding,
+            'last_payment_at'   => $lastPaymentAt,
+        ];
     }
 }

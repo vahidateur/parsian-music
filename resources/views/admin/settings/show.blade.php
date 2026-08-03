@@ -16,7 +16,7 @@
     $isActionable          = ! $meta['coming_soon'] && ! $isSelfContained;
 @endphp
 
-<x-dashboard.section-header :title="$meta['title']" :subtitle="$meta['desc']">
+<x-dashboard.section-header headingLevel="h1" :title="$meta['title']" :subtitle="$meta['desc']">
     <x-slot:actions>
         @if ($meta['coming_soon'])
             <span class="rounded-full bg-amber-500/10 px-3 py-1 text-xs font-semibold text-amber-400 ring-1 ring-amber-500/20">به‌زودی</span>

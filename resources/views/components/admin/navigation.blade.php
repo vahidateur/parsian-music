@@ -32,6 +32,7 @@
                     :aria-expanded="open.toString()"
                     aria-label="{{ $item['label'] }}"
                     title="{{ $item['label'] }}"
+                    @if ($isActive || $isChildActive) aria-current="page" @endif
                 >
                     <span class="admin-navigation__icon" aria-hidden="true">{{ $item['icon'] }}</span>
                     <span class="admin-navigation__label" x-show="!collapsed || mobileOpen" x-cloak>{{ $item['label'] }}</span>

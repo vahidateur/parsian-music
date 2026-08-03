@@ -4,6 +4,7 @@ namespace Tests\Feature\Admin;
 
 use App\Enums\RoleEnum;
 use App\Models\ClassSession;
+use App\Models\Room;
 use App\Models\Instrument;
 use App\Models\Student;
 use App\Models\Subscription;
@@ -54,6 +55,10 @@ class SessionSchedulingTest extends TestCase
             'is_active' => true,
         ]);
 
+        foreach (['A101', 'A102', 'A103'] as $roomName) {
+            Room::create(['name' => $roomName, 'is_active' => true]);
+        }
+
         $this->subscription = Subscription::create([
             'student_id' => $this->student->id,
             'teacher_id' => $this->teacher->id,
@@ -80,6 +85,10 @@ class SessionSchedulingTest extends TestCase
             'teacher_id' => $this->teacher->id,
             'instrument_id' => $this->instrument->id,
             'room' => 'A101',
+        ]);
+        $this->assertDatabaseHas('subscriptions', [
+            'id' => $this->subscription->id,
+            'sessions_used' => 1,
         ]);
     }
 

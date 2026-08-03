@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\AdminBulkActionController;
 use App\Http\Controllers\Admin\AttendanceReportController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\SettingsController;
@@ -7,6 +8,8 @@ use App\Http\Controllers\Admin\CalendarController;
 use App\Http\Controllers\Admin\ClassAttendanceController;
 use App\Http\Controllers\Admin\ClassSessionController;
 use App\Http\Controllers\Admin\InstrumentController;
+use App\Http\Controllers\Admin\InvoiceController;
+use App\Http\Controllers\Admin\InvoicePaymentController;
 use App\Http\Controllers\Admin\LeadController;
 use App\Http\Controllers\Admin\RoomController;
 use App\Http\Controllers\Admin\StudentController;
@@ -52,6 +55,10 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin/students')->name('admin
     Route::get('/', [StudentController::class, 'index'])->name('index');
     Route::get('/create', [StudentController::class, 'create'])->name('create');
     Route::post('/', [StudentController::class, 'store'])->name('store');
+    Route::post('/bulk/preview', [AdminBulkActionController::class, 'preview'])
+        ->defaults('entityType', 'student')->name('bulk.preview');
+    Route::post('/bulk', [AdminBulkActionController::class, 'store'])
+        ->defaults('entityType', 'student')->name('bulk');
     Route::get('/{student}', [StudentController::class, 'show'])->name('show');
     Route::get('/{student}/edit', [StudentController::class, 'edit'])->name('edit');
     Route::put('/{student}', [StudentController::class, 'update'])->name('update');
@@ -87,6 +94,10 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin/teachers')->name('admin
     Route::get('/', [TeacherController::class, 'index'])->name('index');
     Route::get('/create', [TeacherController::class, 'create'])->name('create');
     Route::post('/', [TeacherController::class, 'store'])->name('store');
+    Route::post('/bulk/preview', [AdminBulkActionController::class, 'preview'])
+        ->defaults('entityType', 'teacher')->name('bulk.preview');
+    Route::post('/bulk', [AdminBulkActionController::class, 'store'])
+        ->defaults('entityType', 'teacher')->name('bulk');
     Route::get('/{teacher}', [TeacherController::class, 'show'])->name('show');
     Route::get('/{teacher}/edit', [TeacherController::class, 'edit'])->name('edit');
     Route::put('/{teacher}', [TeacherController::class, 'update'])->name('update');
@@ -119,6 +130,22 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin/enrollments')->name('ad
     Route::get('/{enrollment}/edit', [StudentEnrollmentController::class, 'edit'])->name('edit');
     Route::put('/{enrollment}', [StudentEnrollmentController::class, 'update'])->name('update');
     Route::delete('/{enrollment}', [StudentEnrollmentController::class, 'destroy'])->name('destroy');
+});
+
+Route::middleware(['auth', 'role:admin'])->prefix('admin/invoices')->name('admin.invoices.')->group(function () {
+    Route::get('/', [InvoiceController::class, 'index'])->name('index');
+    Route::get('/create', [InvoiceController::class, 'create'])->name('create');
+    Route::post('/', [InvoiceController::class, 'store'])->name('store');
+    Route::get('/{invoice}', [InvoiceController::class, 'show'])->name('show');
+    Route::get('/{invoice}/edit', [InvoiceController::class, 'edit'])->name('edit');
+    Route::put('/{invoice}', [InvoiceController::class, 'update'])->name('update');
+    Route::delete('/{invoice}', [InvoiceController::class, 'destroy'])->name('destroy');
+    Route::post('/{invoice}/issue', [InvoiceController::class, 'issue'])->name('issue');
+    Route::post('/{invoice}/cancel', [InvoiceController::class, 'cancel'])->name('cancel');
+    Route::post('/{invoice}/duplicate', [InvoiceController::class, 'duplicate'])->name('duplicate');
+
+    Route::post('/{invoice}/payments', [InvoicePaymentController::class, 'store'])->name('payments.store');
+    Route::delete('/{invoice}/payments/{payment}', [InvoicePaymentController::class, 'destroy'])->name('payments.destroy');
 });
 
 Route::middleware(['auth', 'role:admin'])->prefix('admin/reports')->name('admin.reports.')->group(function () {

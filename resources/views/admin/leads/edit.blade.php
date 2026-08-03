@@ -13,29 +13,23 @@
     <p class="mt-1 text-sm text-gray-500">{{ __('admin.update_lead_desc') }}</p>
 </div>
 
-@if ($errors->any())
-    <div class="mb-6 rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">
-        <ul class="list-disc pr-5 space-y-1">
-            @foreach ($errors->all() as $error)
-                <li>{{ $error }}</li>
-            @endforeach
-        </ul>
-    </div>
-@endif
+{{-- Feedback_Channel + Error_State recovery path; field errors render per field --}}
+<x-admin.feedback :validation="false" :returnUrl="route('admin.leads.index')" />
 
+{{-- Loading_State owner of this Record_Form --}}
+<x-admin.form-state>
 <form method="POST" action="{{ route('admin.leads.update', $lead) }}" class="max-w-2xl space-y-5">
     @csrf
     @method('PUT')
     @include('admin.leads.partials.form-fields', compact('instruments', 'teachers', 'assignees') + ['lead' => $lead])
 
     <div class="flex items-center gap-4 pt-2">
-        <button type="submit" class="{{ $btnPrimary }}">
-            {{ __('admin.update_lead') }}
-        </button>
+        <x-admin.submit-button :label="__('admin.update_lead')" :class="$btnPrimary" />
         <a href="{{ route('admin.leads.show', $lead) }}" class="{{ $btnSecondary }}">
             {{ __('admin.cancel') }}
         </a>
     </div>
 </form>
+</x-admin.form-state>
 
 @endsection

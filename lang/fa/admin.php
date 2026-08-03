@@ -70,6 +70,10 @@ return [
     'joined'                         => 'عضویت',
     'hire_date'                      => 'تاریخ استخدام',
     'bio'                            => 'بیوگرافی',
+    'teacher_code'                   => 'کد استاد',
+    'teacher_details'                => 'جزئیات استاد',
+    'teacher_details_desc'           => 'مشاهده اطلاعات ثبت‌شده و داده عملیاتی این استاد.',
+    'view_teacher'                   => 'مشاهده استاد',
 
     // ── Teacher panel ──────────────────────────────────────────────────────
     'weekly_sessions'       => 'کلاس‌های هفتگی',
@@ -144,6 +148,7 @@ return [
     'schedule_session_manually_desc' => 'یک کلاس جدید را به‌صورت دستی برنامه‌ریزی کنید.',
     'duration_minutes_label'   => 'مدت (دقیقه)',
     'select_room_placeholder' => 'انتخاب اتاق...',
+    'room_not_available'     => 'اتاق انتخاب‌شده فعال نیست یا وجود ندارد.',
     'active_enrollment'       => 'ثبت‌نام فعال',
     'session_fee'             => 'شهریه جلسه',
     'discount'                => 'تخفیف',
@@ -270,6 +275,7 @@ return [
     'duration'       => 'مدت',
     'room'           => 'اتاق',
     'notes'          => 'یادداشت',
+    'value_not_provided' => 'ثبت نشده',
     'optional_notes' => 'یادداشت اختیاری',
     'optional'       => 'اختیاری',
     'minutes'        => 'دقیقه',
@@ -290,12 +296,100 @@ return [
     'edit'   => 'ویرایش',
     'delete' => 'حذف',
     'cancel' => 'انصراف',
-    'save'   => 'ذخیره',
+    'confirm' => 'تأیید',
+    'close' => 'بستن',
+    'confirm_action_title' => 'تأیید اقدام',
+    'confirm_entity' => 'موجودیت: :entity',
+    'confirm_action' => 'اقدام: :action',
+    'confirm_consequence' => 'پیامد: :consequence',
+    'confirmation_consequence_irreversible' => 'این اقدام برگشت‌پذیر نیست.',
+    'confirmation_consequence_detach' => 'این رابطه حذف می‌شود و در داده‌های ذخیره‌شده باقی نمی‌ماند.',
+    'confirmation_consequence_reset_password' => 'رمز فعلی کاربر بازنشانی می‌شود.',
+    'reset_password' => 'ریست رمز',
     'view'   => 'مشاهده',
 
     // ── Search placeholders ────────────────────────────────────────────────
     'search_name'  => 'جستجوی نام...',
     'search_phone' => 'جستجوی تلفن...',
+
+    // ── Feedback_Channel (shared success / failure / validation) ───────────
+    'feedback_success_generic'    => 'عملیات با موفقیت انجام شد.',
+    'feedback_failure_generic'    => 'انجام این عملیات ممکن نشد. لطفاً دوباره تلاش کنید یا به فهرست بازگردید.',
+    'feedback_validation_generic' => 'مقدار این فیلد پذیرفته نشد. لطفاً آن را اصلاح کنید.',
+    'feedback_validation_title'   => 'ورودی‌های زیر نیاز به اصلاح دارند',
+    'feedback_dismiss'            => 'بستن پیام',
+
+    // ── پیام‌های نتیجه و خطای عملیات گروهی ─────────────────────────────────
+    'bulk_result' => [
+        'reasons' => [
+            'not_found' => [
+                'category' => 'رکورد یافت نشد',
+                'message' => 'رکورد انتخاب‌شده دیگر در دسترس نیست.',
+            ],
+            'unauthorized' => [
+                'category' => 'غیرمجاز',
+                'message' => 'شما مجاز به تغییر این رکورد نیستید.',
+            ],
+            'protected_dependency' => [
+                'category' => 'وابستگی محافظت‌شده',
+                'message' => 'این رکورد دارای وابستگی‌های محافظت‌شده است.',
+            ],
+            'processing_error' => [
+                'category' => 'خطای پردازش',
+                'message' => 'پردازش رکورد انتخاب‌شده ممکن نشد.',
+            ],
+            'invalid_action' => [
+                'category' => 'انتقال نامعتبر',
+                'message' => 'عملیات وضعیت درخواستی معتبر نیست.',
+            ],
+            'invalid_status' => [
+                'category' => 'وضعیت نامعتبر',
+                'message' => 'وضعیت ذخیره‌شده برای این موجودیت معتبر نیست.',
+            ],
+            'invalid_transition' => [
+                'category' => 'انتقال نامعتبر',
+                'message' => 'وضعیت چرخه‌عمر این رکورد با این عملیات قابل تغییر نیست.',
+            ],
+            'generic' => [
+                'category' => 'خطای پردازش',
+                'message' => 'پردازش این مورد ممکن نشد.',
+            ],
+        ],
+    ],
+    'bulk_errors' => [
+        'unavailable' => 'اجرای عملیات گروهی در حال حاضر در دسترس نیست.',
+    ],
+    'bulk_selection' => [
+        'toolbar_label' => 'عملیات گروهی :entity',
+        'actions_label' => 'عملیات مجاز',
+        'selected_suffix' => 'مورد انتخاب شده',
+        'selected_count' => ':count مورد انتخاب شده',
+        'select_all_visible' => 'انتخاب همه موارد قابل انتخاب در این صفحه',
+        'select_row' => 'انتخاب :entity :label',
+        'all_filtered' => 'انتخاب همه نتایج فیلترشده',
+        'previewing' => 'در حال محاسبه تعداد نتایج فیلترشده…',
+        'preview_ready' => ':count نتیجه برای عملیات گروهی آماده است.',
+        'result_complete' => 'عملیات با موفقیت انجام شد: :succeeded موفق، :skipped ردشده، :failed ناموفق.',
+        'result_partial' => 'عملیات به‌صورت ناقص انجام شد: :succeeded موفق، :skipped ردشده، :failed ناموفق.',
+        'delete_warning' => 'این عملیات حذف دائمی است و قابل بازگشت نیست.',
+        'result_label' => 'نتیجه عملیات گروهی :entity',
+        'result_title' => 'نتیجه عملیات گروهی',
+        'recovery' => 'بازگشت به فهرست',
+    ],
+
+    // ── Operational list controls ──────────────────────────────────────────
+    'clear_filters'        => 'پاک کردن فیلترها',
+    'search_placeholder'   => 'جستجو...',
+    'results_total'        => ':count نتیجه',
+    'no_results_for_query' => 'نتیجه‌ای مطابق فیلترهای اعمال‌شده یافت نشد.',
+    'filters_label'        => 'جست‌وجو و فیلتر',
+
+    // ── Shared Empty / Loading / Error states ──────────────────────────────
+    'empty_no_records'   => 'هنوز رکوردی ثبت نشده است.',
+    'create'             => 'ثبت رکورد جدید',
+    'state_submitting'   => 'در حال ارسال…',
+    'state_error_retry'  => 'تلاش دوباره',
+    'state_error_return' => 'بازگشت به فهرست',
 
     // ── Select placeholders ────────────────────────────────────────────────
     'all_students'    => 'همه هنرجویان',
@@ -369,6 +463,7 @@ return [
     'room_updated_successfully' => 'اتاق با موفقیت ویرایش شد.',
     'room_deleted_successfully' => 'اتاق با موفقیت حذف شد.',
     'no_rooms_found'           => 'هیچ اتاقی یافت نشد.',
+    'room_name'                => 'نام اتاق',
     'room_capacity'            => 'ظرفیت',
 
     // ── Nested: rooms ──────────────────────────────────────────────────────
@@ -499,4 +594,71 @@ return [
     'history_lead_status_desc'   => 'وضعیت به :status تغییر یافت.',
     'view_student'               => 'مشاهده هنرجو',
     'start_date'                 => 'تاریخ شروع',
+
+    // ── Billing / Invoices ─────────────────────────────────────────────────
+    'billing'                    => 'مالی',
+    'invoices'                   => 'صورت‌حساب‌ها',
+    'invoice'                    => 'صورت‌حساب',
+    'payment'                    => 'پرداخت',
+    'manage_invoices'            => 'صدور و پیگیری صورت‌حساب هنرجویان.',
+    'new_invoice'                => 'صورت‌حساب جدید',
+    'create_invoice'             => 'صدور صورت‌حساب',
+    'edit_invoice'               => 'ویرایش صورت‌حساب',
+    'update_invoice'             => 'ذخیره تغییرات',
+    'invoice_details'            => 'جزئیات صورت‌حساب',
+    'new_invoice_desc'           => 'صورت‌حساب پیش‌نویس برای هنرجو ایجاد کنید.',
+    'update_invoice_desc'        => 'اقلام و اطلاعات صورت‌حساب را ویرایش کنید.',
+    'back_to_invoices'           => '← بازگشت به صورت‌حساب‌ها',
+    'invoice_number'             => 'شماره صورت‌حساب',
+    'issue_date'                 => 'تاریخ صدور',
+    'due_date'                   => 'تاریخ سررسید',
+    'subtotal'                   => 'جمع اقلام',
+    'tax'                        => 'مالیات',
+    'total_amount'              => 'مبلغ کل',
+    'amount_paid'                => 'پرداخت‌شده',
+    'amount_due'                 => 'مانده',
+    'invoice_items'              => 'اقلام صورت‌حساب',
+    'item_title'                 => 'عنوان',
+    'item_description'           => 'توضیح',
+    'quantity'                   => 'تعداد',
+    'unit_price'                 => 'قیمت واحد',
+    'line_total'                 => 'جمع سطر',
+    'add_item'                   => 'افزودن قلم',
+    'remove_item'                => 'حذف قلم',
+    'no_invoice_items'           => 'قلمی ثبت نشده است.',
+    'no_invoices_found'          => 'صورت‌حسابی یافت نشد.',
+    'invoice_created_successfully'    => 'صورت‌حساب با موفقیت ایجاد شد.',
+    'invoice_updated_successfully'    => 'صورت‌حساب با موفقیت ویرایش شد.',
+    'invoice_deleted_successfully'    => 'صورت‌حساب با موفقیت حذف شد.',
+    'invoice_issued_successfully'     => 'صورت‌حساب صادر شد.',
+    'invoice_cancelled_successfully'  => 'صورت‌حساب لغو شد.',
+    'invoice_duplicated_successfully' => 'نسخه پیش‌نویس جدید ایجاد شد.',
+    'delete_invoice_confirm'     => 'آیا از حذف این صورت‌حساب مطمئنید؟',
+    'cancel_invoice_confirm'     => 'آیا از لغو این صورت‌حساب مطمئنید؟',
+    'issue_invoice'              => 'صدور',
+    'cancel_invoice'             => 'لغو صورت‌حساب',
+    'duplicate_invoice'          => 'نسخه مشابه',
+    'invoice_not_editable'       => 'این صورت‌حساب قابل ویرایش نیست.',
+
+    // ── Payments (invoice ledger) ──────────────────────────────────────────
+    'payments'                   => 'پرداخت‌ها',
+    'register_payment'           => 'ثبت پرداخت',
+    'payment_amount'             => 'مبلغ پرداخت',
+    'payment_method'             => 'روش پرداخت',
+    'payment_reference'          => 'شماره پیگیری',
+    'paid_at'                    => 'تاریخ پرداخت',
+    'no_payments_yet'            => 'پرداختی ثبت نشده است.',
+    'payment_registered_successfully' => 'پرداخت با موفقیت ثبت شد.',
+    'payment_deleted_successfully'    => 'پرداخت با موفقیت حذف شد.',
+    'delete_payment_confirm'     => 'آیا از حذف این پرداخت مطمئنید؟',
+    'payment_blocked'            => 'ثبت پرداخت برای این صورت‌حساب امکان‌پذیر نیست.',
+
+    // ── Student financial summary ─────────────────────────────────────────
+    'financial_summary'          => 'خلاصه مالی',
+    'total_invoiced'             => 'کل صورت‌حساب',
+    'total_paid'                 => 'کل پرداخت‌شده',
+    'total_outstanding'          => 'مانده بدهی',
+    'last_payment_date'          => 'آخرین پرداخت',
+    'no_financial_records'       => 'سابقه مالی ثبت نشده است.',
+    'view_invoices'              => 'مشاهده صورت‌حساب‌ها',
 ];

@@ -223,27 +223,3 @@
         </div>
     </div>
 </x-dashboard.chart-container>
-
-@push('scripts')
-<script>
-    document.getElementById('login_logo')?.addEventListener('change', function(e) {
-        const file = e.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function(event) {
-                let preview = document.querySelector('[alt="Logo"]');
-                if (!preview) {
-                    preview = document.createElement('img');
-                    preview.alt = 'Logo';
-                    preview.className = 'h-24 mx-auto rounded';
-                    const container = document.querySelector('[for="login_logo"]').closest('.relative');
-                    container.querySelector('.text-center').insertBefore(preview, container.querySelector('.text-center').firstChild);
-                } else {
-                    preview.src = event.target.result;
-                }
-            };
-            reader.readAsDataURL(file);
-        }
-    });
-</script>
-@endpush

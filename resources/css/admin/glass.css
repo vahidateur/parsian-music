@@ -531,3 +531,39 @@
     transition: none;
   }
 }
+
+/* ─────────────────────────────────────────────
+   11  OPERATIONAL GLASS CONTRAST
+   WCAG corrections for inherited admin utility colors remain owned by the
+   Glass theme rather than page or shell styles.
+───────────────────────────────────────────── */
+
+[data-admin-theme="glass"] .admin-page .text-gray-600 {
+  color: var(--admin-color-text-muted);
+}
+
+[data-admin-theme="glass"] .admin-page button.text-red-300,
+[data-admin-theme="glass"] .admin-page button.text-red-400 {
+  color: var(--admin-color-text);
+}
+
+[data-admin-theme="glass"] .admin-page .admin-navigation__sublink--active {
+  color: var(--admin-color-accent-hover);
+}
+
+[data-admin-theme="glass"] .admin-page .text-sky-400,
+[data-admin-theme="glass"] .admin-page .text-sky-300 {
+  color: var(--admin-color-text);
+}
+
+[data-admin-theme="glass"] .admin-page .text-gray-300,
+[data-admin-theme="glass"] .admin-page .text-gray-400,
+[data-admin-theme="glass"] .admin-page .text-gray-500,
+[data-admin-theme="glass"] .admin-page .text-amber-300,
+[data-admin-theme="glass"] .admin-page .text-amber-400 {
+  color: var(--admin-color-text);
+}
+
+[data-admin-theme="glass"] .admin-shell__breadcrumb-link {
+  color: var(--admin-color-text);
+}

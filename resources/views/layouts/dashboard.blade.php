@@ -17,6 +17,10 @@
             ['route' => 'admin.sessions.index', 'active' => 'admin.sessions.index', 'label' => 'لیست جلسات', 'icon' => '▫'],
             ['route' => 'admin.calendar.index', 'active' => 'admin.calendar.*', 'label' => __('admin.calendar'), 'icon' => '◷'],
         ]],
+        ['route' => 'admin.invoices.index', 'active' => 'admin.invoices.*', 'label' => __('admin.billing'), 'icon' => '₪', 'children' => [
+            ['route' => 'admin.invoices.index', 'active' => 'admin.invoices.index', 'label' => __('admin.invoices'), 'icon' => '▦'],
+            ['route' => 'admin.enrollments.index', 'active' => 'admin.enrollments.*', 'label' => __('admin.enrollments'), 'icon' => '☰'],
+        ]],
         ['route' => 'admin.reports.attendance', 'active' => 'admin.reports.*', 'label' => __('admin.reports'), 'icon' => '▤'],
         ['route' => 'admin.instruments.index', 'active' => 'admin.instruments.*', 'label' => __('admin.instruments'), 'icon' => '◉'],
         ['route' => 'admin.rooms.index', 'active' => 'admin.rooms.*', 'label' => 'اتاق‌ها', 'icon' => '▣'],
@@ -30,6 +34,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ $pageTitle }}</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

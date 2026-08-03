@@ -3,13 +3,9 @@
 @section('title', 'ایجاد کاربر جدید')
 
 @section('content')
-@php
-    $actor = auth()->user();
-    $assignableRoles = collect(\App\Enums\RoleEnum::cases())
-        ->filter(fn ($r) => $actor->role->canManage($r));
-@endphp
+{{-- $assignableRoles comes from the controller: no role comparison in the view. --}}
 
-<x-dashboard.section-header title="ایجاد کاربر جدید" subtitle="حساب کاربری جدید در سیستم">
+<x-dashboard.section-header headingLevel="h1" title="ایجاد کاربر جدید" subtitle="حساب کاربری جدید در سیستم">
     <x-slot name="actions">
         <a href="{{ route('admin.users.index') }}"
            class="inline-flex items-center gap-2 rounded-xl border border-gray-700/60 px-4 py-2 text-sm text-gray-300 transition hover:border-gray-600 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-500">
@@ -19,6 +15,9 @@
     </x-slot>
 </x-dashboard.section-header>
 
+{{-- Feedback_Channel: shared success / failure feedback; field errors render per field --}}
+<x-admin.feedback :validation="false" />
+
 <x-dashboard.chart-container title="اطلاعات کاربر" class="mt-5">
     <form method="POST" action="{{ route('admin.users.store') }}" class="space-y-5">
         @csrf
@@ -26,37 +25,36 @@
         @php
             $inputClass = 'w-full rounded-xl border border-gray-700/60 bg-gray-800/40 px-4 py-2.5 text-sm text-gray-100 placeholder-gray-500 focus:border-amber-500/50 focus:outline-none focus:ring-1 focus:ring-amber-500/30';
             $labelClass = 'block text-xs font-semibold text-gray-400 mb-1.5';
-            $errorClass = 'mt-1 text-xs text-red-400';
         @endphp
 
         <div class="grid grid-cols-1 gap-5 sm:grid-cols-2">
             <div>
-                <label class="{{ $labelClass }}">نام کامل <span class="text-red-400">*</span></label>
-                <input type="text" name="full_name" value="{{ old('full_name') }}"
+                <label for="full_name" class="{{ $labelClass }}">نام کامل <span class="text-red-400">*</span></label>
+                <input id="full_name" type="text" name="full_name" {{ feedback_field_attributes('full_name') }} value="{{ old('full_name') }}"
                        class="{{ $inputClass }} @error('full_name') border-red-500/50 @enderror"
                        placeholder="نام و نام خانوادگی" required>
-                @error('full_name')<p class="{{ $errorClass }}">{{ $message }}</p>@enderror
+                <x-admin.feedback field="full_name" />
             </div>
 
             <div>
-                <label class="{{ $labelClass }}">تلفن <span class="text-red-400">*</span></label>
-                <input type="text" name="phone" value="{{ old('phone') }}"
+                <label for="phone" class="{{ $labelClass }}">تلفن <span class="text-red-400">*</span></label>
+                <input id="phone" type="text" name="phone" {{ feedback_field_attributes('phone') }} value="{{ old('phone') }}"
                        class="{{ $inputClass }} @error('phone') border-red-500/50 @enderror"
                        placeholder="09xxxxxxxxx" required>
-                @error('phone')<p class="{{ $errorClass }}">{{ $message }}</p>@enderror
+                <x-admin.feedback field="phone" />
             </div>
 
             <div>
-                <label class="{{ $labelClass }}">ایمیل</label>
-                <input type="email" name="email" value="{{ old('email') }}"
+                <label for="email" class="{{ $labelClass }}">ایمیل</label>
+                <input id="email" type="email" name="email" {{ feedback_field_attributes('email') }} value="{{ old('email') }}"
                        class="{{ $inputClass }} @error('email') border-red-500/50 @enderror"
                        placeholder="example@email.com">
-                @error('email')<p class="{{ $errorClass }}">{{ $message }}</p>@enderror
+                <x-admin.feedback field="email" />
             </div>
 
             <div>
-                <label class="{{ $labelClass }}">نقش <span class="text-red-400">*</span></label>
-                <select name="role" class="{{ $inputClass }} @error('role') border-red-500/50 @enderror" required>
+                <label for="role" class="{{ $labelClass }}">نقش <span class="text-red-400">*</span></label>
+                <select id="role" name="role" {{ feedback_field_attributes('role') }} class="{{ $inputClass }} @error('role') border-red-500/50 @enderror" required>
                     <option value="">انتخاب نقش...</option>
                     @foreach($assignableRoles as $role)
                         <option value="{{ $role->value }}" @selected(old('role') === $role->value)>
@@ -64,20 +62,20 @@
                         </option>
                     @endforeach
                 </select>
-                @error('role')<p class="{{ $errorClass }}">{{ $message }}</p>@enderror
+                <x-admin.feedback field="role" />
             </div>
 
             <div>
-                <label class="{{ $labelClass }}">رمز عبور <span class="text-red-400">*</span></label>
-                <input type="password" name="password"
+                <label for="password" class="{{ $labelClass }}">رمز عبور <span class="text-red-400">*</span></label>
+                <input id="password" type="password" name="password" {{ feedback_field_attributes('password') }}
                        class="{{ $inputClass }} @error('password') border-red-500/50 @enderror"
                        placeholder="حداقل ۸ کاراکتر" required>
-                @error('password')<p class="{{ $errorClass }}">{{ $message }}</p>@enderror
+                <x-admin.feedback field="password" />
             </div>
 
             <div>
-                <label class="{{ $labelClass }}">تکرار رمز عبور <span class="text-red-400">*</span></label>
-                <input type="password" name="password_confirmation"
+                <label for="password_confirmation" class="{{ $labelClass }}">تکرار رمز عبور <span class="text-red-400">*</span></label>
+                <input id="password_confirmation" type="password" name="password_confirmation"
                        class="{{ $inputClass }}"
                        placeholder="تکرار رمز عبور" required>
             </div>

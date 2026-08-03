@@ -2,93 +2,88 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Enums\SkillLevelEnum;
-use App\Enums\TeacherStatusEnum;
+use App\Actions\Admin\TeacherAction;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\AttachTeacherInstrumentRequest;
+use App\Http\Requests\Admin\DetachTeacherInstrumentRequest;
+use App\Http\Requests\Admin\TeacherRequest;
 use App\Models\Instrument;
 use App\Models\Teacher;
+use App\Services\Details\TeacherDetailQuery;
+use App\Services\Lists\TeacherListQuery;
 use App\Services\TeacherInstrumentService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 
+/**
+ * Every action resolves its named TeacherPolicy ability through the
+ * Authorization_Layer before any input is read or any record is written, so a
+ * hidden UI control is never the only protection.
+ */
 class TeacherController extends Controller
 {
-    public function index(Request $request): View
+    public function index(Request $request, TeacherListQuery $listQuery): View
     {
-        $sortCol = in_array($request->sort, ['full_name', 'phone', 'status', 'hire_date', 'created_at'], true)
-            ? $request->sort : 'full_name';
-        $sortDir = $request->direction === 'desc' ? 'desc' : 'asc';
+        $this->authorize('viewAny', Teacher::class);
 
-        $query = Teacher::query();
-
-        if ($request->filled('full_name')) {
-            $query->where('full_name', 'like', '%' . trim($request->full_name) . '%');
-        }
-
-        if ($request->filled('phone')) {
-            $query->where('phone', 'like', '%' . trim($request->phone) . '%');
-        }
-
-        if ($request->filled('status')) {
-            $query->where('status', trim($request->status));
-        }
-
-        $teachers = $query->with('instruments')->orderBy($sortCol, $sortDir)->paginate(15)->withQueryString();
-
-        return view('admin.teachers.index', compact('teachers', 'sortCol', 'sortDir'));
+        return view('admin.teachers.index', [
+            'list' => $listQuery->forInput($request->query(), $request->user()),
+        ]);
     }
 
     public function create(): View
     {
+        $this->authorize('create', Teacher::class);
+
         return view('admin.teachers.create');
     }
 
-    public function store(Request $request): RedirectResponse
+    public function store(TeacherRequest $request, TeacherAction $action): RedirectResponse
     {
-        $validated = $request->validate([
-            'full_name' => ['required', 'string', 'max:255'],
-            'phone' => ['required', 'string', 'max:20', 'unique:teachers,phone'],
-            'status' => ['nullable', 'string', Rule::in(TeacherStatusEnum::values())],
-            'bio' => ['nullable', 'string'],
-            'hire_date' => ['nullable', 'date'],
-        ]);
+        $this->authorize('create', Teacher::class);
 
-        $validated['status'] = $validated['status'] ?? TeacherStatusEnum::Active->value;
-
-        Teacher::create($validated);
+        $action->create($request->validated());
 
         return redirect()->route('admin.teachers.index')
             ->with('success', __('admin.teacher_created_successfully'));
     }
 
+    /**
+     * Record_Detail screen. Route model binding returns the shared not-found
+     * response for an unknown identifier before the ability is evaluated.
+     */
+    public function show(Request $request, Teacher $teacher, TeacherDetailQuery $detailQuery): View
+    {
+        $this->authorize('view', $teacher);
+
+        return view('admin.teachers.show', [
+            'detail' => $detailQuery->forRecord($teacher, $request->user()),
+        ]);
+    }
+
     public function edit(Teacher $teacher): View
     {
+        $this->authorize('update', $teacher);
+
         return view('admin.teachers.edit', compact('teacher'));
     }
 
-    public function update(Request $request, Teacher $teacher): RedirectResponse
+    public function update(TeacherRequest $request, Teacher $teacher, TeacherAction $action): RedirectResponse
     {
-        $validated = $request->validate([
-            'full_name' => ['required', 'string', 'max:255'],
-            'phone' => ['required', 'string', 'max:20', Rule::unique('teachers', 'phone')->ignore($teacher->id)],
-            'status' => ['nullable', 'string', Rule::in(TeacherStatusEnum::values())],
-            'bio' => ['nullable', 'string'],
-            'hire_date' => ['nullable', 'date'],
-        ]);
+        $this->authorize('update', $teacher);
 
-        $validated['status'] = $validated['status'] ?? TeacherStatusEnum::Active->value;
-
-        $teacher->update($validated);
+        $action->update($teacher, $request->validated());
 
         return redirect()->route('admin.teachers.index')
             ->with('success', __('admin.teacher_updated_successfully'));
     }
 
-    public function destroy(Teacher $teacher): RedirectResponse
+    public function destroy(Teacher $teacher, TeacherAction $action): RedirectResponse
     {
-        $teacher->delete();
+        $this->authorize('delete', $teacher);
+
+        $action->delete($teacher);
 
         return redirect()->route('admin.teachers.index')
             ->with('success', __('admin.teacher_deleted_successfully'));
@@ -96,6 +91,8 @@ class TeacherController extends Controller
 
     public function instruments(Teacher $teacher): View
     {
+        $this->authorize('manageInstruments', $teacher);
+
         $teacher->load('instruments');
         $assignedIds = $teacher->instruments()->pluck('instruments.id');
 
@@ -108,13 +105,11 @@ class TeacherController extends Controller
         return view('admin.teachers.instruments', compact('teacher', 'allInstruments'));
     }
 
-    public function attachInstrument(Request $request, Teacher $teacher, TeacherInstrumentService $service): RedirectResponse
+    public function attachInstrument(AttachTeacherInstrumentRequest $request, Teacher $teacher, TeacherInstrumentService $service): RedirectResponse
     {
-        $validated = $request->validate([
-            'instrument_id' => ['required', 'exists:instruments,id', Rule::unique('teacher_instruments', 'instrument_id')->where(fn ($q) => $q->where('teacher_id', $teacher->id))],
-            'skill_level' => ['required', 'string', Rule::in(SkillLevelEnum::values())],
-            'is_primary' => ['nullable', 'boolean'],
-        ]);
+        $this->authorize('attachInstrument', $teacher);
+
+        $validated = $request->validated();
 
         $service->attachInstrument(
             $teacher,
@@ -127,13 +122,11 @@ class TeacherController extends Controller
             ->with('success', __('admin.instrument_updated_successfully'));
     }
 
-    public function detachInstrument(Request $request, Teacher $teacher, TeacherInstrumentService $service): RedirectResponse
+    public function detachInstrument(DetachTeacherInstrumentRequest $request, Teacher $teacher, TeacherInstrumentService $service): RedirectResponse
     {
-        $validated = $request->validate([
-            'instrument_id' => ['required', 'exists:instruments,id'],
-        ]);
+        $this->authorize('detachInstrument', $teacher);
 
-        $service->detachInstrument($teacher, $validated['instrument_id']);
+        $service->detachInstrument($teacher, $request->validated('instrument_id'));
 
         return redirect()->route('admin.teachers.instruments', $teacher)
             ->with('success', __('admin.instrument_updated_successfully'));

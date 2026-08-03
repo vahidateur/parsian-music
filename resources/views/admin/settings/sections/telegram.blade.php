@@ -7,10 +7,9 @@
     <div class="grid grid-cols-1 gap-5">
         <div>
             <label for="telegram_bot_token" class="{{ $labelClass }}">توکن ربات (Bot Token)</label>
-            <input id="telegram_bot_token" type="text" name="telegram_bot_token"
-                   value="{{ old('telegram_bot_token', $s['telegram_bot_token'] ?? config('services.telegram.token', '')) }}"
+            <input id="telegram_bot_token" type="password" name="telegram_bot_token"
                    placeholder="123456789:AABBccdd..." class="{{ $inputClass }}" dir="ltr">
-            <p class="{{ $hintClass }}">از @BotFather در تلگرام دریافت کنید.</p>
+            <p class="{{ $hintClass }}">برای حفظ توکن فعلی، این فیلد را خالی بگذارید. توکن را از @BotFather در تلگرام دریافت کنید.</p>
         </div>
         <div>
             <label for="telegram_chat_id" class="{{ $labelClass }}">شناسه چت (Chat ID)</label>

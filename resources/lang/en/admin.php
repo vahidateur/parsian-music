@@ -404,4 +404,89 @@ return [
     'no_students_enrolled'     => 'No students enrolled in this session.',
     'total_students_count'     => 'Total Students',
     'unmarked_count_label'     => 'Unmarked',
+
+    // ── Feedback_Channel (shared success / failure / validation) ───────────
+    'feedback_success_generic'    => 'The operation completed successfully.',
+    'feedback_failure_generic'    => 'The operation could not be completed. Please try again or return to the list.',
+    'feedback_validation_generic' => 'This value was not accepted. Please correct the field.',
+    'feedback_validation_title'   => 'The following inputs need correction',
+    'feedback_dismiss'            => 'Dismiss message',
+
+    // ── Bulk result and error payloads ──────────────────────────────────────
+    'bulk_result' => [
+        'reasons' => [
+            'not_found' => [
+                'category' => 'Not found',
+                'message' => 'The selected record is no longer available.',
+            ],
+            'unauthorized' => [
+                'category' => 'Unauthorized',
+                'message' => 'You are not authorized to change this record.',
+            ],
+            'protected_dependency' => [
+                'category' => 'Protected dependency',
+                'message' => 'The record has protected dependencies.',
+            ],
+            'processing_error' => [
+                'category' => 'Processing error',
+                'message' => 'The selected record could not be processed.',
+            ],
+            'invalid_action' => [
+                'category' => 'Invalid transition',
+                'message' => 'The requested status action is invalid.',
+            ],
+            'invalid_status' => [
+                'category' => 'Invalid status',
+                'message' => 'The stored status is not a valid entity status.',
+            ],
+            'invalid_transition' => [
+                'category' => 'Invalid transition',
+                'message' => 'This lifecycle status cannot be changed by this action.',
+            ],
+            'generic' => [
+                'category' => 'Processing error',
+                'message' => 'The item could not be processed.',
+            ],
+        ],
+    ],
+    'bulk_errors' => [
+        'unavailable' => 'Bulk execution is currently unavailable.',
+    ],
+    'bulk_selection' => [
+        'toolbar_label' => ':entity bulk actions',
+        'actions_label' => 'Allowed actions',
+        'selected_suffix' => 'selected',
+        'selected_count' => ':count selected',
+        'select_all_visible' => 'Select all selectable items on this page',
+        'select_row' => 'Select :entity :label',
+        'all_filtered' => 'Select all filtered results',
+        'previewing' => 'Resolving the filtered result count…',
+        'preview_ready' => ':count results are ready for the bulk action.',
+        'result_complete' => 'The operation completed: :succeeded succeeded, :skipped skipped, :failed failed.',
+        'result_partial' => 'The operation completed partially: :succeeded succeeded, :skipped skipped, :failed failed.',
+        'delete_warning' => 'This permanently deletes the selected records and cannot be undone.',
+        'result_label' => ':entity bulk action result',
+        'result_title' => 'Bulk action result',
+        'recovery' => 'Return to list',
+    ],
+    'confirm' => 'Confirm',
+    'close' => 'Close',
+    'confirm_action_title' => 'Confirm action',
+    'confirm_entity' => 'Entity: :entity',
+    'confirm_action' => 'Action: :action',
+    'confirm_consequence' => ':consequence',
+
+    // ── Operational list controls ──────────────────────────────────────────
+    'clear_filters'        => 'Clear filters',
+    'search_placeholder'   => 'Search...',
+    'results_total'        => ':count results',
+    'no_results_for_query' => 'No record matches the applied filters.',
+    'filters_label'        => 'Search and filter',
+
+    // ── Shared Empty / Loading / Error states ──────────────────────────────
+    'empty_no_records'   => 'No record has been created yet.',
+    'create'             => 'Create a record',
+    'state_submitting'   => 'Submitting…',
+    'state_error_retry'  => 'Try again',
+    'state_error_return' => 'Back to the list',
 ];

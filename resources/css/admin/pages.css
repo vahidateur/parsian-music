@@ -49,7 +49,67 @@
 }
 
 /* ─────────────────────────────────────────────
-   02  TABLE ENHANCEMENTS
+   02  ADMIN SEMANTIC UTILITY BRIDGE
+   Completed operational views still contain legacy Tailwind utility classes.
+   Resolve those classes through the existing admin theme contract so the same
+   markup remains readable in dark and glass without a parallel page theme.
+───────────────────────────────────────────── */
+
+.admin-page .text-gray-100,
+.admin-page .text-gray-200 { color: var(--admin-color-text); }
+.admin-page .text-gray-300,
+.admin-page .text-gray-400 { color: var(--admin-color-text-muted); }
+.admin-page .text-gray-500,
+.admin-page .text-gray-600,
+.admin-page .text-gray-700 { color: var(--admin-color-text-subtle); }
+.admin-page .text-amber-100 { color: var(--admin-color-text); }
+.admin-page .text-amber-200,
+.admin-page .text-amber-300,
+.admin-page .text-amber-400 { color: var(--admin-color-accent); }
+.admin-page .text-red-300,
+.admin-page .text-red-400,
+.admin-page .text-rose-300,
+.admin-page .text-rose-400 { color: var(--error-500); }
+.admin-page .text-emerald-300,
+.admin-page .text-emerald-400 { color: var(--success-500); }
+.admin-page .text-sky-300,
+.admin-page .text-sky-400,
+.admin-page .text-blue-300,
+.admin-page .text-blue-400 { color: var(--info-500); }
+
+.admin-page .bg-gray-900,
+.admin-page .bg-gray-900\/50 { background-color: var(--admin-color-surface-glass); }
+.admin-page .bg-gray-800\/20,
+.admin-page .bg-gray-800\/25,
+.admin-page .bg-gray-800\/30,
+.admin-page .bg-gray-800\/40,
+.admin-page .bg-gray-800\/50,
+.admin-page .bg-gray-800\/60 { background-color: var(--admin-color-surface-glass-soft); }
+.admin-page .bg-gray-700\/40,
+.admin-page .bg-gray-700\/50,
+.admin-page .bg-gray-700\/60 { background-color: var(--admin-color-surface-elevated); }
+
+.admin-page .border-gray-600,
+.admin-page .border-gray-700,
+.admin-page .border-gray-700\/60,
+.admin-page .border-gray-800\/40,
+.admin-page .border-gray-800\/60 { border-color: var(--admin-color-border); }
+.admin-page .divide-gray-800\/40 > :not([hidden]) ~ :not([hidden]),
+.admin-page .divide-gray-800\/60 > :not([hidden]) ~ :not([hidden]) { border-color: var(--admin-color-border); }
+
+.admin-page .hover\:bg-gray-700\/50:hover,
+.admin-page .hover\:bg-gray-800\/20:hover,
+.admin-page .hover\:bg-gray-800\/25:hover,
+.admin-page .hover\:bg-gray-800\/30:hover,
+.admin-page .hover\:bg-gray-800\/40:hover,
+.admin-page .hover\:bg-gray-800\/50:hover,
+.admin-page .hover\:bg-gray-800\/60:hover { background-color: var(--admin-color-surface-elevated); }
+.admin-page .hover\:text-gray-100:hover,
+.admin-page .hover\:text-gray-200:hover { color: var(--admin-color-text); }
+.admin-page .hover\:text-gray-300:hover { color: var(--admin-color-text-muted); }
+
+/* ─────────────────────────────────────────────
+   03  TABLE ENHANCEMENTS
 ───────────────────────────────────────────── */
 
 .admin-page table[role="table"] {
@@ -204,34 +264,45 @@
    04  PAGINATION
 ───────────────────────────────────────────── */
 
-.admin-page nav[role="navigation"] {
+.admin-page nav[aria-label="Pagination Navigation"] {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 2px;
 }
 
-.admin-page nav[role="navigation"] a,
-.admin-page nav[role="navigation"] span {
+.admin-page nav[aria-label="Pagination Navigation"] a,
+.admin-page nav[aria-label="Pagination Navigation"] span {
   min-width: var(--admin-touch-target);
   min-height: var(--admin-touch-target);
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  border: var(--ui-border-width) solid var(--admin-color-border);
   border-radius: var(--admin-radius-control);
+  background: var(--admin-color-surface-glass-soft);
+  color: var(--admin-color-text-muted);
   font-size: var(--text-sm);
-  transition: background-color var(--admin-duration-fast) var(--admin-ease-standard), color var(--admin-duration-fast) var(--admin-ease-standard);
+  transition: background-color var(--admin-duration-fast) var(--admin-ease-standard), color var(--admin-duration-fast) var(--admin-ease-standard), border-color var(--admin-duration-fast) var(--admin-ease-standard);
 }
 
-.admin-page nav[role="navigation"] a:hover {
+.admin-page nav[aria-label="Pagination Navigation"] a:hover {
+  border-color: var(--admin-color-accent);
   background: var(--admin-color-surface-elevated);
   color: var(--admin-color-accent-hover);
 }
 
-.admin-page nav[role="navigation"] span[aria-current="page"] {
+.admin-page nav[aria-label="Pagination Navigation"] span[aria-current="page"] {
+  border-color: var(--admin-color-accent);
   background: var(--admin-color-accent);
   color: var(--neutral-950);
   font-weight: 600;
+}
+
+.admin-page nav[aria-label="Pagination Navigation"] span[aria-disabled="true"] {
+  background: transparent;
+  color: var(--admin-color-text-subtle);
+  opacity: 1;
 }
 
 /* ─────────────────────────────────────────────
@@ -294,3 +365,290 @@
     justify-content: flex-end;
   }
 }
+
+/* ─────────────────────────────────────────────
+   09  FEEDBACK CHANNEL (shared success / failure / field validation)
+───────────────────────────────────────────── */
+
+.admin-feedback {
+  margin-block-end: var(--space-2);
+}
+
+.admin-feedback__list {
+  margin: 0;
+  padding-inline-start: var(--space-2);
+  color: var(--ui-text-muted);
+  font-size: var(--text-sm);
+  list-style: disc;
+}
+
+.admin-feedback__list > li + li {
+  margin-block-start: var(--space-1);
+}
+
+.admin-feedback__field {
+  margin-block-start: var(--space-1);
+  color: var(--error-500);
+  font-size: var(--text-sm);
+}
+
+.admin-feedback__recovery {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-block-start: var(--space-1);
+  font-size: var(--text-sm);
+}
+
+.admin-feedback__recovery > a {
+  color: var(--ui-accent);
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+.admin-feedback__recovery > a:hover {
+  color: var(--ui-text);
+}
+
+/* ─────────────────────────────────────────────
+   10  OPERATIONAL STATES (shared empty / loading)
+───────────────────────────────────────────── */
+
+.admin-empty__action {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--ui-control-height-sm);
+  padding-inline: var(--space-3);
+  border: var(--ui-border-width) solid var(--ui-border-subtle);
+  border-radius: var(--radius-md);
+  color: var(--ui-accent);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  transition: color var(--duration-fast) var(--ease-standard),
+              border-color var(--duration-fast) var(--ease-standard);
+}
+
+.admin-empty__action:hover {
+  border-color: var(--ui-accent);
+  color: var(--ui-text);
+}
+
+.admin-submit {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.admin-submit__control[disabled] {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.admin-submit__state {
+  min-height: 0;
+  padding: 0;
+}
+
+
+/* ─────────────────────────────────────────────
+   11  OPERATIONAL RESPONSIVE + RTL CONTRACT
+   Mobile lists retain their semantic table markup and use an internal
+   overflow region below the mobile breakpoint.
+───────────────────────────────────────────── */
+
+.admin-page .admin-shell__content-inner {
+  inline-size: 100%;
+  max-inline-size: var(--admin-content-max-width);
+  min-inline-size: 0;
+}
+
+.admin-page .admin-shell__content-inner > * {
+  min-inline-size: 0;
+  max-inline-size: 100%;
+}
+
+.admin-page .admin-shell__content-inner .overflow-x-auto,
+.admin-page .admin-shell__content-inner .ui-table-wrap {
+  max-inline-size: 100%;
+  overflow-inline: auto;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  scrollbar-gutter: stable;
+}
+
+.admin-page .admin-shell__content-inner table {
+  inline-size: 100%;
+  max-inline-size: 100%;
+  border-spacing: 0;
+  table-layout: auto;
+}
+
+.admin-page .admin-shell__content-inner table th,
+.admin-page .admin-shell__content-inner table td {
+  min-inline-size: 0;
+  max-inline-size: 100%;
+  overflow-wrap: anywhere;
+  vertical-align: middle;
+}
+
+.admin-page .admin-shell__content-inner table td > *,
+.admin-page .admin-shell__content-inner table th > * {
+  min-inline-size: 0;
+  max-inline-size: 100%;
+}
+
+.admin-page .admin-shell__content-inner table td > .flex,
+.admin-page .admin-shell__content-inner table th > .flex {
+  flex-wrap: wrap;
+}
+
+.admin-page .admin-shell__content-inner .ui-page-header__main,
+.admin-page .admin-shell__content-inner .ui-page-header__actions,
+.admin-page .admin-shell__content-inner form,
+.admin-page .admin-shell__content-inner fieldset {
+  min-inline-size: 0;
+  max-inline-size: 100%;
+}
+
+/* Numeric, phone, time, and date controls remain isolated from RTL text flow. */
+.admin-page [dir="ltr"],
+.admin-page .tabular-nums,
+.admin-page input[type="date"],
+.admin-page input[type="datetime-local"],
+.admin-page input[type="month"],
+.admin-page input[type="number"],
+.admin-page input[type="tel"],
+.admin-page input[type="time"],
+.admin-page time {
+  direction: ltr;
+  unicode-bidi: isolate;
+}
+
+.admin-page input[type="date"],
+.admin-page input[type="datetime-local"],
+.admin-page input[type="month"],
+.admin-page input[type="number"],
+.admin-page input[type="tel"],
+.admin-page input[type="time"] {
+  text-align: start;
+}
+
+/* Keep long labels and persisted values readable without document overflow. */
+.admin-page .admin-feedback,
+.admin-page .admin-empty,
+.admin-page .ui-alert,
+.admin-page .ui-modal__confirmation-summary,
+.admin-page .admin-shell__content-inner dd,
+.admin-page .admin-shell__content-inner dt {
+  min-inline-size: 0;
+  max-inline-size: 100%;
+  overflow-wrap: anywhere;
+}
+
+/* Overlay surfaces stay inside the viewport and own their scroll region. */
+.admin-page .ui-modal {
+  max-inline-size: 100%;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
+}
+
+.admin-page .ui-modal__dialog {
+  max-inline-size: 100%;
+  max-block-size: calc(100dvh - (var(--space-3) * 2));
+  overflow-inline: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.admin-page .ui-dropdown__panel {
+  max-inline-size: calc(100vw - (var(--space-2) * 2));
+  max-block-size: calc(100dvh - (var(--space-3) * 2));
+  overflow-inline: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+@media (max-width: 767px) {
+  .admin-page .admin-shell__content {
+    padding-inline: var(--space-page-mobile);
+  }
+
+  .admin-page .admin-shell__content-inner .overflow-x-auto,
+  .admin-page .admin-shell__content-inner .ui-table-wrap {
+    margin-inline: 0;
+  }
+
+  .admin-page .admin-shell__content-inner table th,
+  .admin-page .admin-shell__content-inner table td {
+    padding-inline: var(--space-1);
+    white-space: normal;
+  }
+
+  .admin-page .admin-shell__content-inner table td[dir="ltr"],
+  .admin-page .admin-shell__content-inner table td.tabular-nums {
+    white-space: nowrap;
+  }
+
+  .admin-page .ui-modal {
+    padding: var(--space-2);
+  }
+
+  .admin-page .ui-modal__dialog {
+    max-block-size: calc(100dvh - (var(--space-2) * 2));
+  }
+}
+
+@media (pointer: coarse) {
+  .admin-page .admin-shell__content-inner a,
+  .admin-page .admin-shell__content-inner button,
+  .admin-page .admin-shell__content-inner [role="button"],
+  .admin-page .admin-shell__content-inner input,
+  .admin-page .admin-shell__content-inner select,
+  .admin-page .admin-shell__content-inner textarea,
+  .admin-page .ui-modal__close,
+  .admin-page .ui-modal__backdrop {
+    min-inline-size: var(--admin-touch-target);
+    min-block-size: var(--admin-touch-target);
+  }
+
+  .admin-page .admin-shell__content-inner a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .admin-page .admin-shell__breadcrumb-link {
+    display: inline-flex;
+    min-inline-size: var(--admin-touch-target);
+    min-block-size: var(--admin-touch-target);
+    align-items: center;
+  }
+
+  .admin-page .admin-shell__content-inner table th > a,
+  .admin-page .admin-shell__content-inner table td > a {
+    min-inline-size: var(--admin-touch-target);
+    min-block-size: var(--admin-touch-target);
+  }
+
+  .admin-page .admin-shell__content-inner .admin-bulk__checkbox {
+    min-inline-size: var(--admin-touch-target);
+    min-block-size: var(--admin-touch-target);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .admin-page .admin-shell__content-inner table tbody tr,
+  .admin-page .admin-shell__content-inner a,
+  .admin-page .admin-shell__content-inner button,
+  .admin-page .admin-shell__content-inner input,
+  .admin-page .admin-shell__content-inner select,
+  .admin-page .admin-shell__content-inner textarea,
+  .admin-page .ui-modal,
+  .admin-page .ui-modal__backdrop,
+  .admin-page .ui-modal__dialog,
+  .admin-page .ui-dropdown__panel {
+    transition: none;
+  }
+}
+
