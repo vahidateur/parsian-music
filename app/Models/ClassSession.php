@@ -67,4 +67,17 @@ class ClassSession extends Model
     {
         return $this->hasMany(ClassAttendance::class, 'class_session_id');
     }
+
+    public function representsStudent(int $studentId): bool
+    {
+        $this->loadMissing('enrollment:id,student_id');
+
+        foreach ([$this->student_id, $this->enrollment?->student_id] as $sessionStudentId) {
+            if ($sessionStudentId !== null && (int) $sessionStudentId === $studentId) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 }

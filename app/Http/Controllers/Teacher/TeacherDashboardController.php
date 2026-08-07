@@ -166,7 +166,17 @@ class TeacherDashboardController extends Controller
 
         $validated = $request->validate([
             'attendance'              => ['required', 'array', 'min:1'],
-            'attendance.*.student_id' => ['required', 'integer', 'exists:students,id'],
+            'attendance.*.student_id' => [
+                'bail',
+                'required',
+                'integer',
+                'exists:students,id',
+                function (string $attribute, mixed $value, \Closure $fail) use ($session): void {
+                    if (! $session->representsStudent((int) $value)) {
+                        $fail('The selected student is invalid.');
+                    }
+                },
+            ],
             'attendance.*.status'     => ['required', 'string', "in:{$statusValues}"],
             'attendance.*.note'       => ['nullable', 'string', 'max:500'],
         ]);

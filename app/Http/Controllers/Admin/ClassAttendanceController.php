@@ -59,7 +59,16 @@ class ClassAttendanceController extends Controller
         $this->authorize('markAttendance', $session);
 
         $validated = $request->validate([
-            'student_id' => ['required', 'exists:students,id'],
+            'student_id' => [
+                'bail',
+                'required',
+                'exists:students,id',
+                function (string $attribute, mixed $value, \Closure $fail) use ($session): void {
+                    if (! $session->representsStudent((int) $value)) {
+                        $fail('The selected student is invalid.');
+                    }
+                },
+            ],
             'status' => ['required', 'string', 'in:' . implode(',', AttendanceStatusEnum::values())],
             'note' => ['nullable', 'string'],
         ]);
