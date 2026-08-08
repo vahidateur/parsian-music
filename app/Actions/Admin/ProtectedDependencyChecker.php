@@ -24,13 +24,15 @@ final class ProtectedDependencyChecker
         $id = $record->getKey();
 
         if ($record instanceof Teacher) {
-            if (StudentEnrollment::query()->where('teacher_id', $id)->exists()) {
+            if (StudentEnrollment::query()->withTrashed()->where('teacher_id', $id)->exists()) {
                 $categories[] = 'enrollment';
             }
             if (Subscription::query()->where('teacher_id', $id)->exists()) {
                 $categories[] = 'subscription';
             }
-            if (Invoice::query()->whereHas('enrollment', fn (Builder $query): Builder => $query->where('teacher_id', $id))->exists()) {
+            if (Invoice::query()->withTrashed()->whereHas('enrollment', function (Builder $query) use ($id): void {
+                $query->withTrashed()->where('teacher_id', $id);
+            })->exists()) {
                 $categories[] = 'invoice';
             }
             if ($this->teacherSessions($id)->exists()) {
@@ -40,13 +42,18 @@ final class ProtectedDependencyChecker
                 $categories[] = 'attendance';
             }
         } else {
-            if (StudentEnrollment::query()->where('student_id', $id)->exists()) {
+            if (StudentEnrollment::query()->withTrashed()->where('student_id', $id)->exists()) {
                 $categories[] = 'enrollment';
             }
             if (Subscription::query()->where('student_id', $id)->exists()) {
                 $categories[] = 'subscription';
             }
-            if (Invoice::query()->where('student_id', $id)->orWhereHas('enrollment', fn (Builder $query): Builder => $query->where('student_id', $id))->exists()) {
+            if (Invoice::query()->withTrashed()->where(function (Builder $query) use ($id): void {
+                $query->where('student_id', $id)
+                    ->orWhereHas('enrollment', function (Builder $enrollment) use ($id): void {
+                        $enrollment->withTrashed()->where('student_id', $id);
+                    });
+            })->exists()) {
                 $categories[] = 'invoice';
             }
             if (ClassAttendance::query()->where('student_id', $id)->exists()) {
@@ -55,7 +62,7 @@ final class ProtectedDependencyChecker
             if ($this->studentSessions($id)->exists()) {
                 $categories[] = 'class_session';
             }
-            if (Lead::query()->where('converted_student_id', $id)->exists()) {
+            if (Lead::query()->withTrashed()->where('converted_student_id', $id)->exists()) {
                 $categories[] = 'converted_lead';
             }
         }
@@ -77,7 +84,9 @@ final class ProtectedDependencyChecker
     {
         return ClassSession::query()->where(function (Builder $query) use ($id): void {
             $query->where('teacher_id', $id)
-                ->orWhereHas('enrollment', fn (Builder $enrollment): Builder => $enrollment->where('teacher_id', $id));
+                ->orWhereHas('enrollment', function (Builder $enrollment) use ($id): void {
+                    $enrollment->withTrashed()->where('teacher_id', $id);
+                });
         });
     }
 
@@ -86,7 +95,9 @@ final class ProtectedDependencyChecker
         return ClassAttendance::query()->whereHas('classSession', function (Builder $query) use ($id): void {
             $query->where(function (Builder $session) use ($id): void {
                 $session->where('teacher_id', $id)
-                    ->orWhereHas('enrollment', fn (Builder $enrollment): Builder => $enrollment->where('teacher_id', $id));
+                    ->orWhereHas('enrollment', function (Builder $enrollment) use ($id): void {
+                        $enrollment->withTrashed()->where('teacher_id', $id);
+                    });
             });
         });
     }
@@ -95,7 +106,9 @@ final class ProtectedDependencyChecker
     {
         return ClassSession::query()->where(function (Builder $query) use ($id): void {
             $query->where('student_id', $id)
-                ->orWhereHas('enrollment', fn (Builder $enrollment): Builder => $enrollment->where('student_id', $id));
+                ->orWhereHas('enrollment', function (Builder $enrollment) use ($id): void {
+                    $enrollment->withTrashed()->where('student_id', $id);
+                });
         });
     }
 }

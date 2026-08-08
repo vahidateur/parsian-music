@@ -12,6 +12,7 @@ use App\Enums\TeacherStatusEnum;
 use App\Models\Student;
 use App\Models\Teacher;
 use Illuminate\Database\Eloquent\Model;
+use RuntimeException;
 
 /** Executes enum-backed teacher and student status transitions. */
 final class StatusTransitionAction
@@ -41,9 +42,27 @@ final class StatusTransitionAction
             return $this->failure($record, 'invalid_transition', 'This student lifecycle status cannot be changed by this action.');
         }
 
-        // save(), including when the value is already equal, is intentional:
-        // same-state bulk writes are successful persisted operations.
-        $record->forceFill(['status' => $target])->save();
+        // A same-state request is still a successful persisted operation. Eloquent's
+        // save() skips an UPDATE when the cast value is not dirty, so write the
+        // requested enum value explicitly and keep the in-memory model in sync.
+        $record->forceFill(['status' => $target]);
+        $attributes = ['status' => $target->value];
+
+        if ($record->usesTimestamps()) {
+            $timestamp = $record->freshTimestamp();
+            $record->setUpdatedAt($timestamp);
+            $attributes['updated_at'] = $record->fromDateTime($timestamp);
+        }
+
+        $updated = $record->newQuery()
+            ->whereKey($record->getKey())
+            ->update($attributes);
+
+        if ($updated !== 1) {
+            throw new RuntimeException('The status transition could not be persisted.');
+        }
+
+        $record->syncOriginal();
 
         return new BulkItemResultData($record->getKey(), BulkItemResultStatusEnum::Succeeded);
     }
