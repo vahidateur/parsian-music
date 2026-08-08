@@ -74,25 +74,25 @@ class Invoice extends Model
 
     /**
      * Recompute and persist the invoice status based on actual payment totals.
-     * Called automatically by InvoiceService::registerPayment().
-     *
-     * Transition map:
-     *   paid == 0              → stays as-is (Issued / Overdue)
-     *   0 < paid < total       → PartiallyPaid
-     *   paid >= total          → Paid
+     * Draft and cancelled invoices retain their explicit lifecycle state.
      */
     public function syncStatusFromPayments(): static
     {
+        if (in_array($this->status, [InvoiceStatusEnum::Draft, InvoiceStatusEnum::Cancelled], true)) {
+            return $this;
+        }
+
         $paid  = $this->amountPaid();
         $total = (float) $this->total;
 
         $target = match (true) {
             $paid >= $total && $total > 0 => InvoiceStatusEnum::Paid,
             $paid > 0                     => InvoiceStatusEnum::PartiallyPaid,
-            default                       => null, // no change
+            $this->due_date?->isPast()    => InvoiceStatusEnum::Overdue,
+            default                       => InvoiceStatusEnum::Issued,
         };
 
-        if ($target && $this->status->canTransitionTo($target)) {
+        if ($this->status !== $target) {
             $this->update(['status' => $target]);
         }
 

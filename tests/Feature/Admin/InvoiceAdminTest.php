@@ -292,7 +292,19 @@ class InvoiceAdminTest extends TestCase
             ->delete(route('admin.invoices.payments.destroy', [$invoice, $payment]))
             ->assertRedirect(route('admin.invoices.show', $invoice));
 
-        $this->assertEquals(2000000, $invoice->refresh()->amountDue());
+        $invoice->refresh();
+
+        $this->assertEquals(2000000, $invoice->amountDue());
+        $this->assertSame(InvoiceStatusEnum::Issued, $invoice->status);
+
+        $this->actingAs($this->admin)
+            ->post(route('admin.invoices.payments.store', $invoice), [
+                'amount' => 2000000,
+                'method' => PaymentMethodEnum::Card->value,
+            ])
+            ->assertRedirect(route('admin.invoices.show', $invoice));
+
+        $this->assertSame(InvoiceStatusEnum::Paid, $invoice->refresh()->status);
     }
 
     public function test_cancelled_invoice_is_not_editable(): void
