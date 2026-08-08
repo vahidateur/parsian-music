@@ -31,7 +31,7 @@ class PolicyAbilityRegistrationTest extends TestCase
     private const ABILITY_MAP = [
         Teacher::class => ['viewAny', 'view', 'create', 'update', 'delete', 'manageInstruments', 'attachInstrument', 'detachInstrument', 'changeStatus'],
         Student::class => ['viewAny', 'view', 'create', 'update', 'delete', 'changeStatus', 'assign'],
-        ClassSession::class => ['viewAny', 'view', 'create', 'update', 'delete', 'markAttendance', 'changeStatus', 'assign', 'generate'],
+        ClassSession::class => ['viewAny', 'view', 'create', 'update', 'preview', 'suggest', 'viewAuditHistory', 'manageSchedulingRules', 'override', 'delete', 'markAttendance', 'changeStatus', 'assign', 'generate'],
         StudentEnrollment::class => ['viewAny', 'view', 'create', 'update', 'delete', 'changeStatus', 'assign'],
         Room::class => ['viewAny', 'view', 'create', 'update', 'delete', 'toggle'],
         Instrument::class => ['viewAny', 'view', 'create', 'update', 'delete', 'toggle'],

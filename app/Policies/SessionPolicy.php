@@ -30,6 +30,36 @@ class SessionPolicy
         return $this->isAdministrator($user);
     }
 
+    /** Non-persisting availability projection for an existing session. */
+    public function preview(User $user, ClassSession $session): bool
+    {
+        return $this->isAdministrator($user);
+    }
+
+    /** Candidate search before any teacher, student, or room facts are read. */
+    public function suggest(User $user): bool
+    {
+        return $this->isAdministrator($user);
+    }
+
+    /** Read the immutable history for an existing session. */
+    public function viewAuditHistory(User $user, ClassSession $session): bool
+    {
+        return $this->isAdministrator($user);
+    }
+
+    /** Change the effective academy scheduling rules. */
+    public function manageSchedulingRules(User $user): bool
+    {
+        return $this->isAdministrator($user);
+    }
+
+    /** Request a documented soft-conflict override for an existing session. */
+    public function override(User $user, ClassSession $session): bool
+    {
+        return $this->isAdministrator($user);
+    }
+
     public function delete(User $user, ClassSession $session): bool
     {
         return $this->isAdministrator($user);
