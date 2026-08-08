@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Actions\Admin\StudentAction;
 use App\DTOs\ConvertLeadData;
 use App\Enums\EnrollmentStatusEnum;
 use App\Enums\LeadStatusEnum;
@@ -14,6 +15,8 @@ use Illuminate\Support\Facades\DB;
 
 class LeadService
 {
+    public function __construct(private readonly StudentAction $students) {}
+
     /**
      * Convert a Lead into a Student.
      *
@@ -34,23 +37,23 @@ class LeadService
                 ->filter()
                 ->implode(' | ');
 
-            $student = Student::create([
+            $student = $this->students->create([
                 'full_name' => $lead->full_name,
-                'phone'     => $lead->phone,
-                'status'    => StudentStatusEnum::Active,
+                'phone' => $lead->phone,
+                'status' => StudentStatusEnum::Active,
                 'join_date' => now()->toDateString(),
-                'notes'     => $notes ?: null,
+                'notes' => $notes ?: null,
             ]);
 
             // ── 2. Create Enrollment (optional) ───────────────────────────
             if ($data->shouldCreateEnrollment() && $lead->preferred_instrument_id && $lead->preferred_teacher_id) {
                 StudentEnrollment::create([
-                    'student_id'    => $student->id,
+                    'student_id' => $student->id,
                     'instrument_id' => $lead->preferred_instrument_id,
-                    'teacher_id'    => $lead->preferred_teacher_id,   // nullable
-                    'skill_level'   => $data->skillLevel,
-                    'status'        => EnrollmentStatusEnum::Active,
-                    'started_at'    => $data->startDate ?? now(),
+                    'teacher_id' => $lead->preferred_teacher_id,   // nullable
+                    'skill_level' => $data->skillLevel,
+                    'status' => EnrollmentStatusEnum::Active,
+                    'started_at' => $data->startDate ?? now(),
                 ]);
             }
 
@@ -60,7 +63,7 @@ class LeadService
             // ── 4. Link Lead → Student ────────────────────────────────────
             $lead->update([
                 'converted_student_id' => $student->id,
-                'converted_at'         => now(),
+                'converted_at' => now(),
             ]);
 
             // ── Extension points (no-ops until wired in future sprints) ──
@@ -98,7 +101,7 @@ class LeadService
     {
         if ($lead->isConverted()) {
             throw new DomainException(
-                "Lead #{$lead->id} ({$lead->full_name}) has already been converted to " .
+                "Lead #{$lead->id} ({$lead->full_name}) has already been converted to ".
                 "Student #{$lead->converted_student_id}."
             );
         }
@@ -111,7 +114,7 @@ class LeadService
 
         if (! $lead->status->canTransitionTo(LeadStatusEnum::Registered)) {
             throw new DomainException(
-                "Lead #{$lead->id} must reach 'TrialScheduled' before conversion. " .
+                "Lead #{$lead->id} must reach 'TrialScheduled' before conversion. ".
                 "Current status: '{$lead->status->label()}'."
             );
         }

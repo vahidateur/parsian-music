@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace App\Actions\Admin;
 
+use App\Domain\Scheduling\BusinessCodeOwner;
 use App\Enums\TeacherStatusEnum;
 use App\Models\Teacher;
 use App\Support\PersianTextNormalizer;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 
 /**
  * Teacher mutations.
@@ -32,12 +34,14 @@ final class TeacherAction
         'bio' => PersianTextNormalizer::MULTILINE,
     ];
 
+    public function __construct(private readonly BusinessCodeOwner $codes) {}
+
     /**
      * @param  array<string, mixed>  $data
      */
     public function create(array $data): Teacher
     {
-        return Teacher::create($this->attributes($data));
+        return $this->codes->createTeacher($this->attributes($data));
     }
 
     /**
@@ -48,6 +52,11 @@ final class TeacherAction
         $teacher->update($this->attributes($data));
 
         return $teacher;
+    }
+
+    public function backfill(Teacher $teacher): Teacher
+    {
+        return $this->codes->backfillTeacher($teacher);
     }
 
     public function delete(Teacher $teacher): void
@@ -63,10 +72,19 @@ final class TeacherAction
      */
     private function attributes(array $data): array
     {
+        $this->rejectCodeMutation($data);
         $data = PersianTextNormalizer::fields($data, self::NORMALIZED_FIELDS);
 
         $data['status'] = $data['status'] ?? TeacherStatusEnum::Active->value;
 
         return $data;
+    }
+
+    /** @param array<string, mixed> $data */
+    private function rejectCodeMutation(array $data): void
+    {
+        if (array_key_exists('teacher_code', $data)) {
+            throw ValidationException::withMessages(['teacher_code' => __('validation.missing')]);
+        }
     }
 }

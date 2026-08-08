@@ -32,6 +32,7 @@ class StudentRequest extends AdminFormRequest
         $student = $this->route('student');
 
         return [
+            'student_code' => ['missing'],
             'full_name' => ['required', 'string', 'max:255'],
             'phone' => [
                 'required',

@@ -2,14 +2,13 @@
 
 namespace App\Models;
 
-use App\Enums\EnrollmentStatusEnum;
+use App\Domain\Scheduling\BusinessCodeOwner;
 use App\Enums\TeacherStatusEnum;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 
 class Teacher extends Model
 {
@@ -30,13 +29,8 @@ class Teacher extends Model
 
     protected static function booted(): void
     {
-        static::creating(function (self $teacher) {
-            if (empty($teacher->teacher_code)) {
-                $teacher->teacher_code = 'T-' . str_pad(
-                    (static::max('id') ?? 0) + 1,
-                    5, '0', STR_PAD_LEFT
-                );
-            }
+        static::creating(static function (self $teacher): void {
+            app(BusinessCodeOwner::class)->ensureTeacherCode($teacher);
         });
     }
 
