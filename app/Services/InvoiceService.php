@@ -161,12 +161,13 @@ class InvoiceService
     /**
      * Register a payment against an invoice.
      *
-     * Supports full and partial payments — multiple calls accumulate.
-     * Invoice status is automatically synced:
+     * Supports full and partial payments — multiple calls accumulate. The invoice
+     * row is locked while its current status and balance are checked so concurrent
+     * registrations cannot overpay it. Invoice status is automatically synced:
      *   paid < total  → PartiallyPaid
      *   paid >= total → Paid
      *
-     * @throws DomainException if the invoice is Cancelled or already fully Paid.
+     * @throws DomainException if the invoice cannot accept the payment.
      */
     public function registerPayment(
         Invoice           $invoice,
@@ -176,29 +177,37 @@ class InvoiceService
         ?string           $notes      = null,
         ?int              $createdBy  = null,
     ): InvoicePayment {
-        if ($invoice->status === InvoiceStatusEnum::Draft) {
-            throw new DomainException(
-                "Invoice #{$invoice->invoice_number} must be issued before payments can be registered."
-            );
-        }
-
-        if ($invoice->status === InvoiceStatusEnum::Cancelled) {
-            throw new DomainException(
-                "Invoice #{$invoice->invoice_number} is cancelled — payments cannot be registered."
-            );
-        }
-
-        if ($invoice->status === InvoiceStatusEnum::Paid) {
-            throw new DomainException(
-                "Invoice #{$invoice->invoice_number} is already fully paid."
-            );
-        }
-
         if ($amount <= 0) {
             throw new DomainException('Payment amount must be greater than zero.');
         }
 
         return DB::transaction(function () use ($invoice, $amount, $method, $reference, $notes, $createdBy): InvoicePayment {
+            $invoice = Invoice::query()->lockForUpdate()->findOrFail($invoice->getKey());
+
+            if ($invoice->status === InvoiceStatusEnum::Draft) {
+                throw new DomainException(
+                    "Invoice #{$invoice->invoice_number} must be issued before payments can be registered."
+                );
+            }
+
+            if ($invoice->status === InvoiceStatusEnum::Cancelled) {
+                throw new DomainException(
+                    "Invoice #{$invoice->invoice_number} is cancelled — payments cannot be registered."
+                );
+            }
+
+            if ($invoice->status === InvoiceStatusEnum::Paid) {
+                throw new DomainException(
+                    "Invoice #{$invoice->invoice_number} is already fully paid."
+                );
+            }
+
+            if ($amount > $invoice->amountDue()) {
+                throw new DomainException(
+                    "Payment amount exceeds the outstanding balance for invoice #{$invoice->invoice_number}."
+                );
+            }
+
             $payment = $invoice->payments()->create([
                 'amount'     => $amount,
                 'paid_at'    => now(),

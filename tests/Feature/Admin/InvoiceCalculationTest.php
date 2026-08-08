@@ -12,6 +12,7 @@ use App\Models\Student;
 use App\Models\StudentEnrollment;
 use App\Models\Teacher;
 use App\Services\InvoiceService;
+use DomainException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -246,6 +247,31 @@ class InvoiceCalculationTest extends TestCase
         $this->assertEquals(1900000, $invoice->amountPaid());
         $this->assertEquals(0.0, $invoice->amountDue());
         $this->assertSame(InvoiceStatusEnum::Paid, $invoice->status);
+    }
+
+    public function test_stale_payment_attempt_cannot_overpay_invoice(): void
+    {
+        $invoice = $this->makeInvoice([[4, 500000, 0]]);
+        $this->service->issue($invoice);
+
+        // Models represent two requests that both passed form validation using the
+        // same pre-payment balance. This is deterministic; it does not exercise
+        // database lock-wait semantics.
+        $firstAttempt = Invoice::findOrFail($invoice->id);
+        $staleSecondAttempt = Invoice::findOrFail($invoice->id);
+
+        $this->service->registerPayment($firstAttempt, 1200000, PaymentMethodEnum::Cash);
+
+        try {
+            $this->service->registerPayment($staleSecondAttempt, 1200000, PaymentMethodEnum::Card);
+        } catch (DomainException) {
+            // The current, locked invoice state correctly rejects the stale attempt.
+        }
+
+        $invoice->refresh();
+
+        $this->assertEquals(1200000, $invoice->amountPaid());
+        $this->assertLessThanOrEqual((float) $invoice->total, $invoice->amountPaid());
     }
 
     public function test_amount_due_never_goes_negative(): void
