@@ -1,0 +1,59 @@
+# Bugfix Requirements Document
+
+## Introduction
+
+The calendar remains a read-only projection of persisted `class_sessions`, but active recurring schedules have no scheduled generation invoker, configurable time-based rolling horizon, or approved instrument-to-room preference and fallback behavior. Demo data does not model the required operating timetable, and manual session create/edit workflows cannot present authoritative availability before saving. Student and teacher records also lack the requested identity-profile persistence, normalized identity validation, profile-media lifecycle, and complete shared detail presentation. The repair must extend the existing owners without introducing a parallel calendar, scheduler, routes, policies, DTOs, services, or business logic.
+
+## Bug Analysis
+
+### Current Behavior (Defect)
+
+1.1 WHEN an active recurring schedule has an occurrence after the current day and within the configured time-based rolling horizon, THEN the system creates no persisted `class_sessions` record unless an administrator manually runs generation because recurring generation has no scheduled invoker and uses a fixed eight-occurrence window rather than successive calendar-month blocks through that horizon.
+1.2 WHEN the requested date range contains a recurring occurrence but no persisted `class_sessions` record, THEN the system returns no calendar event because the calendar correctly reads persisted records only.
+1.3 WHEN a recurring occurrence belongs to Violin, Piano, Voice, Guitar, or Drums, THEN the system does not apply the required preferred-room mapping of Violin→101, Piano→103, Voice→102, Guitar→102, and Drums→104; WHEN that preferred room is unavailable, inactive, missing, or conflicts at an occurrence, THEN the system skips the occurrence or persists that room instead of selecting the next compatible active available room.
+1.4 WHEN recurring generation runs again for an already-generated occurrence, THEN the system relies on a non-atomic in-memory duplicate check without a persisted uniqueness guarantee.
+1.5 WHEN a calendar caller supplies an instrument or status filter, THEN the system does not validate, render, or apply that filter to persisted session membership.
+1.6 WHEN an administrator creates or updates a student or teacher identity profile, THEN the system cannot persist a national ID, optional email, guardian identity, employment/specialty data, profile photo paths, or the requested profile attributes.
+1.7 WHEN a student or teacher submits an Iranian phone number with Persian/Arabic digits, spaces, punctuation, or an Iranian country prefix, THEN the system preserves a noncanonical value and can treat equivalent numbers as different values.
+1.8 WHEN a national ID is supplied for a student or teacher, THEN the system has no Iranian national-ID checksum validation, persisted uniqueness rule, or configurable per-profile requiredness.
+1.9 WHEN an administrator uploads or replaces a student or teacher photo, THEN the system has no profile-owned upload, replacement cleanup, thumbnail, medium, original-path, or default-avatar behavior.
+1.10 WHEN an administrator views student or teacher detail, THEN the pages use separate templates and the student page directly renders loaded relations, so profile identity and related operational data are not rendered through a shared detail component and fully resolved display data.
+1.11 WHEN an administrator views a teacher or student profile, THEN teacher work-schedule and specialty context, and student guardian, instrument, level, enrollment, teacher, subscription, and attendance context are incomplete or unavailable in the profile display.
+1.12 WHEN `DemoSeeder` creates class sessions, THEN it creates Friday records, leaves multi-hour gaps in the 09:00–21:00 operating window, uses 45- and 90-minute durations, and bulk-inserts rows instead of modelling the required persisted `ClassSession` session distribution.
+1.13 WHEN an administrator supplies create or edit scheduling inputs before submitting a session form, THEN the system provides no server-computed candidate slots with an explicit `AVAILABLE` or `CONFLICT` state.
+1.14 WHEN a proposed create or edit slot overlaps a direct or recurring session, THEN the system exposes only a generic submit-time validation error and no teacher, student, room, blocking session, or time detail.
+1.15 WHEN a proposed slot overlaps a cancelled session or a completed historical session, THEN the existing conflict query treats both statuses as blocking rather than leaving cancelled sessions non-blocking and completed historical sessions blocking.
+
+### Expected Behavior (Correct)
+
+2.1 WHEN an active recurring schedule has an occurrence after the current day and within the configurable time-based rolling horizon, THEN the system SHALL invoke the existing recurring-generation owner on a scheduled daily run and generate successive calendar-month blocks until every eligible occurrence through that horizon is persisted before Calendar reads it; the default horizon SHALL be 30 days, and inactive schedules SHALL cease generating sessions.
+2.2 WHEN recurring generation runs repeatedly or concurrently for the same active schedule and occurrence, THEN the system SHALL persist exactly one session for that schedule, enrollment, date, and start time.
+2.3 WHEN a recurring occurrence is generated for a mapped instrument, THEN the system SHALL prefer Violin→101, Piano→103, Voice→102, Guitar→102, and Drums→104, and SHALL use that preferred room only when it resolves to an active persisted room with no room conflict; it SHALL still reject teacher and enrollment overlaps.
+2.4 WHEN a mapped preferred room is unavailable, inactive, missing, or overlaps, THEN the system SHALL select the next compatible active persisted room in the established room-option order without a room conflict; when none is available, it SHALL create no session and no synthetic calendar event.
+2.5 WHEN a persisted session falls within an explicitly requested inclusive range and matches supplied teacher, student, instrument, room, and status filters, THEN the system SHALL project it exactly once through the existing Calendar query, resource, FullCalendar adapter, and browser rendering with its stable identifier.
+2.6 WHEN an authorized administrator creates or updates a student or teacher, THEN the system SHALL persist the approved identity-profile attributes through the existing Form Request, Action, model, and policy boundaries.
+2.7 WHEN a student or teacher submits an Iranian phone number, THEN the system SHALL canonicalize equivalent Iranian mobile representations before uniqueness validation and persistence.
+2.8 WHEN a national ID is supplied, THEN the system SHALL validate its Iranian checksum and enforce uniqueness; WHEN the configured requirement for that profile type is enabled, THEN the system SHALL require the national ID.
+2.9 WHEN an optional email is supplied, THEN the system SHALL validate and enforce the approved unique-email scope while preserving a null email when none is supplied.
+2.10 WHEN an authorized administrator uploads or replaces a valid profile photo, THEN the system SHALL preserve original, medium, and thumbnail paths, safely replace superseded managed files, and render the configured default avatar when no managed photo exists.
+2.11 WHEN an administrator views a student or teacher detail page, THEN the system SHALL use a shared component and resolved display data to show the approved identity fields plus teacher employment, specialties, instruments, and work schedule, or student guardian, instruments, levels, enrollments, teachers, subscriptions, and attendance.
+2.12 WHEN `DemoSeeder` creates class sessions, THEN the system SHALL persist realistic `ClassSession` records on every Saturday through Thursday from 09:00 through 21:00, SHALL create none on Friday, SHALL use a 99% 30-minute and 1% 60-minute duration distribution, and SHALL avoid the approved maximum idle gap within each seeded operating day.
+2.13 WHEN an authorized administrator supplies valid create or edit scheduling inputs before saving, THEN the system SHALL compute candidate slots through the existing session scheduling boundary and return each candidate with an explicit `AVAILABLE` or `CONFLICT` state without creating or updating a session.
+2.14 WHEN a candidate slot is in `CONFLICT`, THEN the system SHALL identify each conflicting resource type among teacher, student, and room and SHALL provide the blocking persisted session and its time range.
+2.15 WHEN a candidate or final create/edit validation evaluates an overlap, THEN the system SHALL use the same authoritative conflict rules for direct and recurring sessions, SHALL treat cancelled sessions as non-blocking, and SHALL treat completed historical sessions as blocking.
+
+### Unchanged Behavior (Regression Prevention)
+
+3.1 WHEN Calendar receives a request, THEN the system SHALL CONTINUE TO perform no generation, reconciliation, fallback, or write and SHALL return only persisted sessions in the inclusive range subject only to explicit filters.
+3.2 WHEN a direct or enrollment-backed persisted session matches the Calendar request, THEN the system SHALL CONTINUE TO preserve its stable identifier, relation-path checks, eager loading, room-resolution metadata, JSON DTO contract, and FullCalendar RTL rendering.
+3.3 WHEN an administrator uses the existing manual recurring-generation action, THEN the system SHALL CONTINUE TO enforce the existing authorization policy and use the same recurring-generation owner, configured horizon, preferred-room mapping, and active-room fallback behavior as the scheduled run.
+3.4 WHEN existing manual session creation, editing, room-history filtering, attendance, policies, DTOs, routes, demo fixtures, or conflict tests run, THEN the system SHALL CONTINUE TO preserve their ownership and behavior without a parallel calendar or scheduling implementation.
+3.5 WHEN existing student or teacher records have no new identity data, THEN the system SHALL CONTINUE TO display a localized absent-value state and preserve their existing enrollment, subscription, attendance, and user-avatar data.
+3.6 WHEN a profile photo is absent or replaced, THEN the system SHALL CONTINUE TO leave unrelated user-avatar files and unrelated public-storage assets unchanged.
+3.7 WHEN a non-administrator requests student or teacher profile mutation, THEN the system SHALL CONTINUE TO deny the request through the existing named policies and routes.
+3.8 WHEN no approved profile setting changes the national-ID requirement, THEN the system SHALL CONTINUE TO apply the documented default requiredness for each profile type.
+3.9 WHEN existing records contain phone values that are already canonical and nonconflicting, THEN the system SHALL CONTINUE TO preserve their identity and associations after normalization migration.
+3.10 WHEN Calendar receives a request, THEN the system SHALL CONTINUE TO return only persisted sessions and SHALL NOT expose preview candidates, generate sessions, or synthesize availability events.
+3.11 WHEN a create or edit preview reports an `AVAILABLE` candidate, THEN the system SHALL CONTINUE TO perform the existing authoritative conflict validation and transactional persistence at final save so a concurrent conflicting write cannot be accepted.
+3.12 WHEN the demo seeder, manual create/edit flow, recurring generator, or Calendar flow handles `class_sessions`, THEN the system SHALL CONTINUE TO use the established `ClassSession` persistence model, `RoomResolver`, `RoomOptionProvider`, `SessionGeneratorService`, and single conflict/calendar ownership without a duplicate calendar, room-resolution, room-option, or conflict engine.
+3.13 WHEN a candidate preview is requested, THEN the system SHALL CONTINUE TO leave `class_sessions`, subscriptions, attendance, recurring schedules, and Calendar output unchanged.

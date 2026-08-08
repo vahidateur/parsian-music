@@ -19,7 +19,7 @@
     - Keep fixtures database-backed where integration behavior is under test and use domain doubles for PBT iterations.
     - _Requirements: 3.3–3.10, 4.5–4.8, 7.2–7.15, 9.1–9.12, 10.1–10.10_
 
-- [ ] 2. Implement selection context and bulk backend execution
+- [x] 2. Implement selection context and bulk backend execution
   - [x] 2.1 Implement `SelectionContextService` plus teacher/student list query services and `BulkRowViewData`.
     - Preserve existing filters, sort whitelist and pagination; sign an immutable entity/filter/sort snapshot that excludes page and supports expiry/invalidation and server-side all-filtered resolution.
     - _Requirements: 1.1–1.8, 2.1–2.6, 5.9_
@@ -29,7 +29,7 @@
   - [x] 2.3 Implement `BulkAuthorizationService` using `viewAny` and per-record `update`/`delete` Policy/Gate checks.
     - Ensure authorization occurs before resolving or mutating unauthorized selections and never depends on hidden UI controls or role-only checks.
     - _Requirements: 4.6, 5.1–5.3, 5.8, 6.1_
-  - [~] 2.4 Implement `StatusTransitionAction`, `ProtectedDependencyChecker`, `DeleteTeacherAction`, `DeleteStudentAction` and `BulkActionService`.
+  - [x] 2.4 Implement `StatusTransitionAction`, `ProtectedDependencyChecker`, `DeleteTeacherAction`, `DeleteStudentAction` and `BulkActionService`.
     - Use entity Enums, persist same-state status writes as success, reject paused/graduated/unknown raw statuses, process valid items in independent locked transactions, and preserve protected dependencies without cascading.
     - _Requirements: 3.3–3.10, 4.5–4.8, 6.1–6.7_
   - [x] 2.5 Implement `BulkResultResource` and localized result/error payloads.
@@ -74,23 +74,23 @@
     - Cover mobile touch targets and no horizontal overflow at the mandated viewport widths.
     - _Requirements: 1.1–1.8, 2.1–2.8, 4.1–4.4, 12.1–12.7_
 
-- [ ] 4. Implement relation, room and session-edit backend services
-  - [~] 4.1 Implement `RelationPathResolver` with enrollment/direct tuple loading and conflict/missing-path classification.
+- [x] 4. Implement relation, room and session-edit backend services
+  - [x] 4.1 Implement `RelationPathResolver` with enrollment/direct tuple loading and conflict/missing-path classification.
     - Return one canonical `ResolvedRelationPath`; never combine names from conflicting paths and expose only stable IDs in diagnostics.
     - _Requirements: 7.3, 7.8–7.9, 9.3–9.6_
-  - [~] 4.2 Implement `RoomResolver` and `RoomOptionProvider` against persisted `Room` records.
+  - [x] 4.2 Implement `RoomResolver` and `RoomOptionProvider` against persisted `Room` records.
     - Support active/inactive/unresolved/null resolution, exact-name validation, batch lookup and capacity checks for the legacy string column; never create synthetic options.
     - _Requirements: 7.4, 10.1–10.10_
-  - [~] 4.3 Implement `SessionEditRequest`, named `admin.sessions.edit/update` routes and thin `ClassSessionController` edit/update orchestration.
+  - [x] 4.3 Implement `SessionEditRequest`, named `admin.sessions.edit/update` routes and thin `ClassSessionController` edit/update orchestration.
     - Whitelist editable fields, reject protected fields when submitted, validate persisted relations, room rules, dates/times/duration/status, `updated_at` and signed return context.
     - _Requirements: 7.1–7.5, 7.10–7.12_
-  - [~] 4.4 Implement transactional `SessionEditService` and conflict re-checks.
+  - [x] 4.4 Implement transactional `SessionEditService` and conflict re-checks.
     - Lock and re-read the session, resolve one relation path, reload Room, rerun schedule conflicts on relevant changes, update only permitted fields, and keep subscription/derived counters consistent or roll back together.
     - _Requirements: 7.6–7.10, 7.15_
-  - [~] 4.5 Migrate existing session create/store flow to `RoomOptionProvider` and the same Form Request/service room contract.
+  - [x] 4.5 Migrate existing session create/store flow to `RoomOptionProvider` and the same Form Request/service room contract.
     - Remove hardcoded room names while preserving existing route behavior and allowing unchanged inactive/unresolved historical room values only on permitted edits.
     - _Requirements: 7.4, 10.3–10.6_
-  - [~] 4.6 Implement `UpdateSessionNotesRequest`, `SessionNotesNormalizer` and transactional `SessionNotesService`.
+  - [x] 4.6 Implement `UpdateSessionNotesRequest`, `SessionNotesNormalizer` and transactional `SessionNotesService`.
     - Authorize before notes resolution/validation, trim Unicode boundaries, normalize empty to null, derive length limits from schema/config, enforce optimistic concurrency and return an HTML-safe persisted DTO.
     - _Requirements: 8.1–8.10, 11.3, 11.6–11.7_
   - [ ]* 4.7 Write the Eris PBT for **Property 7: Session edit protected-field and failure invariant** using the exact design-property tag.
@@ -103,28 +103,28 @@
     - Assert missing sessions never create replacements and controllers remain orchestration-only.
     - _Requirements: 7.1–7.15, 8.1–8.10_
 
-- [ ] 5. Add session-list and session-edit views
-  - [~] 5.1 Extend `admin.sessions.index` with eager-loaded `SessionDisplayData`, authorized named edit links and persisted active/inactive room filter options.
+- [x] 5. Add session-list and session-edit views
+  - [x] 5.1 Extend `admin.sessions.index` with eager-loaded `SessionDisplayData`, authorized named edit links and persisted active/inactive room filter options.
     - Keep pagination/filter/sort context and display inactive historical or unresolved legacy room values without query execution in Blade.
     - _Requirements: 7.1, 7.12–7.14, 10.2, 10.5–10.6_
-  - [~] 5.2 Implement the session edit form using semantic labels, existing Design System Button/Card/Table variants and the exact editable field set.
+  - [x] 5.2 Implement the session edit form using semantic labels, existing Design System Button/Card/Table variants and the exact editable field set.
     - Render active replacement rooms, historical inactive values and unavailable legacy values honestly; preserve signed return context and localized field errors.
     - _Requirements: 7.2–7.5, 7.10–7.12, 10.3–10.6, 12.1–12.3, 12.7_
   - [ ]* 5.3 Add browser/feature tests for named edit entry points, persisted values, protected-field rejection, room option behavior and same filter/sort/page redirect.
     - Assert no fake/default room or replacement session is rendered.
     - _Requirements: 7.1–7.14, 10.2–10.6_
 
-- [ ] 6. Implement the real calendar API and room-aware query pipeline
-  - [~] 6.1 Implement `CalendarEventRequest` and `CalendarQueryService` for valid date ranges, persisted filters, eager-loaded enrollment/direct relations and one explicit parameterized room batch query.
+- [x] 6. Implement the real calendar API and room-aware query pipeline
+  - [x] 6.1 Implement `CalendarEventRequest` and `CalendarQueryService` for valid date ranges, persisted filters, eager-loaded enrollment/direct relations and one explicit parameterized room batch query.
     - Preserve the existing ۹۲-day contract; reject missing/malformed/reversed/oversized ranges and invalid filters before returning data.
     - _Requirements: 9.1, 9.3, 9.8, 10.7–10.8, 12.9_
-  - [~] 6.2 Update `CalendarEventResource` and `SessionDisplayMapper` to map only persisted session data.
+  - [x] 6.2 Update `CalendarEventResource` and `SessionDisplayMapper` to map only persisted session data.
     - Include stable ID, date/time/end, duration, status/label, notes/version, room, `Room_Resolution`, relation DTO and `can_update_notes` without queries or mixed fallback names.
     - _Requirements: 9.2, 9.4–9.7, 11.1–11.2, 11.8_
-  - [~] 6.3 Wire `CalendarController` and real room filter options to the existing named `admin.calendar.events` feed.
+  - [x] 6.3 Wire `CalendarController` and real room filter options to the existing named `admin.calendar.events` feed.
     - Resolve active/inactive rooms from database records, return exact filter-scoped sessions, preserve empty results and never emit client-only/fake data.
     - _Requirements: 9.1, 9.10, 10.1, 10.7–10.10, 12.11–12.12_
-  - [~] 6.4 Add relation-conflict diagnostics and generic error handling at the calendar boundary.
+  - [x] 6.4 Add relation-conflict diagnostics and generic error handling at the calendar boundary.
     - Return the defined 409/422/500 responses, log only stable session/relation identifiers for conflicts, and exclude SQL, stack traces, credentials and sensitive values.
     - _Requirements: 9.6, 9.8–9.9, 10.8, 12.12_
   - [ ]* 6.5 Write the Eris/domain PBT for **Property 9: Calendar source consistency** using the exact design-property tag.
@@ -143,22 +143,22 @@
     - Assert no N+1 and no mock/fake/sample/default session/person/instrument/room data.
     - _Requirements: 9.1–9.12, 10.1–10.10, 12.9, 12.12_
 
-- [ ] 7. Extend the existing calendar UI and notes drawer
-  - [~] 7.1 Connect the existing FullCalendar orchestrator and filter modules to the real event/resource contract and persisted room options.
+- [x] 7. Extend the existing calendar UI and notes drawer
+  - [x] 7.1 Connect the existing FullCalendar orchestrator and filter modules to the real event/resource contract and persisted room options.
     - Preserve last successfully rendered real events on feed errors, show retry on failure, and show the existing localized empty state for an honest empty response.
     - _Requirements: 9.10–9.12, 10.1, 10.7–10.8, 12.11–12.12_
-  - [~] 7.2 Extend the existing event drawer with Alpine persisted/draft notes state and the named notes PATCH endpoint.
+  - [x] 7.2 Extend the existing event drawer with Alpine persisted/draft notes state and the named notes PATCH endpoint.
     - Implement authorization-aware edit control, duplicate-submit prevention, busy state, success replacement/refetch, 403/409/422/500 retry behavior and draft/persisted separation.
     - _Requirements: 8.1–8.8, 8.10, 9.12, 11.1–11.7_
-  - [~] 7.3 Apply the existing RTL, Design System, accessibility and responsive contracts to bulk UI, session list/edit and calendar drawer.
+  - [x] 7.3 Apply the existing RTL, Design System, accessibility and responsive contracts to bulk UI, session list/edit and calendar drawer.
     - Preserve semantic controls, `role=dialog`, `aria-modal`, heading linkage, `x-trap`, Escape/focus restoration, live announcements, reduced-motion behavior, logical CSS and 44px coarse-pointer targets at 390–1920px.
     - _Requirements: 11.3–11.8, 12.1–12.10_
   - [ ]* 7.4 Add browser/accessibility/visual smoke tests for real calendar events, drawer focus lifecycle, notes states, retry/refetch, room resolution, RTL labels, reduced motion, touch targets and no horizontal overflow at 390, 430, 768, 1024, 1366, 1600 and 1920 widths.
     - Assert no inline presentation styles/handlers and no client-only persisted data contracts.
     - _Requirements: 8.1–8.8, 9.10–9.12, 11.1–11.8, 12.1–12.12_
 
-- [ ] 8. Complete authorization, audit and relation-observability coverage
-  - [~] 8.1 Add named-route security feature tests covering authentication, CSRF, Policy/Gate bypass attempts, authorization-before-resolution and wrong-entity/tampered-context rejection for every state-changing endpoint.
+- [x] 8. Complete authorization, audit and relation-observability coverage
+  - [x] 8.1 Add named-route security feature tests covering authentication, CSRF, Policy/Gate bypass attempts, authorization-before-resolution and wrong-entity/tampered-context rejection for every state-changing endpoint.
     - Assert forbidden requests do not resolve protected targets or mutate records; notes authorization precedes notes validation/resolution.
     - _Requirements: 5.1–5.8, 8.10, 11.3, 12.11_
   - [ ]* 8.2 Write the Eris/integration PBT for **Property 13: Authorization non-mutation and ordering** using the exact design-property tag.
@@ -174,18 +174,18 @@
     - Verify policy, CSRF and transaction boundaries through the real named routes.
     - _Requirements: 4.9–4.13, 5.1–5.8, 6.6–6.8, 9.6_
 
-- [ ] 9. Wire the complete feature and verify cross-module contracts
-  - [~] 9.1 Register all named routes, policy mappings, service bindings, resources, view data providers and frontend module imports without introducing anonymous routes or duplicate UI components.
+- [x] 9. Wire the complete feature and verify cross-module contracts
+  - [x] 9.1 Register all named routes, policy mappings, service bindings, resources, view data providers and frontend module imports without introducing anonymous routes or duplicate UI components.
     - Ensure controllers remain thin and all mutations use the specified Form Request → Policy → Service/Action → Resource/DTO boundaries.
     - _Requirements: 5.8–5.9, 7.1, 8.10, 9.1, 11.3, 12.8, 12.11_
-  - [~] 9.2 Add cross-module feature tests for post-session-edit calendar refresh, post-notes-save event refresh, room filter consistency, list context preservation and real-data-only responses.
+  - [x] 9.2 Add cross-module feature tests for post-session-edit calendar refresh, post-notes-save event refresh, room filter consistency, list context preservation and real-data-only responses.
     - Cover persisted values across list, edit form, calendar event and drawer without fallback substitution.
     - _Requirements: 7.12–7.14, 8.6–8.8, 9.7, 9.10–9.12, 10.5–10.8_
   - [ ]* 9.3 Add the final automated acceptance suite that runs the required unit, PBT, integration, security, browser/accessibility and responsive checks with property tags discoverable in test output.
     - Include at least 100 iterations for each PBT and preserve the existing project test/build conventions.
     - _Requirements: 1.1–1.8, 2.1–2.8, 3.1–3.13, 4.1–4.13, 5.1–5.9, 6.1–6.8, 7.1–7.15, 8.1–8.10, 9.1–9.12, 10.1–10.10, 11.1–11.8, 12.1–12.12_
 
-- [~] 10. Checkpoint - Ensure all tests pass, ask the user if questions arise.
+- [x] 10. Checkpoint - Ensure all tests pass, ask the user if questions arise.
 
 ## Notes
 

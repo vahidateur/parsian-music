@@ -27,6 +27,7 @@ This specification defines acceptance outcomes for current rendering regressions
 - **Standard_Event_Presentation**: The existing duration-adaptive presentation used for a rendered Calendar_Event with a duration of 60 minutes or longer.
 - **Readable_Name_Presentation**: Simultaneous visual presentation of the complete Student_Display_Name and complete Teacher_Display_Name without clipping, truncation, ellipsis, pointer hover, keyboard focus, or opening event details.
 - **Jalali_Label**: The Jalali calendar date shown by the Admin_Calendar for a Calendar_Day.
+- **Confirmed_Jalali_Association**: A confirmed relationship between a Jalali_Label and the corresponding Gregorian Calendar_Day in the Calendar_Timezone.
 - **Timezone_Offset_Transition**: A change to the UTC offset applicable to the Calendar_Timezone.
 - **First_Post_Persistence_Successful_Refresh**: The earliest event refresh that completes successfully after a Persisted_Session is saved.
 - **External_Owner**: The team responsible for a dependency outside the Calendar_Rendering_Owner boundary.
@@ -53,11 +54,12 @@ Calendar_Rendering_Owner owns observable conversion, discovery, and readable pre
 
 #### Acceptance Criteria
 
-1. WHEN a successful event refresh completes for a Displayed_Range, THE Calendar_Rendering_Owner SHALL create exactly one Calendar_Event for each Renderable_Session with Displayed_Range_Membership and a successful Calendar_Event_Conversion.
-2. WHEN a successful event refresh completes for a Displayed_Range, THE Calendar_Rendering_Owner SHALL omit each Persisted_Session identifier that lacks Displayed_Range_Membership or a successful Calendar_Event_Conversion.
-3. WHEN an existing Renderable_Session has Displayed_Range_Membership and a successful Calendar_Event_Conversion, THE Calendar_Rendering_Owner SHALL include the Persisted_Session identifier in the Visible_Event_Set.
-4. WHEN a Persisted_Session starts at the inclusive start instant of a Displayed_Range and has a successful Calendar_Event_Conversion, THE Calendar_Rendering_Owner SHALL include the Persisted_Session identifier in the Visible_Event_Set.
-5. WHEN a Persisted_Session starts at the exclusive end instant of a Displayed_Range, THE Calendar_Rendering_Owner SHALL omit the Persisted_Session identifier from the Visible_Event_Set regardless of the Calendar_Event_Conversion outcome.
+1. WHEN a successful event refresh completes for a Displayed_Range, THE Calendar_Rendering_Owner SHALL create exactly one Calendar_Event, identified by the Persisted_Session identifier, for each Renderable_Session whose time interval has Displayed_Range_Membership and whose Calendar_Event_Conversion succeeds, and SHALL not create duplicate Calendar_Events for one Persisted_Session identifier.
+2. WHEN a successful event refresh completes for a Displayed_Range, THE Calendar_Rendering_Owner SHALL omit from the Visible_Event_Set every Persisted_Session identifier whose time interval lacks Displayed_Range_Membership or whose Calendar_Event_Conversion fails, and SHALL not create a Calendar_Event for an identifier whose conversion fails.
+3. WHEN an existing Renderable_Session has Displayed_Range_Membership and a successful Calendar_Event_Conversion, THE Calendar_Rendering_Owner SHALL include the Persisted_Session identifier exactly once in the Visible_Event_Set.
+4. WHEN a Persisted_Session starts at the inclusive start instant of a Displayed_Range, THE Calendar_Rendering_Owner SHALL include the Persisted_Session identifier exactly once in the Visible_Event_Set when Calendar_Event_Conversion succeeds, and SHALL omit the identifier and SHALL not create its Calendar_Event when Calendar_Event_Conversion fails.
+5. WHEN a zero-duration Displayed_Range has equal start and end instants, THE Calendar_Rendering_Owner SHALL omit every Renderable_Session identifier from the Visible_Event_Set and SHALL not create a Calendar_Event, because no session interval has Displayed_Range_Membership in an empty half-open range.
+6. WHEN a Persisted_Session starts at the exclusive end instant of a Displayed_Range, THE Calendar_Rendering_Owner SHALL omit the Persisted_Session identifier from the Visible_Event_Set and SHALL not create its Calendar_Event regardless of the Calendar_Event_Conversion outcome.
 
 ### Requirement 2: Deterministic New-Session Visibility
 
@@ -65,9 +67,11 @@ Calendar_Rendering_Owner owns observable conversion, discovery, and readable pre
 
 #### Acceptance Criteria
 
-1. WHEN a newly Persisted_Session has Displayed_Range_Membership and a successful Calendar_Event_Conversion at the First_Post_Persistence_Successful_Refresh, THE Calendar_Rendering_Owner SHALL include the Persisted_Session identifier exactly once in the Visible_Event_Set.
-2. WHEN the First_Post_Persistence_Successful_Refresh completes for a newly Persisted_Session without Displayed_Range_Membership, THE Calendar_Rendering_Owner SHALL omit the Persisted_Session identifier from the Visible_Event_Set.
-3. IF Calendar_Event_Conversion fails for a newly Persisted_Session at the First_Post_Persistence_Successful_Refresh, THEN THE Calendar_Rendering_Owner SHALL omit the Persisted_Session identifier from the Visible_Event_Set and record the identifier in the Verification_Record.
+1. WHEN a newly Persisted_Session is saved and the First_Post_Persistence_Successful_Refresh completes, THE Calendar_Rendering_Owner SHALL include the Persisted_Session identifier exactly once in the Visible_Event_Set if the session has Displayed_Range_Membership and Calendar_Event_Conversion succeeds.
+2. WHEN the First_Post_Persistence_Successful_Refresh completes for a newly Persisted_Session without Displayed_Range_Membership, THE Calendar_Rendering_Owner SHALL omit the Persisted_Session identifier from the Visible_Event_Set and SHALL not create its Calendar_Event.
+3. IF Calendar_Event_Conversion fails for a newly Persisted_Session at the First_Post_Persistence_Successful_Refresh, THEN THE Calendar_Rendering_Owner SHALL atomically remove the Persisted_Session identifier from the Visible_Event_Set, SHALL not expose the identifier as a Calendar_Event during that failed-conversion refresh, SHALL record the identifier and failed-conversion status in the Verification_Record for auditing and manual review, and SHALL retain that identifier and status in the Verification_Record even if a later conversion succeeds.
+4. IF any failed-conversion handling change cannot complete, including when rollback of that handling fails, THEN THE Calendar_Rendering_Owner SHALL attempt to roll back all failed-conversion handling changes and SHALL record a FAIL status for the affected Focused_Regression_Case.
+5. WHEN a later successful refresh converts a previously failed-conversion Persisted_Session and the session has Displayed_Range_Membership, THE Calendar_Rendering_Owner SHALL include the Persisted_Session identifier exactly once in the Visible_Event_Set while retaining the earlier failed-conversion identifier and status in the Verification_Record.
 
 ### Requirement 3: Duration-Adaptive Readable Name Presentation
 
@@ -75,10 +79,10 @@ Calendar_Rendering_Owner owns observable conversion, discovery, and readable pre
 
 #### Acceptance Criteria
 
-1. WHEN a rendered Calendar_Event has a duration shorter than 60 minutes, THE Calendar_Rendering_Owner SHALL use the Compact_Event_Presentation.
-2. WHEN a rendered Calendar_Event has a duration shorter than 60 minutes, THE Calendar_Rendering_Owner SHALL provide a Readable_Name_Presentation.
-3. WHEN a rendered Calendar_Event has a duration of 60 minutes or longer, THE Calendar_Rendering_Owner SHALL use the Standard_Event_Presentation.
-4. WHEN a rendered Calendar_Event has a duration of 60 minutes or longer, THE Calendar_Rendering_Owner SHALL provide a Readable_Name_Presentation.
+1. WHEN a rendered Calendar_Event has a duration greater than 0 and shorter than 60 minutes, THE Calendar_Rendering_Owner SHALL use only the Compact_Event_Presentation.
+2. WHEN a rendered Calendar_Event has a duration greater than 0 and shorter than 60 minutes, THE Calendar_Rendering_Owner SHALL provide a Readable_Name_Presentation containing the complete Student_Display_Name and complete Teacher_Display_Name simultaneously.
+3. WHEN a rendered Calendar_Event has a duration of 60 minutes or longer, THE Calendar_Rendering_Owner SHALL use the Standard_Event_Presentation, including when the duration is exactly 60 minutes.
+4. WHEN a rendered Calendar_Event has a duration of 60 minutes or longer, THE Calendar_Rendering_Owner SHALL provide a Readable_Name_Presentation containing the complete Student_Display_Name and complete Teacher_Display_Name simultaneously.
 
 ### Requirement 4: Complete Overlapping-Event Discoverability
 
@@ -86,10 +90,10 @@ Calendar_Rendering_Owner owns observable conversion, discovery, and readable pre
 
 #### Acceptance Criteria
 
-1. WHEN two or more Calendar_Events overlap in time within an active Displayed_Range, THE Calendar_Rendering_Owner SHALL include every overlapping Calendar_Event identifier in the Visible_Event_Set.
-2. IF FullCalendar conceals one or more overlapping Calendar_Events behind an Event_Visibility_Affordance, THEN THE Calendar_Rendering_Owner SHALL provide an operable Event_Visibility_Affordance for every concealed Calendar_Event.
-3. WHEN an Event_Visibility_Affordance is operated, THE Calendar_Rendering_Owner SHALL reveal every Calendar_Event identifier represented by that Event_Visibility_Affordance.
-4. WHEN a successful event refresh completes for an active Displayed_Range, THE Calendar_Rendering_Owner SHALL expose every identifier with Displayed_Range_Membership and a successful Calendar_Event_Conversion through the Visible_Event_Set.
+1. WHEN two or more successfully converted Calendar_Events form an overlap group by sharing any time interval and at least one Calendar_Event in the group has Displayed_Range_Membership, THE Calendar_Rendering_Owner SHALL include exactly once in the Visible_Event_Set every successfully converted Calendar_Event identifier in that overlap group, including identifiers for events whose intervals extend outside the Displayed_Range, without a performance or selective-visibility exception.
+2. IF FullCalendar conceals one or more overlapping Calendar_Events behind an Event_Visibility_Affordance, THEN THE Calendar_Rendering_Owner SHALL provide one operable Event_Visibility_Affordance that represents each concealed Calendar_Event, without requiring a prior request for concealed events.
+3. WHEN an Event_Visibility_Affordance is operated, THE Calendar_Rendering_Owner SHALL reveal every Calendar_Event identifier represented by that Event_Visibility_Affordance and SHALL make each revealed identifier discoverable.
+4. WHEN a successful event refresh completes for an active Displayed_Range, THE Calendar_Rendering_Owner SHALL expose through the Visible_Event_Set every identifier whose Calendar_Event has Displayed_Range_Membership and successful Calendar_Event_Conversion exactly once, including identifiers in an overlap group, without a performance or selective-visibility exception.
 
 ### Requirement 5: Month, Week, and Day View Equivalence
 
@@ -97,10 +101,11 @@ Calendar_Rendering_Owner owns observable conversion, discovery, and readable pre
 
 #### Acceptance Criteria
 
-1. WHEN a Renderable_Session has Displayed_Range_Membership in an active month view and a successful Calendar_Event_Conversion, THE Calendar_Rendering_Owner SHALL include the Persisted_Session identifier in the month Visible_Event_Set.
-2. WHEN a Renderable_Session has Displayed_Range_Membership in an active week view and a successful Calendar_Event_Conversion, THE Calendar_Rendering_Owner SHALL include the Persisted_Session identifier in the week Visible_Event_Set.
-3. WHEN a Renderable_Session has Displayed_Range_Membership in an active day view and a successful Calendar_Event_Conversion, THE Calendar_Rendering_Owner SHALL include the Persisted_Session identifier in the day Visible_Event_Set.
-4. WHEN month, week, and day views use identical Active_Filters and Calendar_Timezone for the same Calendar_Day, THE Calendar_Rendering_Owner SHALL expose the same identifiers for Renderable_Sessions that have that Calendar_Day as an Event_Touched_Day and have successful Calendar_Event_Conversion in each applicable Visible_Event_Set.
+1. WHEN a successful event refresh completes for an active month view, THE Calendar_Rendering_Owner SHALL include exactly once in the month Visible_Event_Set the Persisted_Session identifier for each Renderable_Session that has Displayed_Range_Membership and a successful Calendar_Event_Conversion.
+2. WHEN a successful event refresh completes for an active week view, THE Calendar_Rendering_Owner SHALL include exactly once in the week Visible_Event_Set the Persisted_Session identifier for each Renderable_Session that has Displayed_Range_Membership and a successful Calendar_Event_Conversion.
+3. WHEN a successful event refresh completes for an active day view, THE Calendar_Rendering_Owner SHALL include exactly once in the day Visible_Event_Set the Persisted_Session identifier for each Renderable_Session that has Displayed_Range_Membership and a successful Calendar_Event_Conversion.
+4. WHEN the month, week, and day views each display the same Calendar_Day with identical Active_Filters and Calendar_Timezone, THE Calendar_Rendering_Owner SHALL, at completion of each view's successful event refresh, expose the same set of Persisted_Session identifiers in all three applicable Visible_Event_Sets for Renderable_Sessions whose Event_Touched_Day is that Calendar_Day and whose Calendar_Event_Conversion succeeds.
+5. WHEN Calendar_Event_Conversion fails for a Renderable_Session while the month, week, and day views display the same Calendar_Day with identical Active_Filters and Calendar_Timezone, THE Calendar_Rendering_Owner SHALL remove the Persisted_Session identifier from all three applicable Visible_Event_Sets in one atomic observable update and SHALL not expose that identifier in any of those views during an intermediate update.
 
 ### Requirement 6: Jalali, Gregorian, and Calendar-Timezone Invariants
 
@@ -108,12 +113,15 @@ Calendar_Rendering_Owner owns observable conversion, discovery, and readable pre
 
 #### Acceptance Criteria
 
-1. WHEN the Admin_Calendar displays a Jalali_Label for a Calendar_Day, THE Calendar_Rendering_Owner SHALL associate the Jalali_Label with that same Gregorian Calendar_Day in the Calendar_Timezone.
-2. IF a Jalali_Label cannot be associated with a Gregorian Calendar_Day, THEN THE Calendar_Rendering_Owner SHALL display the Gregorian Calendar_Day without a Jalali_Label.
-3. WHEN an administrator navigates from a Jalali_Label to its Calendar_Day, THE Calendar_Rendering_Owner SHALL request and render a Displayed_Range containing that same Gregorian Calendar_Day.
-4. WHEN a Renderable_Session is transformed into a Calendar_Event, THE Calendar_Rendering_Owner SHALL preserve the Renderable_Session Calendar_Day, start time, and duration in the Calendar_Timezone.
-5. WHEN a Timezone_Offset_Transition occurs in the Calendar_Timezone, THE Calendar_Rendering_Owner SHALL preserve the Gregorian Calendar_Day, start time, and duration for each unchanged Renderable_Session.
-6. WHEN FullCalendar changes view with unchanged Active_Filters and Calendar_Timezone, THE Calendar_Rendering_Owner SHALL preserve the Gregorian Calendar_Day, start time, and duration for each unchanged Calendar_Event with Displayed_Range_Membership in the new view.
+1. WHEN the Admin_Calendar displays a Jalali_Label for a Calendar_Day, THE Calendar_Rendering_Owner SHALL associate that Jalali_Label with exactly one Gregorian Calendar_Day having the same local date in the Calendar_Timezone.
+2. IF a Jalali_Label does not have exactly one Gregorian Calendar_Day association, THEN THE Calendar_Rendering_Owner SHALL display the Gregorian Calendar_Day without a Jalali_Label.
+3. WHEN an administrator navigates from a Jalali_Label with a Confirmed_Jalali_Association, THE Calendar_Rendering_Owner SHALL request and render a Displayed_Range whose interval intersects the complete local-day interval of the associated Gregorian Calendar_Day in the Calendar_Timezone.
+4. IF a Jalali_Label lacks a Confirmed_Jalali_Association or identifies more than one Gregorian Calendar_Day, THEN THE Calendar_Rendering_Owner SHALL block navigation from that Jalali_Label and SHALL not request or render a Displayed_Range as a result of that navigation.
+5. WHEN a Renderable_Session is transformed into a Calendar_Event and Calendar_Event_Conversion succeeds, THE Calendar_Rendering_Owner SHALL preserve exactly the Renderable_Session Gregorian Calendar_Day, local start time, and duration when interpreted in the Calendar_Timezone.
+6. IF a Renderable_Session cannot be transformed while preserving its Gregorian Calendar_Day, local start time, or duration in the Calendar_Timezone, THEN THE Calendar_Rendering_Owner SHALL fail the Calendar_Event_Conversion, SHALL not create or render a Calendar_Event for that Renderable_Session, and SHALL leave the Renderable_Session unchanged.
+7. WHEN a Timezone_Offset_Transition occurs in the Calendar_Timezone, THE Calendar_Rendering_Owner SHALL preserve each unchanged Renderable_Session’s local Gregorian Calendar_Day, local start time, and duration in the Calendar_Timezone; IF the original local start time is invalid after the transition, THE Calendar_Rendering_Owner SHALL use a valid local start time on the same Gregorian Calendar_Day and SHALL preserve the duration.
+8. IF a Timezone_Offset_Transition makes a Renderable_Session’s original local start time invalid and THE Calendar_Rendering_Owner cannot determine a valid local start time on the same Gregorian Calendar_Day, THEN THE Calendar_Rendering_Owner SHALL not create or render a Calendar_Event for that Renderable_Session and SHALL record a fail status for the affected Focused_Regression_Case.
+9. WHEN FullCalendar changes view with unchanged Active_Filters and Calendar_Timezone, THE Calendar_Rendering_Owner SHALL preserve the same Gregorian Calendar_Day, local start time, and duration for each unchanged Calendar_Event that has Displayed_Range_Membership in the new view.
 
 ### Requirement 7: Idempotent FullCalendar Re-Rendering
 
@@ -121,9 +129,11 @@ Calendar_Rendering_Owner owns observable conversion, discovery, and readable pre
 
 #### Acceptance Criteria
 
-1. WHEN FullCalendar re-renders an unchanged Displayed_Range with identical Active_Filters and Calendar_Timezone, THE Calendar_Rendering_Owner SHALL expose a Visible_Event_Set equal to the Visible_Event_Set from the immediately preceding successful render.
-2. WHEN FullCalendar completes two or more consecutive event refreshes for an unchanged Displayed_Range with identical Active_Filters and Calendar_Timezone, THE Calendar_Rendering_Owner SHALL expose each Visible_Event_Set identifier exactly once.
-3. WHEN FullCalendar renders a Displayed_Range in which a Calendar_Event lacks Displayed_Range_Membership, THE Calendar_Rendering_Owner SHALL omit the Calendar_Event identifier from the Visible_Event_Set.
+1. WHEN FullCalendar completes a successful re-render of an unchanged Displayed_Range with identical Active_Filters and Calendar_Timezone, THE Calendar_Rendering_Owner SHALL expose a Visible_Event_Set equal to the Visible_Event_Set exposed by the immediately preceding successful render of that same Displayed_Range with those same Active_Filters and Calendar_Timezone.
+2. WHEN FullCalendar completes each of two or more consecutive successful event refreshes for an unchanged Displayed_Range with identical Active_Filters and Calendar_Timezone, THE Calendar_Rendering_Owner SHALL expose no more than one Calendar_Event for each identifier in the Visible_Event_Set.
+3. WHEN FullCalendar renders a Displayed_Range, THE Calendar_Rendering_Owner SHALL assign each Calendar_Event exactly one visibility state: visible if the Calendar_Event has Displayed_Range_Membership and satisfies every Active_Filter, or hidden otherwise.
+4. WHEN a Calendar_Event time interval partially overlaps a Displayed_Range interval, THE Calendar_Rendering_Owner SHALL include the Calendar_Event identifier in the Visible_Event_Set if and only if the Calendar_Event has Displayed_Range_Membership and satisfies every Active_Filter, and SHALL omit the identifier otherwise.
+5. IF a Calendar_Event has Displayed_Range_Membership and fails at least one Active_Filter, THEN THE Calendar_Rendering_Owner SHALL assign the Calendar_Event the hidden visibility state and SHALL omit its identifier from the Visible_Event_Set.
 
 ### Requirement 8: Focused Regression Verification Records
 
@@ -131,14 +141,16 @@ Calendar_Rendering_Owner owns observable conversion, discovery, and readable pre
 
 #### Acceptance Criteria
 
-1. WHEN a Focused_Regression_Case completes, THE Calendar_Rendering_Owner SHALL create one Verification_Record for that Focused_Regression_Case.
-2. WHEN a Focused_Regression_Case passes, THE Calendar_Rendering_Owner SHALL record the expected identifier set, observed identifier set, rendered identifiers, overflow-disclosed identifiers, and pass status in the Verification_Record.
-3. IF a Focused_Regression_Case fails, THEN THE Calendar_Rendering_Owner SHALL record the expected identifier set, observed identifier set, fail status, and first failing ownership boundary in the Verification_Record.
-4. WHEN the existing-session range-membership case executes, THE Calendar_Rendering_Owner SHALL verify the inclusive-start and exclusive-end outcomes in Requirement 1.
-5. WHEN the newly-persisted-session case executes, THE Calendar_Rendering_Owner SHALL verify the First_Post_Persistence_Successful_Refresh outcome in Requirement 2.
-6. WHEN the duration-presentation case executes with 30-minute and 60-minute fixtures, THE Calendar_Rendering_Owner SHALL verify the Readable_Name_Presentation outcome in Requirement 3.
-7. WHEN the overlap case executes with two through ten fixtures sharing a time interval, THE Calendar_Rendering_Owner SHALL verify complete discoverability of every fixture identifier.
-8. WHEN the month, week, day, Jalali, Gregorian, Calendar_Timezone, and re-rendering cases execute, THE Calendar_Rendering_Owner SHALL verify the invariants in Requirements 5 through 7.
+1. WHEN execution of a Focused_Regression_Case reaches a pass or fail outcome, THE Calendar_Rendering_Owner SHALL create exactly one Verification_Record for that Focused_Regression_Case.
+2. WHEN all applicable assertions for a Focused_Regression_Case succeed and its expected identifier set equals its observed identifier set, THE Calendar_Rendering_Owner SHALL record the expected identifier set, observed identifier set, rendered identifiers, overflow-disclosed identifiers, and PASS status in the Verification_Record.
+3. IF any applicable assertion fails or the expected identifier set differs from the observed identifier set, THEN THE Calendar_Rendering_Owner SHALL record the expected identifier set, observed identifier set, FAIL status, and first failing ownership boundary in the Verification_Record, and SHALL not record PASS status for that case.
+4. WHEN the existing-session range-membership Focused_Regression_Case executes, THE Calendar_Rendering_Owner SHALL verify both the inclusive-start and exclusive-end outcomes specified in Requirement 1 before assigning the case a pass or fail outcome.
+5. WHEN the newly-persisted-session Focused_Regression_Case executes, THE Calendar_Rendering_Owner SHALL independently verify the First_Post_Persistence_Successful_Refresh outcome specified in Requirement 2, and failure of any other Focused_Regression_Case SHALL not prevent verification or recording of this case.
+6. WHEN the duration-presentation Focused_Regression_Case executes with one 30-minute fixture and one 60-minute fixture, THE Calendar_Rendering_Owner SHALL verify the Readable_Name_Presentation outcome specified in Requirement 3 for both fixtures before assigning the case a pass or fail outcome.
+7. WHEN the overlap Focused_Regression_Case executes with each fixture count from 2 through 10 sharing one time interval, THE Calendar_Rendering_Owner SHALL verify complete discoverability of every fixture identifier for each count before assigning the case a pass or fail outcome.
+8. WHEN any month, week, day, Jalali, Gregorian, Calendar_Timezone, or re-rendering Focused_Regression_Case completes all applicable invariant assertions successfully, THE Calendar_Rendering_Owner SHALL verify the applicable invariants in Requirements 5 through 7 and record PASS status for that case before completing its Verification_Record.
+9. WHEN a Focused_Regression_Case executes, THE Calendar_Rendering_Owner SHALL verify and record that case independently of every other Focused_Regression_Case, and failure of another Focused_Regression_Case SHALL not prevent verification or recording of the current case.
+10. IF execution of an invariant Focused_Regression_Case does not complete or any applicable invariant assertion fails, THEN THE Calendar_Rendering_Owner SHALL record FAIL status for the affected Focused_Regression_Case and SHALL not record PASS status for that case.
 
 ### Requirement 9: Scope and Ownership Protection
 
@@ -146,25 +158,26 @@ Calendar_Rendering_Owner owns observable conversion, discovery, and readable pre
 
 #### Acceptance Criteria
 
-1. WHEN a focused regression investigation identifies Calendar_Rendering_Owner as the first failing boundary, THE Calendar_Rendering_Owner SHALL limit correction and verification to the outcomes in Requirements 1 through 8.
-2. IF a focused regression investigation identifies an External_Owner as the first failing boundary, THEN THE Calendar_Rendering_Owner SHALL record the external dependency and require a separately approved specification before scope expansion.
-3. WHEN focused regression verification completes, THE Calendar_Rendering_Owner SHALL preserve the behaviors listed in the Non-Scope section.
+1. WHEN a focused regression investigation identifies Calendar_Rendering_Owner as the first failing boundary, THE Calendar_Rendering_Owner SHALL allow correction and verification only for the observable outcomes defined in Requirements 1 through 8 and SHALL prevent execution when either the proposed correction or verification includes behavior outside those outcomes.
+2. IF a focused regression investigation identifies an External_Owner as the first failing boundary, THEN THE Calendar_Rendering_Owner SHALL record the external dependency and External_Owner in the Verification_Record, SHALL prevent correction or verification outside the current scope, and SHALL permit scope expansion only after a separately approved specification is available.
+3. WHEN focused regression verification completes, THE Calendar_Rendering_Owner SHALL compare each exercised behavior listed in the Non-Scope section with its pre-correction result, SHALL record each comparison as unchanged or changed, and SHALL not mark the scope verification as passing if any recorded comparison is changed.
 
 ## Focused Regression Tests
 
 | Test ID | Regression fixture and action | Required observation |
 |---|---|---|
-| CRR-01 | Refresh a range with an eligible fixture crossing the inclusive start instant, an eligible fixture at the inclusive start instant, and an eligible fixture at the exclusive end instant. | The crossing and inclusive-start fixture identifiers are present exactly once; the exclusive-end fixture identifier is absent. |
+| CRR-01 | Refresh a range with an eligible fixture crossing the inclusive start instant, an eligible fixture at the inclusive start instant with successful conversion, an eligible fixture at the inclusive start instant with failed conversion, and an eligible fixture at the exclusive end instant; repeat with a zero-duration Displayed_Range whose start equals its end. | The crossing and successful inclusive-start fixture identifiers are present exactly once; the failed-conversion and exclusive-end fixture identifiers are absent from the Visible_Event_Set; the failed-conversion identifier is recorded in the Verification_Record for auditing and manual review; every session starting at the zero-duration boundary has no Calendar_Event and is absent. |
 | CRR-02 | Persist one eligible session in the active range and complete the First_Post_Persistence_Successful_Refresh. | The new fixture identifier is present exactly once. |
 | CRR-03 | Render one existing 30-minute fixture and one existing 60-minute fixture with non-empty student and teacher names. | Each fixture uses its duration-adaptive presentation and displays both complete names simultaneously. |
 | CRR-04 | Render fixture sets of 2, 3, 5, and 10 sessions sharing a time interval. | Every fixture identifier is directly discoverable or revealed by an operable Event_Visibility_Affordance. |
-| CRR-05 | Inspect applicable month, week, and day views for the same Calendar_Day with identical Active_Filters and Calendar_Timezone. | Each applicable Visible_Event_Set contains the same fixture identifiers. |
-| CRR-06 | Navigate Jalali month-boundary and year-boundary fixtures through month, week, and day views. | Each Jalali_Label and Calendar_Event refers to the same Gregorian Calendar_Day, start time, and duration in the Calendar_Timezone. |
-| CRR-07 | Render applicable fixtures before, during, and after a Timezone_Offset_Transition. | Each unchanged fixture retains its Gregorian Calendar_Day, start time, and duration. |
+| CRR-05 | Inspect applicable month, week, and day views for the same Calendar_Day with identical Active_Filters and Calendar_Timezone. | Immediately after each view is displayed, each applicable Visible_Event_Set contains the same successfully converted fixture identifiers and omits failed-conversion identifiers. |
+| CRR-06 | Navigate Jalali month-boundary and year-boundary fixtures through month, week, and day views, including a Jalali_Label with a broken Gregorian association. | Each valid Jalali_Label and Calendar_Event refers to the same Gregorian Calendar_Day, start time, and duration in the Calendar_Timezone; navigation from the broken association is blocked and does not request or render a Displayed_Range. |
+| CRR-07 | Render applicable fixtures before, during, and after a Timezone_Offset_Transition, including a fixture whose original local time becomes invalid. | Each unchanged fixture retains its local Gregorian Calendar_Day, start time, and duration meaning in the Calendar_Timezone, and any invalid transition time is adjusted to a valid value. |
 | CRR-08 | Re-render an unchanged Displayed_Range with unchanged Active_Filters and Calendar_Timezone. | The before-and-after Visible_Event_Set values are equal and contain no duplicate identifier. |
 
 ## Verification Requirements
 
 - Each Focused_Regression_Case uses isolated fixtures for only the calendar rendering outcomes covered by this specification.
+- Each Focused_Regression_Case proceeds independently; failure of another Focused_Regression_Case does not prevent verification of the current Focused_Regression_Case.
 - Each Verification_Record identifies the fixture identifiers, active FullCalendar view, Displayed_Range, Calendar_Timezone, and Active_Filters used by the Focused_Regression_Case.
 - Completion of this requirements phase requires review and approval of this document before any design or task document is created.
