@@ -50,7 +50,16 @@ final class EnrollmentAction
      */
     public function update(StudentEnrollment $enrollment, array $data): StudentEnrollment
     {
-        $enrollment->update(PersianTextNormalizer::fields($data, self::NORMALIZED_FIELDS));
+        $data = PersianTextNormalizer::fields($data, self::NORMALIZED_FIELDS);
+
+        if ((int) $data['teacher_id'] !== (int) $enrollment->teacher_id) {
+            $this->enrollments->guardTeacherTeachesInstrument(
+                (int) $data['teacher_id'],
+                $enrollment->instrument_id,
+            );
+        }
+
+        $enrollment->update($data);
 
         return $enrollment;
     }

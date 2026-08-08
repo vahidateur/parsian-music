@@ -69,7 +69,7 @@ class EnrollmentService
      *
      * @throws ValidationException
      */
-    protected function guardTeacherTeachesInstrument(int $teacherId, int $instrumentId): void
+    public function guardTeacherTeachesInstrument(int $teacherId, int $instrumentId): void
     {
         $teacherTeachesInstrument = DB::table('teacher_instruments')
             ->where('teacher_id', $teacherId)
