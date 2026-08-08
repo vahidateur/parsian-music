@@ -63,6 +63,26 @@ class InvoiceAdminTest extends TestCase
         ]);
     }
 
+    private function enrollmentForAnotherStudent(): StudentEnrollment
+    {
+        $student = Student::forceCreate([
+            'student_code' => 'S-90002',
+            'full_name' => 'Other Billing Student',
+            'phone' => '09120009003',
+            'status' => 'active',
+            'join_date' => now(),
+        ]);
+
+        return StudentEnrollment::create([
+            'student_id' => $student->id,
+            'instrument_id' => $this->enrollment->instrument_id,
+            'teacher_id' => $this->enrollment->teacher_id,
+            'skill_level' => 'beginner',
+            'status' => 'active',
+            'started_at' => now(),
+        ]);
+    }
+
     /** @return array<string, mixed> */
     private function invoicePayload(array $overrides = []): array
     {
@@ -108,6 +128,51 @@ class InvoiceAdminTest extends TestCase
         $this->assertEquals(2000000, (float) $invoice->subtotal);
         $this->assertEquals(2100000, (float) $invoice->total);
         $this->assertCount(1, $invoice->items);
+    }
+
+    public function test_store_rejects_an_enrollment_owned_by_another_student(): void
+    {
+        $this->actingAs($this->admin)
+            ->post(route('admin.invoices.store'), $this->invoicePayload([
+                'enrollment_id' => $this->enrollmentForAnotherStudent()->id,
+            ]))
+            ->assertSessionHasErrors('enrollment_id');
+
+        $this->assertSame(0, Invoice::count());
+    }
+
+    public function test_update_rejects_an_enrollment_owned_by_another_student(): void
+    {
+        $this->actingAs($this->admin)->post(route('admin.invoices.store'), $this->invoicePayload());
+        $invoice = Invoice::latest('id')->firstOrFail();
+
+        $this->actingAs($this->admin)
+            ->put(route('admin.invoices.update', $invoice), $this->invoicePayload([
+                'enrollment_id' => $this->enrollmentForAnotherStudent()->id,
+            ]))
+            ->assertSessionHasErrors('enrollment_id');
+
+        $invoice->refresh();
+
+        $this->assertSame($this->student->id, $invoice->student_id);
+        $this->assertSame($this->enrollment->id, $invoice->enrollment_id);
+    }
+
+    public function test_store_and_update_allow_no_enrollment(): void
+    {
+        $response = $this->actingAs($this->admin)
+            ->post(route('admin.invoices.store'), $this->invoicePayload(['enrollment_id' => null]));
+
+        $invoice = Invoice::latest('id')->firstOrFail();
+
+        $response->assertRedirect(route('admin.invoices.show', $invoice));
+        $this->assertNull($invoice->enrollment_id);
+
+        $this->actingAs($this->admin)
+            ->put(route('admin.invoices.update', $invoice), $this->invoicePayload(['enrollment_id' => null]))
+            ->assertRedirect(route('admin.invoices.show', $invoice));
+
+        $this->assertNull($invoice->refresh()->enrollment_id);
     }
 
     public function test_store_requires_at_least_one_item(): void

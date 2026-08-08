@@ -6,6 +6,7 @@ namespace App\Http\Requests\Admin;
 
 use App\Actions\Admin\InvoiceAction;
 use App\Support\PersianTextNormalizer;
+use Illuminate\Validation\Rule;
 
 /**
  * Validation contract of the invoice Record_Form (create and edit).
@@ -54,7 +55,11 @@ class InvoiceRequest extends AdminFormRequest
     {
         return [
             'student_id'    => ['required', 'exists:students,id'],
-            'enrollment_id' => ['nullable', 'exists:student_enrollments,id'],
+            'enrollment_id' => [
+                'nullable',
+                Rule::exists('student_enrollments', 'id')
+                    ->where('student_id', $this->input('student_id')),
+            ],
             'issue_date'    => ['required', 'date'],
             'due_date'      => ['required', 'date', 'after_or_equal:issue_date'],
             'tax'           => ['nullable', 'numeric', 'min:0', 'max:' . self::MONEY_MAX],
