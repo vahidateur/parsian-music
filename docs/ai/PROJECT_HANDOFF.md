@@ -24,21 +24,22 @@ Build a production-ready internal admin panel for academy staff.
 
 Backend:
 
-* PHP 8.2+
-* Laravel 13
+* PHP 8.3 (`composer.json`)
+* Laravel 13.8+ (`laravel/framework: ^13.8`)
 
 Frontend:
 
 * Blade
 * Tailwind CSS
-* Alpine.js optional (minimal)
+* Alpine.js where an existing interaction surface requires it
 * No Vue
 * No React
 
 Database:
 
-* MySQL
-* UTF8MB4 collation
+* Laravel database configuration supports SQLite, MySQL, MariaDB, PostgreSQL, and SQL Server.
+* MySQL/InnoDB is the production concurrency-validation target; do not infer the active runtime driver without the deployment environment configuration.
+* UTF8MB4 is configured for the MySQL and MariaDB connections.
 
 Environment:
 
@@ -49,20 +50,19 @@ Environment:
 Architecture:
 
 * Modular monolith
-* Blade-first architecture
-* Controller-based business logic
-* No service layer yet
-* No repository layer yet
-* No API layer yet
+* Blade-first presentation architecture
+* Thin controllers for HTTP orchestration and authorization
+* Existing Form Request, Action, and Service layers own application behavior. Current examples include `SessionCreateService`, `SessionEditService`, `CalendarQueryService`, `ConflictDetectionService`, `RoomResolver`, and `RoomOptionProvider`.
+* Existing JSON endpoints are internal admin contracts; the repository does not document a separate public API tier.
 
 ---
 
 # Coding Rules (STRICT)
 
 1. Keep architecture simple and production-ready.
-2. Prefer controller logic over service classes for now.
+2. Keep controllers thin; reuse the existing Action/Service or domain owner instead of duplicating business logic.
 3. Avoid overengineering.
-4. Blade only.
+4. Blade only for presentation.
 5. Tailwind only.
 6. Avoid JavaScript unless necessary.
 7. Small tasks preferred (1–2 files per task).
@@ -429,6 +429,15 @@ Acceptable for current project stage.
 4. Search uses LIKE queries
 
 Acceptable for current dataset.
+
+5. Validate SessionCreateService concurrency under MySQL/InnoDB using real concurrent database connections.
+
+Acceptance checks:
+
+* row-level lock behavior
+* lock waiting
+* absence of duplicate overlapping sessions
+* absence of deadlocks
 
 ---
 
