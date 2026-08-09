@@ -15,9 +15,9 @@ class SessionAuditWriter
     /** @param array<string, mixed> $before @param array<string, mixed> $after */
     public function append(
         ClassSession $session,
-        User $actor,
+        ?User $actor,
         ScheduleProposal $proposal,
-        SessionVersion $priorVersion,
+        ?SessionVersion $priorVersion,
         SessionVersion $resultingVersion,
         array $before,
         array $after,
@@ -27,10 +27,10 @@ class SessionAuditWriter
         $conflicts = $conflicts instanceof JsonSerializable ? $conflicts->jsonSerialize() : $conflicts;
 
         return $this->store([
-            'actor_id' => $actor->getKey(),
+            'actor_id' => $actor?->getKey(),
             'event_type' => SessionAuditRecord::EVENT_TYPE,
             'entity_type' => ClassSession::class,
-            'action' => 'update',
+            'action' => $priorVersion === null ? 'create' : 'update',
             'selection_mode' => $proposal->source->value,
             'total' => 1,
             'succeeded' => 1,
@@ -40,7 +40,7 @@ class SessionAuditWriter
                 'schema_version' => 1,
                 'session_id' => $session->getKey(),
                 'source' => $proposal->source->value,
-                'prior_version' => $priorVersion->value,
+                'prior_version' => $priorVersion?->value,
                 'resulting_version' => $resultingVersion->value,
                 'changed_fields' => array_keys(array_diff_assoc($after, $before)),
                 'before' => $before,

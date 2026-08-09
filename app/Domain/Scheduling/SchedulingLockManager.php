@@ -17,17 +17,17 @@ final class SchedulingLockManager
 {
     public function lock(ScheduleProposal $proposal): LockedSchedulingScope
     {
-        if ($proposal->sessionId === null) {
-            throw new \InvalidArgumentException('An existing session is required for a versioned mutation.');
-        }
-
-        $session = ClassSession::query()->lockForUpdate()->find($proposal->sessionId);
-        if (! $session instanceof ClassSession) {
-            throw (new ModelNotFoundException)->setModel(ClassSession::class, [$proposal->sessionId]);
+        $session = null;
+        $keys = [];
+        if ($proposal->sessionId !== null) {
+            $session = ClassSession::query()->lockForUpdate()->find($proposal->sessionId);
+            if (! $session instanceof ClassSession) {
+                throw (new ModelNotFoundException)->setModel(ClassSession::class, [$proposal->sessionId]);
+            }
+            $keys[] = 'class_session:'.$session->getKey();
         }
 
         $ids = $this->resourceIds($session, $proposal);
-        $keys = ['class_session:'.$session->getKey()];
         foreach ($ids as $type => $values) {
             foreach ($values as $id) {
                 $this->lockResource($type, $id);
@@ -46,13 +46,13 @@ final class SchedulingLockManager
     }
 
     /** @return array<string, list<int|string>> */
-    private function resourceIds(ClassSession $session, ScheduleProposal $proposal): array
+    private function resourceIds(?ClassSession $session, ScheduleProposal $proposal): array
     {
         $ids = [
-            'enrollment' => [$session->enrollment_id, $proposal->relationPath->enrollmentId],
-            'instrument' => [$session->instrument_id, $proposal->relationPath->instrumentId],
-            'student' => [$session->student_id, $proposal->relationPath->studentId],
-            'teacher' => [$session->teacher_id, $proposal->relationPath->teacherId],
+            'enrollment' => [$session?->enrollment_id, $proposal->relationPath->enrollmentId],
+            'instrument' => [$session?->instrument_id, $proposal->relationPath->instrumentId],
+            'student' => [$session?->student_id, $proposal->relationPath->studentId],
+            'teacher' => [$session?->teacher_id, $proposal->relationPath->teacherId],
         ];
         ksort($ids, SORT_STRING);
 
@@ -66,9 +66,9 @@ final class SchedulingLockManager
     }
 
     /** @return list<string> */
-    private function roomNames(ClassSession $session, ScheduleProposal $proposal): array
+    private function roomNames(?ClassSession $session, ScheduleProposal $proposal): array
     {
-        $rooms = array_filter([$session->getRawOriginal('room'), $proposal->room], 'is_string');
+        $rooms = array_filter([$session?->getRawOriginal('room'), $proposal->room], 'is_string');
         $rooms = array_values(array_unique(array_map('trim', $rooms)));
         sort($rooms, SORT_STRING);
 
@@ -93,5 +93,5 @@ final class SchedulingLockManager
 final readonly class LockedSchedulingScope
 {
     /** @param list<string> $resourceKeys */
-    public function __construct(public ClassSession $session, public array $resourceKeys) {}
+    public function __construct(public ?ClassSession $session, public array $resourceKeys) {}
 }

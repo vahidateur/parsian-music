@@ -50,6 +50,14 @@ class AppServiceProvider extends ServiceProvider
         // ── Settings singletons ───────────────────────────────────────────
         $this->app->singleton(InstituteSettings::class);
         $this->app->singleton(SettingsManager::class);
+        $this->app->bind(
+            \App\Domain\Scheduling\SchedulingDomain::class,
+            fn ($app): \App\Domain\Scheduling\SchedulingDomain => new \App\Domain\Scheduling\SchedulingDomain(
+                $app->make(\App\Domain\Scheduling\ScheduleProposalNormalizer::class),
+                $app->make(\App\Domain\Scheduling\AvailabilityEvaluator::class),
+                $app->make(\App\Domain\Scheduling\SchedulingMutationCoordinator::class),
+            ),
+        );
 
         // ── Notification channel drivers ──────────────────────────────────
         $this->app->bind("notification.driver.{$this->ch(NotificationChannelEnum::InApp)}",    DatabaseDriver::class);

@@ -1,135 +1,116 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Services;
 
+use App\Domain\Scheduling\ProposalSource;
+use App\Domain\Scheduling\RelationPath;
+use App\Domain\Scheduling\RelationPathType;
+use App\Domain\Scheduling\SchedulingDomain;
+use App\Domain\Scheduling\SchedulingMutationException;
+use App\Domain\Scheduling\SchedulingValidationException;
 use App\Enums\SessionStatusEnum;
 use App\Models\ClassSession;
 use App\Models\RecurringSchedule;
+use App\Models\StudentEnrollment;
+use App\Models\User;
 use Carbon\Carbon;
+use DateTimeInterface;
+use DateTimeZone;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\DB;
 
-/**
- * Session generation service.
- *
- * Canonical orchestrator for creating future ClassSession records from a
- * RecurringSchedule. Encapsulates all session creation logic:
- *   1. Date occurrence calculation (pure date math).
- *   2. Duplicate detection (existing enrollment + date + time).
- *   3. Conflict detection via ConflictDetectionService (teacher/room/enrollment).
- *   4. Transactional bulk creation.
- *
- * Weekday convention: DB stores 0 (Sunday) through 6 (Saturday), matching
- * Carbon's dayOfWeek (0=Sun … 6=Sat).
- */
-class SessionGeneratorService
+/** Preserves occurrence calculation and duplicate behavior while delegating writes to SchedulingDomain. */
+final class SessionGeneratorService
 {
-    public function __construct(
-        protected ConflictDetectionService $conflictDetector,
-    ) {}
+    public function __construct(private readonly SchedulingDomain $scheduling) {}
 
-    /**
-     * Generate future ClassSession records from a RecurringSchedule.
-     *
-     * Skips any session that already exists for the same
-     * (enrollment_id + session_date + start_time) combination, or that
-     * conflicts with an existing session.
-     *
-     * @return Collection<int, ClassSession>  The newly created sessions.
-     */
-    public function generateForSchedule(RecurringSchedule $schedule, int $weeks = 8): Collection
+    /** @return Collection<int, ClassSession> */
+    public function generateForSchedule(RecurringSchedule $schedule, int $weeks = 8, ?User $actor = null): Collection
     {
         $created = collect();
-
         if (! $schedule->is_active) {
             return $created;
         }
 
-        $enrollmentId = $schedule->enrollment_id;
-        $targetWeekday = (int) $schedule->weekday; // 0-6 matching Carbon::dayOfWeek
-        $startTime = $schedule->start_time;
-        $durationMinutes = $schedule->duration_minutes;
-        $room = $schedule->room;
+        $enrollment = $schedule->enrollment ?? $schedule->enrollment()->first();
+        if (! $enrollment instanceof StudentEnrollment) {
+            return $created;
+        }
 
-        // Resolve teacher_id once from the enrollment relation.
-        $teacherId = $schedule->enrollment?->teacher_id
-            ?? $schedule->enrollment()->value('teacher_id');
-
-        // Build the set of session dates for the next N occurrences,
-        // starting from the next matching weekday (today excluded).
-        $dates = $this->getNextOccurrences($targetWeekday, $weeks);
-
-        // Bulk-load existing sessions for these dates to avoid N queries.
-        $existing = ClassSession::where('enrollment_id', $enrollmentId)
+        $dates = $this->getNextOccurrences((int) $schedule->weekday, $weeks);
+        $storedStartTime = $this->storageTime($schedule->start_time);
+        $proposalStartTime = substr($storedStartTime, 0, 5);
+        $existing = ClassSession::query()
+            ->where('enrollment_id', $enrollment->getKey())
             ->whereIn('session_date', $dates)
-            ->where('start_time', $startTime)
+            ->where('start_time', $storedStartTime)
             ->pluck('session_date')
             ->all();
+        $path = new RelationPath(
+            RelationPathType::Enrollment,
+            $enrollment->getKey(),
+            $enrollment->student_id,
+            $enrollment->teacher_id,
+            $enrollment->instrument_id,
+        );
 
-        DB::transaction(function () use (
-            &$created, $dates, $existing, $schedule,
-            $enrollmentId, $teacherId, $startTime, $durationMinutes, $room
-        ) {
-            foreach ($dates as $dateString) {
-                if (in_array($dateString, $existing, true)) {
-                    continue; // Skip duplicates
-                }
-
-                // Conflict detection: skip if teacher, room, or enrollment overlaps.
-                if ($teacherId && $this->conflictDetector->checkTeacherConflict(
-                    $teacherId, $dateString, $startTime, $durationMinutes
-                )) {
-                    continue;
-                }
-                if ($this->conflictDetector->checkRoomConflict(
-                    $room, $dateString, $startTime, $durationMinutes
-                )) {
-                    continue;
-                }
-                if ($this->conflictDetector->checkTimeOverlap(
-                    $enrollmentId, $dateString, $startTime, $durationMinutes
-                )) {
-                    continue;
-                }
-
-                $created->push(ClassSession::create([
-                    'enrollment_id'         => $enrollmentId,
-                    'recurring_schedule_id' => $schedule->id,
-                    'session_date'          => $dateString,
-                    'start_time'            => $startTime,
-                    'duration_minutes'      => $durationMinutes,
-                    'room'                  => $room,
-                    'status'                => SessionStatusEnum::Scheduled,
-                ]));
+        foreach ($dates as $date) {
+            if (in_array($date, $existing, true)) {
+                continue;
             }
-        });
+
+            try {
+                $proposal = $this->scheduling->normalize([
+                    'student_id' => $enrollment->student_id,
+                    'teacher_id' => $enrollment->teacher_id,
+                    'instrument_id' => $enrollment->instrument_id,
+                    'session_date' => $date,
+                    'start_time' => $proposalStartTime,
+                    'duration_minutes' => $schedule->duration_minutes,
+                    'status' => SessionStatusEnum::Scheduled->value,
+                    'room' => $schedule->room,
+                    'notes' => null,
+                    'source' => ProposalSource::Recurrence->value,
+                ], $path, $this->timezone());
+                $created->push($this->scheduling->create(
+                    $actor,
+                    $proposal,
+                    ['recurring_schedule_id' => $schedule->getKey()],
+                )->session);
+            } catch (SchedulingValidationException|SchedulingMutationException) {
+                continue;
+            }
+        }
 
         return $created;
     }
 
-    /**
-     * Resolve the next N occurrences of a target weekday.
-     *
-     * Pure date math: starts from tomorrow, advances to the first matching
-     * weekday, then yields weekly occurrences for `$weeks` weeks.
-     *
-     * @return Collection<int, string>  List of "YYYY-MM-DD" date strings.
-     */
+    /** @return Collection<int, string> */
     protected function getNextOccurrences(int $targetWeekday, int $weeks): Collection
     {
         $dates = collect();
-
         $cursor = Carbon::today()->addDay();
 
         while ((int) $cursor->dayOfWeek !== $targetWeekday) {
             $cursor = $cursor->addDay();
         }
 
-        for ($i = 0; $i < $weeks; $i++) {
+        for ($index = 0; $index < $weeks; $index++) {
             $dates->push($cursor->toDateString());
             $cursor = $cursor->addWeek();
         }
 
         return $dates;
+    }
+
+    private function timezone(): DateTimeZone
+    {
+        return new DateTimeZone((string) config('app.timezone', 'Asia/Tehran'));
+    }
+
+    private function storageTime(mixed $time): string
+    {
+        return $time instanceof DateTimeInterface ? $time->format('H:i:s') : (string) $time;
     }
 }

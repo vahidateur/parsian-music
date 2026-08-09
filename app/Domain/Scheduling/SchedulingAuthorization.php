@@ -32,6 +32,14 @@ final class SchedulingAuthorization
         $gate->authorize($ability->value, $session);
     }
 
+    public function authorizeCreation(User $actor, ProposalSource $source): void
+    {
+        Gate::forUser($actor)->authorize(
+            $source === ProposalSource::Recurrence ? SchedulingAbility::Recurrence->value : 'create',
+            ClassSession::class,
+        );
+    }
+
     public function authorizeCollection(User $actor, SchedulingAbility $ability): void
     {
         if (! in_array($ability, [SchedulingAbility::Suggest, SchedulingAbility::Recurrence, SchedulingAbility::Rules], true)) {

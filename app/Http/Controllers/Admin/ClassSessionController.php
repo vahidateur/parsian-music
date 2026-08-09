@@ -13,6 +13,7 @@ use App\Models\Teacher;
 use App\Models\Subscription;
 use App\Services\ConflictDetectionService;
 use App\Services\SessionCreateOptionsProvider;
+use App\Services\SessionCreateService;
 use App\Services\SessionGeneratorService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -95,16 +96,18 @@ class ClassSessionController extends Controller
         return view('admin.sessions.index', compact('sessions', 'students', 'teachers', 'instruments', 'sortCol', 'sortDir'));
     }
 
-    public function generate(SessionGeneratorService $generator): RedirectResponse
+    public function generate(Request $request, SessionGeneratorService $generator): RedirectResponse
     {
         $this->authorize('generate', ClassSession::class);
 
+        /** @var \App\Models\User $actor */
+        $actor = $request->user();
         $schedules = RecurringSchedule::active()->get();
 
         $totalCreated = 0;
 
         foreach ($schedules as $schedule) {
-            $created = $generator->generateForSchedule($schedule, 8);
+            $created = $generator->generateForSchedule($schedule, 8, $actor);
             $totalCreated += $created->count();
         }
 
@@ -119,37 +122,13 @@ class ClassSessionController extends Controller
         return view('admin.sessions.create', $optionsProvider->prepare());
     }
 
-    public function store(SessionCreateRequest $request, ConflictDetectionService $conflictDetector): RedirectResponse
+    public function store(SessionCreateRequest $request, SessionCreateService $createService): RedirectResponse
     {
-        $validated = $request->validated();
+        $this->authorize('create', ClassSession::class);
 
-        $hasConflict = $conflictDetector->checkTeacherConflict(
-            $validated['teacher_id'], $validated['session_date'], $validated['start_time'], $validated['duration_minutes']
-        ) || $conflictDetector->checkRoomConflict(
-            $validated['room'], $validated['session_date'], $validated['start_time'], $validated['duration_minutes']
-        ) || $conflictDetector->checkStudentOverlap(
-            $validated['student_id'], $validated['session_date'], $validated['start_time'], $validated['duration_minutes']
-        );
-
-        if ($hasConflict) {
-            throw ValidationException::withMessages([
-                'start_time' => __('admin.session_conflict_error'),
-            ]);
-        }
-
-        DB::transaction(function () use ($validated): void {
-            ClassSession::create($validated);
-
-            $subscription = Subscription::query()->where([
-                'student_id' => $validated['student_id'],
-                'teacher_id' => $validated['teacher_id'],
-                'instrument_id' => $validated['instrument_id'],
-            ])->lockForUpdate()->first();
-
-            if ($subscription) {
-                $subscription->increment('sessions_used');
-            }
-        });
+        /** @var \App\Models\User $actor */
+        $actor = $request->user();
+        $createService->create($request->validated(), $actor);
 
         return redirect()->route('admin.sessions.index')
             ->with('success', __('admin.session_created_successfully'));

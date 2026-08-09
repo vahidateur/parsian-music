@@ -16,7 +16,9 @@ use App\Domain\Scheduling\RelationPathType;
 use App\Domain\Scheduling\ResourceVersionManager;
 use App\Domain\Scheduling\RoomSuitabilityService;
 use App\Domain\Scheduling\ScheduleProposal;
+use App\Domain\Scheduling\ScheduleProposalNormalizer;
 use App\Domain\Scheduling\SchedulingAuthorization;
+use App\Domain\Scheduling\SchedulingDomain;
 use App\Domain\Scheduling\SchedulingDecisionCode;
 use App\Domain\Scheduling\SchedulingLockManager;
 use App\Domain\Scheduling\SchedulingMutationCoordinator;
@@ -35,6 +37,7 @@ use App\Models\Student;
 use App\Models\Teacher;
 use App\Models\User;
 use App\Services\ConflictDetectionService;
+use App\Services\RelationPathResolver;
 use App\Services\RoomOptionProvider;
 use App\Services\RoomResolver;
 use DateTimeZone;
@@ -52,7 +55,7 @@ final class SchedulingMutationCoordinatorTest extends TestCase
     {
         [$actor, $session, $proposal] = $this->mutationFixture('11:00', 'Updated note');
 
-        $result = $this->coordinator()->mutate($actor, $proposal);
+        $result = $this->domain()->mutate($actor, $proposal);
 
         $this->assertSame('sv1_', substr($result->version->value, 0, 4));
         $this->assertSame($result->version->value, $session->refresh()->session_version);
@@ -93,14 +96,14 @@ final class SchedulingMutationCoordinatorTest extends TestCase
     {
         foreach (['audit', 'cache'] as $failure) {
             [$actor, $session, $proposal] = $this->mutationFixture('11:00', 'Unchanged');
-            $coordinator = $failure === 'audit'
-                ? $this->coordinator(writer: new class extends SessionAuditWriter {
+            $domain = $failure === 'audit'
+                ? $this->domain(writer: new class extends SessionAuditWriter {
                     protected function store(array $attributes): SessionAuditRecord { throw new RuntimeException('audit unavailable'); }
                 })
-                : $this->coordinator(invalidator: static function (): void { throw new RuntimeException('cache unavailable'); });
+                : $this->domain(invalidator: static function (): void { throw new RuntimeException('cache unavailable'); });
 
             try {
-                $coordinator->mutate($actor, $proposal);
+                $domain->mutate($actor, $proposal);
                 $this->fail("{$failure} failure must abort the transaction.");
             } catch (RuntimeException) {
                 $this->assertSame('Original note', $session->refresh()->notes);
@@ -114,7 +117,7 @@ final class SchedulingMutationCoordinatorTest extends TestCase
     private function assertRejectedWithoutWrites(User $actor, ClassSession $session, ScheduleProposal $proposal, ?SchedulingDecisionCode $code): void
     {
         try {
-            $this->coordinator()->mutate($actor, $proposal);
+            $this->domain()->mutate($actor, $proposal);
             $this->fail('The mutation must be rejected.');
         } catch (SchedulingMutationException $exception) {
             if ($code !== null) {
@@ -164,14 +167,22 @@ final class SchedulingMutationCoordinatorTest extends TestCase
         )];
     }
 
-    private function coordinator(?SessionAuditWriter $writer = null, ?\Closure $invalidator = null): SchedulingMutationCoordinator
+    private function domain(?SessionAuditWriter $writer = null, ?\Closure $invalidator = null): SchedulingDomain
     {
         $facts = new ConflictFactsProvider(new ConflictDetectionService);
         $rules = new EffectiveSchedulingRules('coordinator-v1', 'test', new DateTimeZone('Asia/Tehran'), [1, 2, 3, 4, 5, 6, 7], 0, 1440, 30, 120, 8, 4, null, 0, 0);
 
+        return new SchedulingDomain(
+            new ScheduleProposalNormalizer(new RelationPathResolver),
+            new AvailabilityEvaluator($facts, new ConflictClassifier, new AcademyRulesProvider($rules), new RoomSuitabilityService(new RoomResolver, new RoomOptionProvider, $facts)),
+            $this->coordinator($writer, $invalidator),
+        );
+    }
+
+    private function coordinator(?SessionAuditWriter $writer = null, ?\Closure $invalidator = null): SchedulingMutationCoordinator
+    {
         return new SchedulingMutationCoordinator(
             new SchedulingAuthorization,
-            new AvailabilityEvaluator($facts, new ConflictClassifier, new AcademyRulesProvider($rules), new RoomSuitabilityService(new RoomResolver, new RoomOptionProvider, $facts)),
             new SchedulingLockManager,
             new SessionVersionManager(new LegacySessionVersionAdapter),
             new ResourceVersionManager,
