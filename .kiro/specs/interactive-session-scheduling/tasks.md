@@ -12,44 +12,44 @@ Implement the approved PHP 8.3/Laravel scheduling domain incrementally. Begin by
     - Create test-only deterministic interval, relation-path, rule, room, version, and concurrency-case builders (minimum 100 generated cases per property) with seed and first-failure diagnostics; reuse existing `tests/Feature/Admin/CalendarControllerTest.php`, `tests/js/properties/`, and the installed test runners.
     - Affected: `tests/Feature/Admin/`, `tests/Unit/`, `tests/Support/`, `tests/js/properties/` only. Prerequisite for every production task; rollback is removal of added test-only files.
     - _Requirements: 1.1-1.8, 17.1-17.7, 18.5-18.7, 20.5, 21.1-21.8_
-  - [ ]* 1.2 Write the executable property test for persisted calendar projection preservation
+  - [x]* 1.2 Write the executable property test for persisted calendar projection preservation
     - **Property 15: Persisted calendar projection count-and-ID preservation invariant.** Generate inclusive ranges and approved filters, then assert source IDs/counts survive query, resource, endpoint, normalization, and rendering once only with zero feed writes or synthesis.
     - **Validates: Requirements 13.4, 13.9, 15.7, 17.1, 17.2, 17.3, 17.7, 21.5.**
-  - [ ]* 1.3 Write the executable property test for first-boundary diagnostics
+  - [x]* 1.3 Write the executable property test for first-boundary diagnostics
     - **Property 16: First-boundary diagnostic invariant.** Inject earliest representation mismatches and assert the suite reports the correct boundary, fixture/seed, expected, and observed result without a downstream adjustment.
     - **Validates: Requirements 1.1, 17.1, 21.5, 21.6.**
 
 - [ ] 2. Build the canonical pure scheduling decision contracts
-  - [ ] 2.1 Create immutable scheduling values, enums, proposal normalization, and the transport-neutral `SchedulingDomain` façade
+  - [x] 2.1 Create immutable scheduling values, enums, proposal normalization, and the transport-neutral `SchedulingDomain` façade
     - Add only approved `app/Domain/Scheduling` value objects/contracts; map existing `ClassSession`, `SessionEditResource`, `SessionEditViewData`, and `SessionDisplayData` compatibly rather than replacing their public fields. Reject protected enrollment, financial, recurrence-identity, and BusinessCode fields before a mutation path.
     - Do not select a new package or add a second persistence abstraction. Use one relation-path resolution route for direct and enrollment-backed sessions.
     - Affected: `app/Domain/Scheduling/`, existing enums/DTOs only where a backward-compatible server-owned field is required.
     - _Requirements: 2.1-2.7, 4.1-4.3, 5.7, 8.4, 11.1, 16.3-16.5, 18.1-18.4, 21.3_
-  - [ ] 2.2 Implement the sole availability evaluator, conflict classifier, rules provider, and room-suitability facts boundary
+  - [x] 2.2 Implement the sole availability evaluator, conflict classifier, rules provider, and room-suitability facts boundary
     - Compose interval/resource facts from `ConflictDetectionService`, `RoomResolver`, `RoomOptionProvider`, and `RelationPathResolver`; do not copy their queries or overlap predicate. Only `SchedulingDomain` may turn those facts into an `AvailabilityResult`.
     - Return exactly one state with complete authorized conflict ranges, hard/soft classification, effective buffers/rules, localized-safe codes, and deterministic outcomes.
     - Affected: `app/Domain/Scheduling/` and only proven compatibility adapters.
     - _Requirements: 4.1-4.10, 5.1, 9.1-9.9, 10.1-10.6, 18.1, 18.6_
-  - [ ] 2.3 Add centralized scheduling authorization and extend `SessionPolicy` only with evidence-backed named abilities
+  - [x] 2.3 Add centralized scheduling authorization and extend `SessionPolicy` only with evidence-backed named abilities
     - Gate protected facts before evaluation; distinguish update, preview, suggestion, audit-history, recurrence, rules, and override authority without record-existence disclosure. Preserve all existing `SessionPolicy` behavior and named route middleware.
     - _Requirements: 3.5-3.6, 5.3-5.4, 8.6, 12.5-12.6, 16.1-16.2, 16.7_
-  - [ ]* 2.4 Write the executable property test for canonical decision ownership
+  - [x]* 2.4 Write the executable property test for canonical decision ownership
     - **Property 1: Canonical decision ownership invariant.** Generate source-equivalent form, drag/resize, recurrence, and Busy Seed proposals; assert they use one normalized domain decision before source presentation.
     - **Validates: Requirements 4.1, 10.5, 13.1, 15.1, 18.1, 18.2, 18.6.**
-  - [ ]* 2.5 Write the executable property test for proposal integrity and no-write rejection
+  - [x]* 2.5 Write the executable property test for proposal integrity and no-write rejection
     - **Property 2: Proposal integrity and rejection preservation invariant.** Generate permitted, protected, malformed, mixed-path, unauthorized, and disallowed fields; assert stable rejections preserve session, code, recurrence, version, counters, and audit state.
     - **Validates: Requirements 2.3, 2.4, 2.5, 2.7, 8.3, 8.4, 16.3, 16.4, 21.3.**
-  - [ ]* 2.6 Write the executable property test for complete availability and conflict classification
+  - [x]* 2.6 Write the executable property test for complete availability and conflict classification
     - **Property 3: Scheduling consistency and complete conflict invariant.** Cover physical/adjacent intervals, buffers, cancelled/completed sessions, every resource category, and hard constraints; assert exactly one safe decision state.
     - **Validates: Requirements 4.2-4.8, 9.3-9.7, 10.1-10.3.**
-  - [ ]* 2.7 Write the executable property test for effective rules and room suitability
+  - [x]* 2.7 Write the executable property test for effective rules and room suitability
     - **Property 10: Effective rules and room suitability invariant.** Generate complete/contradictory rules and room/resource facts; assert only authorized active compatible available rooms are ordered and violations name their constraint.
     - **Validates: Requirements 9.1-9.7, 9.9, 10.1-10.5.**
-  - [ ]* 2.8 Write the executable property test for immutable contract round trips
+  - [x]* 2.8 Write the executable property test for immutable contract round trips
     - **Property 14: Immutable contract round-trip invariant.** Generate valid/malformed proposal, availability, rules, suggestion, audit, and resource representations; assert reversible fields/enums or stable safe errors that never become mutations.
     - **Validates: Requirements 2.6, 5.7, 17.5, 18.2, 21.3.**
 
-- [ ] 3. Add proven additive persistence, effective rules, and immutable operational-code support
+- [x] 3. Add proven additive persistence, effective rules, and immutable operational-code support
   - [x] 3.1 Implement only evidence-backed reversible migrations, models, repositories, factories, and rule validation
     - After the Task 1 preflight confirms actual schema/consumers, add the minimum indexed persistent state for effective rules, resource versions/locks, room requirements, and immutable audit records. Preserve `ClassSession` direct/enrollment paths and existing `teacher_code`/`student_code`; never create duplicate BusinessCode columns or a destructive rewrite.
     - Validate complete rule configurations atomically, preserve the last valid configuration, advance effective versions, and scope all new state to the proven academy owner.
@@ -59,12 +59,12 @@ Implement the approved PHP 8.3/Laravel scheduling domain incrementally. Begin by
     - Allocate/backfill canonical `teacher_code` and `student_code` uniquely under transaction/database enforcement; reject user-editable or scheduling-payload code changes and preserve primary keys/relations byte-for-byte. Limit disclosure to authorized DTO/resource fields with localized, escaped labels.
     - Reuse existing teacher/student actions, models, policies, and code columns; do not add another identity generator.
     - _Requirements: 8.1-8.7, 16.1-16.6, 18.2, 21.1_
-  - [ ]* 3.3 Write the executable property test for BusinessCode allocation and immutability
+  - [x]* 3.3 Write the executable property test for BusinessCode allocation and immutability
     - **Property 9: BusinessCode uniqueness and immutability invariant.** Generate create, approved backfill, ordinary update, and forbidden payload sequences; assert one non-empty unique canonical code and no ordinary mutation.
     - **Validates: Requirements 8.1-8.4.**
 
-- [ ] 4. Coordinate authoritative mutation, auditing, concurrency, and recurrence through existing entry points
-  - [ ] 4.1 Implement the transaction-only mutation coordinator, lock manager, version manager, and append-only audit writer
+- [x] 4. Coordinate authoritative mutation, auditing, concurrency, and recurrence through existing entry points
+  - [x] 4.1 Implement the transaction-only mutation coordinator, lock manager, version manager, and append-only audit writer
     - Lock the session and affected resources deterministically, compare the opaque current `SessionVersion`, re-evaluate under lock, atomically persist the accepted session/version/resource-version changes and exactly one audit snapshot, then roll back all writes for every failure.
     - Retain legacy `updated_at` compatibility only in an adapter; audit writer failure, cache/infrastructure failure, stale version, hard constraint, and authorization failure must never yield partial state.
     - _Requirements: 2.2, 2.6-2.7, 5.2-5.7, 11.1-11.7, 12.1-12.7, 14.3-14.5, 16.5-16.6, 20.4_
@@ -75,7 +75,7 @@ Implement the approved PHP 8.3/Laravel scheduling domain incrementally. Begin by
     - Generate/reconcile only through canonical proposals and the mutation coordinator; enforce one persisted occurrence/audit per recurring-schedule/date/start identity, explicit series scope confirmation, active/inactive deletion guards, and explanation-only blocked results.
     - Calendar discovery remains an ordinary later read through the existing named feed after commit.
     - _Requirements: 13.1-13.9, 17.2-17.4, 18.1-18.2_
-  - [ ]* 4.4 Write the executable property test for narrow force overrides
+  - [x]* 4.4 Write the executable property test for narrow force overrides
     - **Property 4: Narrow override invariant.** Generate blocking reports and override instructions; assert only fully authorized, confirmed, reasoned soft-conflict overrides commit one correctly attributed audit and no hard-constraint bypass.
     - **Validates: Requirements 5.1-5.7, 11.5.**
   - [ ]* 4.5 Write the executable property test for accepted-transition atomicity
