@@ -15,6 +15,9 @@
 **/.config.kiro
 /auth.json
 /node_modules
+/bit.cloud/node_modules/
+/bit.cloud/tool-results/
+/test-results/
 /public/build
 /public/fonts-manifest.dev.json
 /public/hot
