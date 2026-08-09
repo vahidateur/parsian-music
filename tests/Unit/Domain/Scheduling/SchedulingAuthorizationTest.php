@@ -38,6 +38,22 @@ final class SchedulingAuthorizationTest extends TestCase
         }
     }
 
+    public function test_session_and_collection_abilities_cannot_be_interchanged(): void
+    {
+        $authorization = new SchedulingAuthorization;
+        $admin = $this->actor(RoleEnum::ADMIN);
+
+        try {
+            $authorization->authorizeSession($admin, SchedulingAbility::Suggest, $this->scheduledSession());
+            $this->fail('Collection-only abilities must not receive a session target.');
+        } catch (\InvalidArgumentException) {
+            $this->addToAssertionCount(1);
+        }
+
+        $this->expectException(\InvalidArgumentException::class);
+        $authorization->authorizeCollection($admin, SchedulingAbility::Preview);
+    }
+
     public function test_unauthorized_actor_cannot_run_protected_fact_evaluation(): void
     {
         $evaluated = false;

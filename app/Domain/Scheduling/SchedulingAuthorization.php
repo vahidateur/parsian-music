@@ -22,6 +22,10 @@ final class SchedulingAuthorization
 {
     public function authorizeSession(User $actor, SchedulingAbility $ability, ClassSession $session): void
     {
+        if (! in_array($ability, [SchedulingAbility::Update, SchedulingAbility::Preview, SchedulingAbility::AuditHistory, SchedulingAbility::Override], true)) {
+            throw new InvalidArgumentException("{$ability->value} does not accept a ClassSession target.");
+        }
+
         $gate = Gate::forUser($actor);
 
         $gate->authorize('view', $session);

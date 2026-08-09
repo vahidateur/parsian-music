@@ -16,7 +16,7 @@ use DateTimeZone;
  */
 final readonly class SchedulingDomain
 {
-    public function __construct(private ScheduleProposalNormalizer $normalizer) {}
+    public function __construct(private ScheduleProposalNormalizer $normalizer, private ?AvailabilityEvaluator $evaluator = null) {}
 
     /** @param array<string, mixed> $input */
     public function normalizeForSession(array $input, ClassSession $session, DateTimeZone $timezone): ScheduleProposal
@@ -43,5 +43,16 @@ final readonly class SchedulingDomain
     public function fromSessionDisplayData(SessionDisplayData $display, RelationPath $path, SessionVersion $version, DateTimeZone $timezone): ScheduleProposal
     {
         return $this->normalizer->fromSessionDisplayData($display, $path, $version, $timezone);
+    }
+
+    public function evaluate(ScheduleProposal $proposal): AvailabilityResult
+    {
+        if ($this->evaluator === null) {
+            throw new \LogicException('Availability evaluation requires the Task 2.2 evaluator boundary.');
+        }
+
+        $decision = $this->evaluator->evaluate($proposal);
+
+        return new AvailabilityResult($decision->state, $proposal, $decision->code, $decision->details);
     }
 }
